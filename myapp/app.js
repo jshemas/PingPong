@@ -8,6 +8,7 @@ var express = require('express')
   , User = require('./routes/user')
   , Game = require('./routes/game')
   , http = require('http')
+  , expressLayouts = require('express-ejs-layouts')
   , path = require('path');
 
 
@@ -20,7 +21,10 @@ var app = express();
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs')
+app.set('layout', 'layout');
+app.use(expressLayouts);
+
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
