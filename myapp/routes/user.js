@@ -5,7 +5,6 @@
 
 function User(config){
 	this.config = config;
-	console.log(this.config);
 
 }
 
