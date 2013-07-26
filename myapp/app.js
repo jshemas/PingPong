@@ -6,6 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , User = require('./routes/user')
+  , Game = require('./routes/game')
   , http = require('http')
   , path = require('path');
 
@@ -51,7 +52,6 @@ var playerSchema = mongoose.Schema({
 
 //two players for now...
 var gameSchema = mongoose.Schema({
-	totalScore: String, //is this needed?
 	redPlayer: String,
 	bluePlayer: String,
 	matches: [matchSchema]
@@ -69,9 +69,12 @@ var teamSchema = mongoose.Schema({
 
 var Players = mongoose.model('players', playerSchema);
 var Games = mongoose.model('games', gameSchema);
+var Matches = mongoose.model('matches', matchSchema);
 var Teams = mongoose.model('teams', teamSchema);
 
 user = new User({Players: Players});
+game = new Game({Games: Games, Players: Players});
+
 
 
 http.createServer(app).listen(app.get('port'), function(){
@@ -81,3 +84,6 @@ http.createServer(app).listen(app.get('port'), function(){
 app.get('/', routes.index);
 app.get('/users', function(){ user.list.apply(user, arguments) });
 app.post('/users', function(){ user.add.apply(user, arguments) });
+
+app.get('/games', function(){ game.list.apply(game, arguments) });
+app.post('/games', function(){ game.add.apply(game, arguments) });
