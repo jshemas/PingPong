@@ -7,10 +7,23 @@
 <body>
 <h1><%= title %></h1>
 <div>
-
 	<ul>
-		<%= players %>
+		<% for(var i=0; i<players.length; i++) {%>
+			<li data-playerID="<%= players[i]._id %>"><%= players[i].fname %> "<%= players[i].nickname %>" <%= players[i].lname %></li>
+		<% } %>
 	</ul>
+
+	<hr>
+
+	<h2>Add Player</h2>
+
+	<form name="input" action="/users" method="post">
+		First name: <input type="text" name="firstName"><br>
+		Last name: <input type="text" name="lastName">
+		Nickname: <input type="text" name="nickname">
+		<input type="submit" value="Submit">
+	</form>
+
 </div>
 </body>
 </html>

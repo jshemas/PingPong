@@ -44,7 +44,9 @@ db.once('open', function callback () {
 });
 
 var playerSchema = mongoose.Schema({
-	name: String
+	fname: String,
+	lname: String,
+	nickname: String
 })
 
 //two players for now...
@@ -78,3 +80,4 @@ http.createServer(app).listen(app.get('port'), function(){
 
 app.get('/', routes.index);
 app.get('/users', function(){ user.list.apply(user, arguments) });
+app.post('/users', function(){ user.add.apply(user, arguments) });
