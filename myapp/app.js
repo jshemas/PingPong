@@ -9,6 +9,9 @@ var express = require('express')
   , http = require('http')
   , path = require('path');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/pingpong')
+
 var app = express();
 
 // all environments
@@ -32,6 +35,33 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function callback () {
+	console.log("DB Online!");
+});
+
+var playerSchema = mongoose.Schema({
+	name: String
+})
+
+//two players for now...
+var gameSchema = mongoose.Schema({
+	totalScore: String, //is this needed?
+	redPlayer: String,
+	bluePlayer: String,
+	matches: [matchSchema]
+})
+
+var matchSchema = mongoose.Schema({
+	redScore: String,
+	blueScore: String
+})
+
+var player = mongoose.model('player', playerSchema);
+var game = mongoose.model('game', gameSchema);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
