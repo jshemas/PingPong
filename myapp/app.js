@@ -5,12 +5,14 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , user = require('./routes/user')
+  , User = require('./routes/user')
   , http = require('http')
   , path = require('path');
 
+
+
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/pingpong')
+mongoose.connect('mongodb://192.168.241.233/pingpong')
 
 var app = express();
 
@@ -33,8 +35,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -59,10 +60,21 @@ var matchSchema = mongoose.Schema({
 	blueScore: String
 })
 
-var player = mongoose.model('player', playerSchema);
-var game = mongoose.model('game', gameSchema);
+var teamSchema = mongoose.Schema({
+	redPlayer: String,
+	bluePlayer: String
+})
+
+var Players = mongoose.model('players', playerSchema);
+var Games = mongoose.model('games', gameSchema);
+var Teams = mongoose.model('teams', teamSchema);
+
+user = new User({Players: Players});
 
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+app.get('/', routes.index);
+app.get('/users', function(){ user.list.apply(user, arguments) });
