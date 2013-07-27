@@ -35,7 +35,6 @@ Game.prototype.list = function(req, res){
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
-					console.log("games Found", games);
 					pcb(null,games)
 
 				}
