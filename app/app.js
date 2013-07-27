@@ -53,8 +53,8 @@ var gameSchema = mongoose.Schema({
 	redPlayer: String,
 	bluePlayer: String,
 	matches: [matchSchema],
-	redPlayerDetails: [playerSchema], // Populatd by route logic
-	bluePlayerDetails: [playerSchema] // Populated by route logic
+	redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
+	bluePlayerDetails: [playerSchema] // TODO: Get these out of arrays
 })
 
 var matchSchema = mongoose.Schema({
