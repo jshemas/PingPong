@@ -1,6 +1,16 @@
 
 <h1><%= title %></h1>
 <div>
+
+	<div ng-controller="GameListCtrl">
+		<ul class="phones">
+			<li ng-repeat="game in games | filter:query | orderBy:orderProp">
+				{{game.redPlayerDetails.0.nickname}}
+				<p>{{game.bluePlayerDetails.0.nickname}}</p>
+			</li>
+		</ul>
+	</div>
+
 	<ul>
 		<% for(var i=0; i<games.length; i++) { %>
 			<% var curr_game = games[i]; %>
@@ -20,7 +30,8 @@
 
 	<hr>
 
-	<h2>Add Player</h2>
+
+	<h2>Add Game</h2>
 
 	<form name="input" action="/games" method="post">
 		Player 1: 	<select name="redPlayer" id="redPlayer">
@@ -49,5 +60,7 @@
 
 		<input type="submit" value="Submit">
 	</form>
+
+
 
 </div>
