@@ -12,6 +12,8 @@ var express = require('express'),
 //var dbPath = 'mongodb://192.168.241.233/pingpong';
 //local server
 var dbPath = 'mongodb://localhost/local';
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
 
 // configure Express
 app.configure(function() {
@@ -50,7 +52,9 @@ var playerSchema = mongoose.Schema({
 var gameSchema = mongoose.Schema({
 	redPlayer: String,
 	bluePlayer: String,
-	matches: [matchSchema]
+	matches: [matchSchema],
+	redPlayerDetails: [playerSchema], // Populatd by route logic
+	bluePlayerDetails: [playerSchema] // Populated by route logic
 })
 
 var matchSchema = mongoose.Schema({
@@ -81,3 +85,4 @@ app.post('/users', function(){ user.add.apply(user, arguments) });
 
 app.get('/games', function(){ game.list.apply(game, arguments) });
 app.post('/games', function(){ game.add.apply(game, arguments) });
+app.get('/games/json', function(){ game.json.apply(game, arguments) });

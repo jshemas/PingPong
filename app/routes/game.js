@@ -62,6 +62,56 @@ Game.prototype.list = function(req, res){
 
 };
 
+Game.prototype.json = function(req, res){
+	console.log("JSON");
+	var that = this;
+
+	async.parallel([
+		function(pcb){ // Get All Available Players
+			that.config.Players.find(function (err, players) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,players)
+				}
+
+			});
+		},
+		function(pcb){ // Get all Games
+			that.config.Games.find(function (err, games) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,games)
+
+				}
+
+			});
+		}
+	], function(error, args){
+
+		var myPlayers = args[0];
+		var myGames = args[1];
+
+		myGames.forEach(function(game, i){
+			myPlayers.forEach(function(player, j){
+				if(player["_id"] == game.redPlayer){
+					console.log("Player Matched", player)
+					myGames[i].redPlayerDetails = player;
+				}
+				if(player["_id"] == game.bluePlayer){
+					console.log("Player Matched", player)
+					myGames[i].bluePlayerDetails = player;
+				}
+			});
+		});
+		console.log("My Games", myGames);
+
+		res.json(myGames)
+	});
+
+};
+
 Game.prototype.add = function(req, res){
 	var redPlayer = req.body.redPlayer;
 	var bluePlayer = req.body.bluePlayer;
