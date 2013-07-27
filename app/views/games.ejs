@@ -3,30 +3,22 @@
 <div>
 
 	<div ng-controller="GameListCtrl">
-		<ul class="phones">
+		<ul class="phones" style="margin:0; list-style: none;">
 			<li ng-repeat="game in games | filter:query | orderBy:orderProp">
-				{{game.redPlayerDetails.0.nickname}}
-				<p>{{game.bluePlayerDetails.0.nickname}}</p>
+
+				<div class="row">
+					<div class="span5 center">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</div>
+					<div class="span2 center">VS</div>
+					<div class="span5 center">{{game.bluePlayerDetails.0.fname}} "{{game.bluePlayerDetails.0.nickname}}" {{game.bluePlayerDetails.0.lname}}</div>
+				</div>
+				<div ng-repeat="match in game.matches | filter:query | orderBy:orderProp" class="row">
+					<div class="span5 center">{{match.redScore}}</div>
+					<div class="span2 center">MATCH {{ $index +1 }}</div>
+					<div class="span5 center">{{match.blueScore}}</div>
+				</div>
 			</li>
 		</ul>
 	</div>
-
-	<ul>
-		<% for(var i=0; i<games.length; i++) { %>
-			<% var curr_game = games[i]; %>
-			<%= curr_game.matches %>
-			<h2>Game Between <%= games[i].bluePlayerDetails.fname %> <%= games[i].bluePlayerDetails.lname %> and <%= games[i].redPlayerDetails.fname %> <%= games[i].redPlayerDetails.lname %></h2>
-
-
-			<% for(var j=0; j<curr_game.matches.length; j++) { %>
-				<% curr_match = curr_game.matches[j]; %>
-				<h3>Game <%= j %>:</h3>
-				Red Score: <%= curr_match.redScore %>
-				Blue Score: <%= curr_match.blueScore %>
-
-			<% } %>
-		<% } %>
-	</ul>
 
 	<hr>
 
