@@ -14,7 +14,7 @@ module.exports = User;
 User.prototype.list = function(req, res){
 	this.config.Players.find(function (err, players) {
 		if (err){ // TODO handle err
-			console.log(players)
+			console.log(err)
 		} else{
 			res.render('players', { title: 'Players', players: players });
 		}
@@ -23,10 +23,6 @@ User.prototype.list = function(req, res){
 };
 
 User.prototype.add = function(req, res){
-
-	console.log('req', req.body);
-//	console.log('req', res);
-
 	var firstName = req.body.firstName;
 	var lastName = req.body.lastName;
 	var nickname = req.body.nickname;
