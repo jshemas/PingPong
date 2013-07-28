@@ -11,3 +11,6 @@ function GameListCtrl($scope, $http) {
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
 
+function GameDetailCtrl($scope, $routeParams) {
+	$scope.gameId = $routeParams.gameId;
+}
