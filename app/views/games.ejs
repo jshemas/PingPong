@@ -3,7 +3,7 @@
 <div>
 
 	<div ng-controller="GameListCtrl">
-		<ul class="phones" style="margin:0; list-style: none;">
+		<ul class="gamesPlayed" style="margin:0; list-style: none;">
 			<li ng-repeat="game in games | filter:query | orderBy:orderProp">
 
 				<div class="row">
@@ -12,9 +12,9 @@
 					<div class="span5 center">{{game.bluePlayerDetails.0.fname}} "{{game.bluePlayerDetails.0.nickname}}" {{game.bluePlayerDetails.0.lname}}</div>
 				</div>
 				<div ng-repeat="match in game.matches | filter:query | orderBy:orderProp" class="row">
-					<div class="span5 center">{{match.redScore}}</div>
+					<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
 					<div class="span2 center">MATCH {{ $index +1 }}</div>
-					<div class="span5 center">{{match.blueScore}}</div>
+					<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
 				</div>
 			</li>
 		</ul>
@@ -53,6 +53,30 @@
 		<input type="submit" value="Submit">
 	</form>
 
+</div>
 
+<div id="addGame">
 
 </div>
+
+<script type="text/javascript">
+	$(function(){
+
+		$( "#dialog" ).dialog({
+			buttons: [
+				{
+					text: "Save Game",
+					click: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				{
+					text: "Close",
+					click: function(){
+						$( this ).dialog( "close" );
+					}
+				}
+			]
+		});
+	});
+</script>

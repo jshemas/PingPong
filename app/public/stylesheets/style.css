@@ -5,12 +5,25 @@ body {
 a {
   color: #00b7ff;
 }
-.center{
-	text-align: center;
+.center {
+  text-align: center;
 }
-.float-left{
-	float: left;
+.float-left {
+  float: left;
 }
-.float-right{
-	float: right;
+.float-right {
+  float: right;
+  border: 1px solid #f00;
+}
+/*
+ * Games Table
+ */
+.gamesPlayed {
+  margin: 0;
+  list-style: none;
+}
+.gamesPlayed li {
+  border-top: 1px solid #ddd;
+  margin-bottom: 20px;
+  padding-top: 10px;
 }
