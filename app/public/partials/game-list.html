@@ -1,0 +1,25 @@
+<div class="searchBox float-right">
+	Search: <input ng-model="query">
+</div>
+<h1>{{title}}</h1>
+<div>
+
+	<ul class="gamesPlayed" style="margin:0; list-style: none;">
+		<li ng-repeat="game in games | filter:query ">
+
+			<div class="row">
+				<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</a> </div>
+				<div class="span2 center"><a href="#/games/{{game._id}}">VS</a></div>
+				<div class="span5 center"><a href="#/players/{{game.bluePlayerDetails.0._id}}">{{game.bluePlayerDetails.0.fname}} "{{game.bluePlayerDetails.0.nickname}}" {{game.bluePlayerDetails.0.lname}}</a></div>
+			</div>
+			<div ng-repeat="match in game.matches | filter:query | orderBy:orderProp" class="row">
+				<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
+				<div class="span2 center">MATCH {{ $index +1 }}</div>
+				<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
+			</div>
+		</li>
+	</ul>
+	Games Played: ({{games.length}}) <br>
+	<a href="Javascript:alert('{{games | json}}');">Show JSON</a>
+
+</div>
