@@ -1,0 +1,36 @@
+<h1>{{title}}</h1>
+<div ng-controller="PlayerListCtrl">
+	Search: <input ng-model="query">
+	<table class="table">
+		<thead class="center">
+			<tr>
+				<th>Player:</th>
+				<th>Games Played</th>
+				<th>Wins</th>
+				<th>Losses</th>
+				<th>Streak</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="player in players | filter:query " class="center">
+				<td>{{player.fname}} "{{player.fname}}" {{player.lname}}</td>
+				<td>10</td>
+				<td>5</td>
+				<td>5</td>
+				<td>2</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<hr>
+
+	<h2>Add Player</h2>
+
+	<form name="input" action="/users" method="post">
+		First name: <input type="text" name="firstName"><br>
+		Last name: <input type="text" name="lastName">
+		Nickname: <input type="text" name="nickname">
+		<input type="submit" value="Submit">
+	</form>
+
+</div>
