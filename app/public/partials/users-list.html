@@ -13,7 +13,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="player in players | filter:query " class="center">
-				<td>{{player.fname}} "{{player.fname}}" {{player.lname}}</td>
+				<td><a href="#/users/{{player._id}}">{{player.fname}} "{{player.fname}}" {{player.lname}}</a> </td>
 				<td>10</td>
 				<td>5</td>
 				<td>5</td>

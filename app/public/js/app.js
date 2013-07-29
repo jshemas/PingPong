@@ -8,6 +8,8 @@ angular.module('arena', []).
 		when('/games', {templateUrl: 'partials/game-list.html',   controller: GameListCtrl}).
 		when('/games/:gameId', {templateUrl: 'partials/game-detail.html', controller: GameDetailCtrl}).
 
-		when('/users', {templateUrl: 'partials/users-list.html', controller: PlayerListCtrl}).
+		when('/players', {templateUrl: 'partials/users-list.html', controller: PlayerListCtrl}).
+		when('/players/:userId', {templateUrl: 'partials/users-detail.html', controller: PlayerDetailCtrl}).
+
 		otherwise({redirectTo: '/games'});
 }]);
