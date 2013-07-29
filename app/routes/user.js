@@ -22,6 +22,31 @@ User.prototype.list = function(req, res){
 	});
 };
 
+User.prototype.listJSON = function(req, res){
+	this.config.Players.find(function (err, players) {
+		if (err){ // TODO handle err
+			console.log(err)
+		} else{
+			res.json(players)
+		}
+
+	});
+};
+
+User.prototype.singleJSON = function(req, res){
+	var playerId = req.params.id;
+	console.log("PlayeriD", playerId);
+	this.config.Players.findById(playerId, function(err, player) {
+		if (err){ // TODO handle err
+			console.log(err)
+		} else{
+			res.json(player)
+		}
+
+	});
+};
+
+
 User.prototype.add = function(req, res){
 	var firstName = req.body.firstName;
 	var lastName = req.body.lastName;

@@ -5,7 +5,10 @@ body {
 a {
   color: #00b7ff;
 }
-.center {
+.center,
+.center td,
+.center th {
+  text-align: center;
   text-align: center;
 }
 .float-left {
@@ -13,7 +16,6 @@ a {
 }
 .float-right {
   float: right;
-  border: 1px solid #f00;
 }
 /*
  * Games Table
