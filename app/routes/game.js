@@ -62,6 +62,51 @@ Game.prototype.list = function(req, res){
 
 };
 
+Game.prototype.singleGame = function(req, res){
+	var gameId = req.params.id;
+	console.log("GameID", gameId);
+	var that = this;
+
+
+
+	async.parallel([
+		function(pcb){ // Get All Available Players
+			that.config.Players.find(function (err, players) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,players)
+				}
+			});
+		},
+		function(pcb){ // Get all Games
+			that.config.Games.findById(gameId, function (err, gameInfo) {
+				console.log("SingleGameInfo", gameInfo);
+				pcb(null, gameInfo);
+			});
+		}
+	], function(error, args){
+
+		var myPlayers = args[0];
+		var gameDetails = args[1];
+
+		myPlayers.forEach(function(player, j){
+			if(player["_id"] == gameDetails.redPlayer){
+				console.log("Player Matched", player)
+				gameDetails.redPlayerDetails = player;
+			}
+			if(player["_id"] == gameDetails.bluePlayer){
+				console.log("Player Matched", player)
+				gameDetails.bluePlayerDetails = player;
+			}
+		});
+
+
+		res.json(gameDetails)
+	});
+
+}
+
 Game.prototype.json = function(req, res){
 	console.log("JSON");
 	var that = this;

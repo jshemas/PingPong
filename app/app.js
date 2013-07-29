@@ -86,3 +86,4 @@ app.post('/users', function(){ user.add.apply(user, arguments) });
 app.get('/games', function(){ game.list.apply(game, arguments) });
 app.post('/games', function(){ game.add.apply(game, arguments) });
 app.get('/games/json', function(){ game.json.apply(game, arguments) });
+app.get('/games/:id/json', function(){ game.singleGame.apply(game, arguments) });

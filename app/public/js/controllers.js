@@ -11,6 +11,20 @@ function GameListCtrl($scope, $http) {
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
 
-function GameDetailCtrl($scope, $routeParams) {
+function GameDetailCtrl($scope, $routeParams, $http) {
+
 	$scope.gameId = $routeParams.gameId;
+	$http.get('/games/' + $scope.gameId + '/json').success(function(data) {
+		console.log("Game Data", data);
+		$scope.gameData = data;
+	});
+}
+
+function PlayerListCtrl($scope, $http) {
+	$http.get('/games/json').success(function(data) {
+		console.log(data);
+		$scope.games = data;
+	});
+
+	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
