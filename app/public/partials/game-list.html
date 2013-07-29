@@ -1,6 +1,9 @@
+<div class="searchBox float-right">
+	Search: <input ng-model="query">
+</div>
 <h1>{{title}}</h1>
 <div ng-controller="GameListCtrl">
-	Search: <input ng-model="query">
+
 	<ul class="gamesPlayed" style="margin:0; list-style: none;">
 		<li ng-repeat="game in games | filter:query ">
 
