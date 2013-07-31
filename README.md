@@ -7,8 +7,7 @@ This was build using Node.js(v0.10.10) and MongoDB(v2.4.4).
 
 Just Run...
 ```
-cd app
-node app
+node app/app.js
 ```
 
 ### Tests

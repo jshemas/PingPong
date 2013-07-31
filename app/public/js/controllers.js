@@ -52,7 +52,7 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 }
 
 function PlayerDetailCtrl($scope, $routeParams, $http) {
-	console.log("Route Params", $routeParams);
+	//console.log("Route Params", $routeParams);
 	$scope.userId = $routeParams.userId;
 	$http.get('/users/' + $scope.userId + '/json').success(function(data) {
 		//console.log("user Data", data);

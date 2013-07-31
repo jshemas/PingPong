@@ -1,12 +1,9 @@
-
 <h1><%= title %></h1>
 <div>
-
 	<div ng-controller="GameListCtrl">
 		Search: <input ng-model="query">
 		<ul class="gamesPlayed" style="margin:0; list-style: none;">
 			<li ng-repeat="game in games | filter:query ">
-
 				<div class="row">
 					<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</a> </div>
 					<div class="span2 center"><a href="#/games/{{game._id}}">VS</a></div>
@@ -21,16 +18,9 @@
 		</ul>
 		Games Played: ({{games.length}}) <br>
 		<a href="Javascript:alert('{{games | json}}');">Show JSON</a>
-		
 	</div>
-
-
-
 	<hr>
-
-
 	<h2>Add Game</h2>
-
 	<form name="input" action="/games" method="post">
 		Player 1: 	<select name="redPlayer" id="redPlayer">
 						<% for(var i=0; i<players.length; i++) {%>
@@ -54,20 +44,12 @@
 		<h3>Match 3 Scores</h3>
 		Player 1: <input type="text" name="match3RedPlayer"><br>
 		Player 2: <input type="text" name="match3BluePlayer"><br>
-
-
 		<input type="submit" value="Submit">
 	</form>
-
 </div>
-
-<div id="addGame">
-
-</div>
-
+<div id="addGame"></div>
 <script type="text/javascript">
 	$(function(){
-
 		$( "#dialog" ).dialog({
 			buttons: [
 				{

@@ -1,5 +1,4 @@
 'use strict';
-
 /* App Module */
 
 angular.module('arena', []).
@@ -22,7 +21,5 @@ angular.module('arena', []).
 			controller: PlayerDetailCtrl
 		}).
 		otherwise({redirectTo: '/games'});
-
 	//$locationProvider.html5Mode(true); // Use HTML5 strategy if available for how application deep linking paths are stored
-
 }]);

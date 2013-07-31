@@ -23,7 +23,6 @@ app.configure(function() {
 	app.set('layout', 'layout');
 	app.use(expressLayouts);
 	app.use(express.favicon());
-	//app.use(express.logger('dev')); //this spams my logs
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(express.cookieParser('your secret here'));
