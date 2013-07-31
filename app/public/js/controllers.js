@@ -21,13 +21,22 @@ function GameDetailCtrl($scope, $routeParams, $http) {
 	});
 }
 
-function PlayerListCtrl($scope, $http) {
+function PlayerListCtrl($scope, $http, $location, $route) {
 	$scope.title = "Players"
 	$http.get('/users/json').success(function(data) {
 		console.log(data);
 		$scope.players = data;
 
 	});
+
+	$scope.form = {};
+	$scope.addPlayer = function () {
+		$http.post('/users', $scope.form).success(function(data) {
+			console.log("SUCCESS!", data);
+			//$location.path('/players');
+			$route.reload();
+		});
+	};
 
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }

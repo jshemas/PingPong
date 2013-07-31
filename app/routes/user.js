@@ -58,15 +58,22 @@ User.prototype.add = function(req, res){
 		nickname: nickname
 	});
 
+
+
 	newPlayer.save(function (err, newPlayer) {
 
 		if (err){ // TODO handle the error
 			console.log("Player Addd Failed: ", err);
-			res.redirect(500, "/users")
+			res.json({
+				success: false,
+				error: err
+			});
 		}
 		else{
 			console.log("Player Added");
-			res.redirect("/users");
+			res.json({
+				success: true
+			});
 		}
 
 	});

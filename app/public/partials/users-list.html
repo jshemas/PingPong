@@ -29,11 +29,10 @@
 
 	<h2>Add Player</h2>
 
-	<form name="input" action="/users" method="post">
-		First name: <input type="text" name="firstName"><br>
-		Last name: <input type="text" name="lastName">
-		Nickname: <input type="text" name="nickname">
-		<input type="submit" value="Submit">
-	</form>
+
+	First name: <input type="text" name="firstName" ng-model='form.firstName'><br>
+	Last name: <input type="text" name="lastName" ng-model='form.lastName'>
+	Nickname: <input type="text" name="nickname" ng-model='form.nickname'>
+	<button ng-click='addPlayer()'>Add Player</button>
 
 </div>
