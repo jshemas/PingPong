@@ -41,39 +41,12 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// import models
+var Players = require('./models/Player')(mongoose);
+var Games = require('./models/Game')(mongoose);
 
-var playerSchema = mongoose.Schema({
-	fname: String,
-	lname: String,
-	nickname: String
-})
-
-//two players for now...
-var gameSchema = mongoose.Schema({
-	redPlayer: String,
-	bluePlayer: String,
-	matches: [matchSchema],
-	redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
-	bluePlayerDetails: [playerSchema] // TODO: Get these out of arrays
-})
-
-var matchSchema = mongoose.Schema({
-	redScore: String,
-	blueScore: String
-})
-
-var teamSchema = mongoose.Schema({
-	redPlayer: String,
-	bluePlayer: String
-})
-
-var Players = mongoose.model('players', playerSchema);
-var Games = mongoose.model('games', gameSchema);
-var Matches = mongoose.model('matches', matchSchema);
-var Teams = mongoose.model('teams', teamSchema);
-
-user = new User({Players: Players});
-game = new Game({Games: Games, Players: Players});
+user = new User({Players: Players.Players});
+game = new Game({Games: Games.Game, Players: Players.Players});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
