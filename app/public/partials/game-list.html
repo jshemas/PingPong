@@ -3,10 +3,8 @@
 </div>
 <h1>{{title}}</h1>
 <div>
-
 	<ul class="gamesPlayed" style="margin:0; list-style: none;">
 		<li ng-repeat="game in games | filter:query ">
-
 			<div class="row">
 				<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</a> </div>
 				<div class="span2 center"><a href="#/games/{{game._id}}">VS</a></div>
@@ -21,5 +19,17 @@
 	</ul>
 	Games Played: ({{games.length}}) <br>
 	<a href="Javascript:alert('{{games | json}}');">Show JSON</a>
-
+	<h2>Add Game</h2>
+	Player 1: <select ng-options="player.lname for player in players" name="redPlayer" id="redPlayer" ng-model='form.redPlayer'></select></br>
+	Player 2: <select ng-options="player.lname for player in players" name="redPlayer" id="bluePlayer" ng-model='form.bluePlayer'></select></br>
+	<h3>Match 1 Scores</h3>
+	Player 1: <input type="text" name="match1RedPlayer" ng-model='form.match1RedPlayer'><br>
+	Player 2: <input type="text" name="match1BluePlayer" ng-model='form.match1BluePlayer'><br>
+	<h3>Match 2 Scores</h3>
+	Player 1: <input type="text" name="match2RedPlayer" ng-model='form.match2RedPlayer'><br>
+	Player 2: <input type="text" name="match2BluePlayer" ng-model='form.match2BluePlayer'><br>
+	<h3>Match 3 Scores</h3>
+	Player 1: <input type="text" name="match3RedPlayer" ng-model='form.match3RedPlayer'><br>
+	Player 2: <input type="text" name="match3BluePlayer" ng-model='form.match3BluePlayer'><br>
+	<button ng-click='addGame()'>Add Game</button>
 </div>

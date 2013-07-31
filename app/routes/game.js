@@ -158,8 +158,8 @@ Game.prototype.json = function(req, res){
 };
 
 Game.prototype.add = function(req, res){
-	var redPlayer = req.body.redPlayer;
-	var bluePlayer = req.body.bluePlayer;
+	var redPlayer = req.body.redPlayer._id;
+	var bluePlayer = req.body.bluePlayer._id;
 
 	var matches = [
 		{
@@ -189,11 +189,16 @@ Game.prototype.add = function(req, res){
 
 		if (err){ // TODO handle the error
 			console.log("Game Add Failed: ", err);
-			res.redirect(500, "/games")
+			res.json({
+				success: false,
+				error: err
+			});
 		}
 		else{
 			console.log("Game Added");
-			res.redirect("/games");
+			res.json({
+				success: true
+			});
 		}
 
 	});
