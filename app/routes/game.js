@@ -131,19 +131,19 @@ Game.prototype.add = function(req, res){
 	var bluePlayer = req.body.bluePlayer._id;
 	var matches = [
 		{
-			redScore: req.body["match1RedPlayer"] || 0,
-			blueScore: req.body["match1BluePlayer"] || 0
+			redScore: parseInt(req.body["match1RedPlayer"]) || 0,
+			blueScore: parseInt(req.body["match1BluePlayer"]) || 0
 		},
 		{
-			redScore: req.body["match2RedPlayer"] || 0,
-			blueScore: req.body["match2BluePlayer"] || 0
+			redScore: parseInt(req.body["match2RedPlayer"]) || 0,
+			blueScore: parseInt(req.body["match2BluePlayer"]) || 0
 		}
 	];
 
 	if(req.body["match3RedPlayer"] || req.body["match3BluePlayer"] ){
 		matches.push({
-			redScore: req.body["match3RedPlayer"] || 0,
-			blueScore: req.body["match3BluePlayer"] || 0
+			redScore: parseInt(req.body["match3RedPlayer"]) || 0,
+			blueScore: parseInt(req.body["match3BluePlayer"]) || 0
 		});
 	};
 

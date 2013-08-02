@@ -29,7 +29,7 @@ User.prototype.listJSON = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Games
-			that.config.Games.find(function (err, games) {
+			that.config.Games.find({}).sort({dateTime: 1}).execFind(function (err, games) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
@@ -47,7 +47,7 @@ User.prototype.listJSON = function(req, res){
 			if(currentStreak.type === newGame){
 				return {
 					type: currentStreak.type,
-					count: currentStreak.count++
+					count: currentStreak.count + 1
 				}
 			}else{
 				return {
@@ -62,6 +62,7 @@ User.prototype.listJSON = function(req, res){
 			var wins = 0,
 				losses = 0,
 				gamesPlayed = 0,
+				ratio = 500,
 				currentStreak = {
 					type: "?",
 					count: 0
@@ -72,33 +73,33 @@ User.prototype.listJSON = function(req, res){
 			myGames.forEach(function(game, i){
 
 				var finalMatch = ( typeof game.matches[2] == "undefined" ) ? game.matches[1] : game.matches[2];
-
 				if( player._id == game.bluePlayer){
 					gamesPlayed++;
 					if(finalMatch.redScore > finalMatch.blueScore){
-						wins++;
-						currentStreak = calculateStreak(currentStreak, "W");
-					}else{
 						losses++;
 						currentStreak = calculateStreak(currentStreak, "L");
+					}else{
+						wins++;
+						currentStreak = calculateStreak(currentStreak, "W");
 					}
 
 				}else if( player._id == game.redPlayer ){
 					gamesPlayed++;
 					if(finalMatch.redScore > finalMatch.blueScore){
-						losses++;
-						currentStreak = calculateStreak(currentStreak, "L");
-					}else{
 						wins++;
 						currentStreak = calculateStreak(currentStreak, "W");
+					}else{
+						losses++;
+						currentStreak = calculateStreak(currentStreak, "L");
 					}
 				}
 			});
 
+			myPlayers[j].ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
 			myPlayers[j].wins = wins;
 			myPlayers[j].losses = losses;
 			myPlayers[j].gamesPlayed = gamesPlayed;
-			myPlayers[j].streak = currentStreak.type + currentStreak.count;
+			myPlayers[j].streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
 		});
 
 

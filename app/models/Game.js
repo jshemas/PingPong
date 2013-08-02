@@ -11,8 +11,8 @@ module.exports = function(mongoose) {
 	});
 
 	var matchSchema = mongoose.Schema({
-		redScore: { type: String, required: true },
-		blueScore: { type: String, required: true }
+		redScore: { type: Number, required: true },
+		blueScore: { type: Number, required: true }
 	});
 
 	// What is this used for?

@@ -8,7 +8,8 @@ module.exports = function(mongoose) {
 		wins: { type: String, required: false },
 		losses: { type: String, required: false },
 		gamesPlayed: { type: String, required: false },
-		streak: { type: String, required: false }
+		streak: { type: String, required: false },
+		ratio: { type: String, required: false }
 
 	});
 
