@@ -15,11 +15,11 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="player in players | filter:query " class="center">
-				<td><a href="#/users/{{player._id}}">{{player.fname}} "{{player.fname}}" {{player.lname}}</a> </td>
-				<td>10</td>
-				<td>5</td>
-				<td>5</td>
-				<td>2</td>
+				<td><a href="#/users/{{player._id}}">{{player.fname}} "{{player.nickname}}" {{player.lname}}</a> </td>
+				<td>{{player.gamesPlayed}}</td>
+				<td>{{player.wins}}</td>
+				<td>{{player.losses}}</td>
+				<td>{{player.streak}}</td>
 			</tr>
 		</tbody>
 	</table>

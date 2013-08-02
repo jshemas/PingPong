@@ -44,7 +44,7 @@ if ('development' == app.get('env')) {
 var Players = require('./models/Player')(mongoose);
 var Games = require('./models/Game')(mongoose);
 
-user = new User({Players: Players.Players});
+user = new User({Games: Games.Game, Players: Players.Players});
 game = new Game({Games: Games.Game, Players: Players.Players});
 
 http.createServer(app).listen(app.get('port'), function(){
