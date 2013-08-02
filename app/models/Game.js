@@ -5,6 +5,7 @@ module.exports = function(mongoose) {
 		redPlayer: { type: String, required: true },
 		bluePlayer: { type: String, required: true },
 		matches: [matchSchema],
+		dateTime : { type : Date, default: Date.now },
 		redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
 		bluePlayerDetails: [playerSchema] // TODO: Get these out of arrays
 	});

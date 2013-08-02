@@ -7,7 +7,9 @@
 		<li ng-repeat="game in games | filter:query ">
 			<div class="row">
 				<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</a> </div>
-				<div class="span2 center"><a href="#/games/{{game._id}}">VS</a></div>
+				<div class="span2 center"><a href="#/games/{{game._id}}">VS
+					{{ game.dateTime | date:'yyyy-MM-dd HH:mm:ss'}}
+				</a></div>
 				<div class="span5 center"><a href="#/players/{{game.bluePlayerDetails.0._id}}">{{game.bluePlayerDetails.0.fname}} "{{game.bluePlayerDetails.0.nickname}}" {{game.bluePlayerDetails.0.lname}}</a></div>
 			</div>
 			<div ng-repeat="match in game.matches | filter:query | orderBy:orderProp" class="row">
