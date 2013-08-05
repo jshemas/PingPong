@@ -1,6 +1,5 @@
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
-	//TODO - Add last updated time to schema
 	var playerSchema = mongoose.Schema({
 		fname: { type: String, required: true },
 		lname: { type: String, required: true },
@@ -9,8 +8,8 @@ module.exports = function(mongoose) {
 		losses: { type: String, required: false },
 		gamesPlayed: { type: String, required: false },
 		streak: { type: String, required: false },
-		ratio: { type: String, required: false }
-
+		ratio: { type: String, required: false },
+		createdDate: { type: Date, default: Date.now }
 	});
 
 	var Players = mongoose.model('players', playerSchema);
