@@ -1,22 +1,41 @@
-<div>
-	<table class="table">
-		<thead class="center">
-		<tr>
-			<th>Player:</th>
-			<th>Games Played</th>
-			<th>Wins</th>
-			<th>Losses</th>
-			<th>Streak</th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr class="center">
-			<td>{{userData.fname}} "{{userData.fname}}" {{userData.lname}}</td>
-			<td>10</td>
-			<td>5</td>
-			<td>5</td>
-			<td>2</td>
-		</tr>
-		</tbody>
-	</table>
+<div class="row">
+	<div class="span4">
+		<div class="userImageWrapper">
+			<img src="/images/PingPongPlaceholder.jpeg" alt="" height="200px"/>
+		</div>
+	</div>
+	<div class="span8">
+		<h2>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h2>
+
+		<table class="table">
+			<tbody>
+				<tr>
+					<th>Games Played:</th>
+					<td>{{userData.gamesPlayed}}</td>
+				</tr>
+				<tr>
+					<th>Wins</th>
+					<td>{{userData.wins}}</td>
+				</tr>
+				<tr>
+					<th>Losses</th>
+					<td>{{userData.losses}}</td>
+				</tr>
+				<tr>
+					<th>Ratio</th>
+					<td>{{userData.ratio}}</td>
+				</tr>
+				<tr>
+					<th>Streak</th>
+					<td>{{userData.streak}}</td>
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="row">
+	<h3>Player's Recent Games</h3>
+
 </div>

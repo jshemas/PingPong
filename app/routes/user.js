@@ -42,21 +42,6 @@ User.prototype.listJSON = function(req, res){
 		var myGames = args[1];
 
 
-		function calculateStreak(currentStreak, newGame){
-			//calculateStreak({ type, count }, L)
-			if(currentStreak.type === newGame){
-				return {
-					type: currentStreak.type,
-					count: currentStreak.count + 1
-				}
-			}else{
-				return {
-					type: newGame,
-					count: 1
-				}
-			}
-		}
-
 		myPlayers.forEach(function(player, j){
 
 			var wins = 0,
@@ -110,14 +95,78 @@ User.prototype.listJSON = function(req, res){
 
 User.prototype.singleJSON = function(req, res){
 	var playerId = req.params.id;
-	//console.log("PlayeriD", playerId);
-	this.config.Players.findById(playerId, function(err, player) {
-		if (err){ // TODO handle err
-			console.log(err)
-		} else{
-			res.json(player)
+
+	var that = this;
+	async.parallel([
+		function(pcb){ // Get All Available Players
+			that.config.Players.findById(playerId, function(err, player) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,player)
+				}
+			});
+		},
+		function(pcb){ // Get all Games
+			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,games)
+				}
+			});
 		}
+	], function(error, args){
+		var player = args[0];
+		var myGames = args[1];
+
+		var wins = 0,
+			losses = 0,
+			gamesPlayed = 0,
+			ratio = 500,
+			currentStreak = {
+				type: "?",
+				count: 0
+			};
+
+		myGames.forEach(function(game, i){
+
+			var finalMatch = ( typeof game.matches[2] == "undefined" ) ? game.matches[1] : game.matches[2];
+			if( player._id == game.bluePlayer){
+				gamesPlayed++;
+				if(finalMatch.redScore > finalMatch.blueScore){
+					losses++;
+					currentStreak = calculateStreak(currentStreak, "L");
+				}else{
+					wins++;
+					currentStreak = calculateStreak(currentStreak, "W");
+				}
+
+			}else if( player._id == game.redPlayer ){
+				gamesPlayed++;
+				if(finalMatch.redScore > finalMatch.blueScore){
+					wins++;
+					currentStreak = calculateStreak(currentStreak, "W");
+				}else{
+					losses++;
+					currentStreak = calculateStreak(currentStreak, "L");
+				}
+			}
+		});
+
+		player.ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
+		player.wins = wins;
+		player.losses = losses;
+		player.gamesPlayed = gamesPlayed;
+		player.streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
+
+
+
+		//console.log("My player", player);
+		res.json(player);
 	});
+
+
 };
 
 User.prototype.add = function(req, res){
@@ -145,3 +194,18 @@ User.prototype.add = function(req, res){
 		}
 	});
 };
+
+function calculateStreak(currentStreak, newGame){
+	//calculateStreak({ type, count }, L)
+	if(currentStreak.type === newGame){
+		return {
+			type: currentStreak.type,
+			count: currentStreak.count + 1
+		}
+	}else{
+		return {
+			type: newGame,
+			count: 1
+		}
+	}
+}
