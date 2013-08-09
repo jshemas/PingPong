@@ -29,7 +29,7 @@ User.prototype.listJSON = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Games
-			that.config.Games.find({}).sort({dateTime: 1}).execFind(function (err, games) {
+			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{

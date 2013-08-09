@@ -39,6 +39,8 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 		//console.log(data);
 		$scope.players = data;
 	});
+	$scope.predicate = '-streak';
+
 	$scope.form = {};
 	$scope.addPlayer = function () {
 		$http.post('/users', $scope.form).success(function(data) {
