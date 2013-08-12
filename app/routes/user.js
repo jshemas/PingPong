@@ -95,7 +95,6 @@ User.prototype.listJSON = function(req, res){
 
 User.prototype.singleJSON = function(req, res){
 	var playerId = req.params.id;
-
 	var that = this;
 	async.parallel([
 		function(pcb){ // Get All Available Players
@@ -108,7 +107,7 @@ User.prototype.singleJSON = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Games
-			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
+			that.config.Games.find({$or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]}).sort({dateTime: -1}).execFind(function (err, games) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{

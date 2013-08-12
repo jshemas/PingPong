@@ -61,4 +61,10 @@ function PlayerDetailCtrl($scope, $routeParams, $http) {
 		$scope.userData = data;
 		$scope.title = data.fname;
 	});
+
+	$http.get('/games/json?playerID=' + $scope.userId).success(function(data) {
+		//console.log("Game Data", data);
+		$scope.gameData = data;
+		console.log("GameData", $scope.gameData);
+	});
 }
