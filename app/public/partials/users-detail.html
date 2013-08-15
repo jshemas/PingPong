@@ -5,7 +5,16 @@
 		</div>
 	</div>
 	<div class="span8">
-		<h2>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h2>
+		<div class="float-right">
+			<ul class="list-style-none">
+				<li>
+					<a href="#Edit"><i class="icon-edit"></i> Edit</a>
+				</li>
+				<li><a href="#Delete"><i class="icon-remove"></i> Delete</a></li>
+			</ul>
+		</div>
+
+		<h3>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h3>
 
 		<table class="table">
 			<tbody>

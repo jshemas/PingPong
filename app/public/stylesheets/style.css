@@ -17,6 +17,9 @@ a {
 .float-right {
   float: right;
 }
+.list-style-none {
+  list-style: none;
+}
 /***************************
 *	Games Table
 ***************************/
