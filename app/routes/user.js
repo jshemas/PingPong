@@ -194,6 +194,46 @@ User.prototype.add = function(req, res){
 	});
 };
 
+User.prototype.edit = function(req, res){
+
+	var that = this;
+
+	this.config.Players.update({"_id": req.body.id}, req.body.data, function(err, player) {
+		if (err){ // TODO handle err
+			console.log(err)
+		} else{
+			res.json({"Success": true});
+		}
+	});
+};
+
+User.prototype.delete = function(req, res){
+	var playerID = req.params.id;
+	var that = this;
+
+	async.parallel([
+		function(pcb){ // Remove Player
+			that.config.Players.remove({"_id": playerID}, function(err){
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null);
+				}
+			});
+		}
+	], function(error, args){
+		if(error){
+			res.json({"Success": false, "Error": error});
+		}else{
+			res.json({"Success": true});
+		}
+
+	});
+
+
+
+};
+
 function calculateStreak(currentStreak, newGame){
 	//calculateStreak({ type, count }, L)
 	if(currentStreak.type === newGame){

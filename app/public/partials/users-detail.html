@@ -8,9 +8,9 @@
 		<div class="float-right">
 			<ul class="list-style-none">
 				<li>
-					<a href="#Edit"><i class="icon-edit"></i> Edit</a>
+					<a href="" ng-click="showEditPlayer()"><i class="icon-edit"></i> Edit</a>
 				</li>
-				<li><a href="#Delete"><i class="icon-remove"></i> Delete</a></li>
+				<li ng-click="showRemovePlayer()"><a href="" ><i class="icon-remove"></i> Delete!</a></li>
 			</ul>
 		</div>
 
@@ -63,4 +63,51 @@
 		</li>
 	</ul>
 
+</div>
+
+<div id="removePlayerConfirmation" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="removePlayerConfirmationLabel">Remove Player</h3>
+	</div>
+	<div class="modal-body">
+		<p>Are you sure you wish to remove {{userData.fname}} "{{userData.nickname}}" {{userData.lname}} ?</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click="deletePlayer()" class="btn btn-primary">Yes, remove.</button>
+	</div>
+</div>
+
+<div id="editPlayerDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="editPlayerDialogLabel">Edit Player</h3>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label" for="inputFirstName">FirstName</label>
+				<div class="controls">
+					<input type="text" id="inputFirstName" ng-model='user.fname' placeholder="First Name" value="{{userData.fname}}">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputNickName">NickName</label>
+				<div class="controls">
+					<input type="text" id="inputNickName" ng-model='user.nickname'  placeholder="Nick Name" value="{{userData.nickname}}">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputLastName">LastName</label>
+				<div class="controls">
+					<input type="text" id="inputLastName" ng-model='user.lname' placeholder="Last Name" value="{{userData.lname}}">
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click="editPlayer(user)" class="btn btn-primary">Update Player</button>
+	</div>
 </div>
