@@ -10,5 +10,5 @@ def exp_score(r1,r2):
 
 def delta(r1,r2,result):
     K = 32
-    return K * (result - exp_score(r1,r2))
+    return round(K * (result - exp_score(r1,r2)))
 
