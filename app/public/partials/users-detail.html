@@ -1,11 +1,20 @@
 <div class="row">
 	<div class="span4">
 		<div class="userImageWrapper">
-			<img src="/images/PingPongPlaceholder.jpeg" alt="" height="200px"/>
+			<img src="/images/PingPongPlaceholder3.jpg" alt="" height="200px"/>
 		</div>
 	</div>
 	<div class="span8">
-		<h2>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h2>
+		<div class="float-right">
+			<ul class="list-style-none">
+				<li>
+					<a href="" ng-click="showEditPlayer()"><i class="icon-edit"></i> Edit</a>
+				</li>
+				<li ng-click="showRemovePlayer()"><a href="" ><i class="icon-remove"></i> Delete!</a></li>
+			</ul>
+		</div>
+
+		<h3>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h3>
 
 		<table class="table">
 			<tbody>
@@ -36,6 +45,69 @@
 </div>
 
 <div class="row">
-	<h3>Player's Recent Games</h3>
+	<h3>Player's Recent Games ({{gameData.length}})</h3>
+	<ul class="gamesPlayed" style="margin:0; list-style: none;">
+		<li ng-repeat="game in gameData | filter:query ">
+			<div class="row">
+				<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</a> </div>
+				<div class="span2 center"><a href="#/games/{{game._id}}">VS
+					{{ game.dateTime | date:'yyyy-MM-dd HH:mm:ss'}}
+				</a></div>
+				<div class="span5 center"><a href="#/players/{{game.bluePlayerDetails.0._id}}">{{game.bluePlayerDetails.0.fname}} "{{game.bluePlayerDetails.0.nickname}}" {{game.bluePlayerDetails.0.lname}}</a></div>
+			</div>
+			<div ng-repeat="match in game.matches | filter:query | orderBy:orderProp" class="row">
+				<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
+				<div class="span2 center">MATCH {{ $index +1 }}</div>
+				<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
+			</div>
+		</li>
+	</ul>
 
+</div>
+
+<div id="removePlayerConfirmation" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="removePlayerConfirmationLabel">Remove Player</h3>
+	</div>
+	<div class="modal-body">
+		<p>Are you sure you wish to remove {{userData.fname}} "{{userData.nickname}}" {{userData.lname}} ?</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click="deletePlayer()" class="btn btn-primary">Yes, remove.</button>
+	</div>
+</div>
+
+<div id="editPlayerDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="editPlayerDialogLabel">Edit Player</h3>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label" for="inputFirstName">FirstName</label>
+				<div class="controls">
+					<input type="text" id="inputFirstName" ng-model='user.fname' placeholder="First Name" value="{{userData.fname}}">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputNickName">NickName</label>
+				<div class="controls">
+					<input type="text" id="inputNickName" ng-model='user.nickname'  placeholder="Nick Name" value="{{userData.nickname}}">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputLastName">LastName</label>
+				<div class="controls">
+					<input type="text" id="inputLastName" ng-model='user.lname' placeholder="Last Name" value="{{userData.lname}}">
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click="editPlayer(user)" class="btn btn-primary">Update Player</button>
+	</div>
 </div>

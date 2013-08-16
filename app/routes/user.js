@@ -95,7 +95,6 @@ User.prototype.listJSON = function(req, res){
 
 User.prototype.singleJSON = function(req, res){
 	var playerId = req.params.id;
-
 	var that = this;
 	async.parallel([
 		function(pcb){ // Get All Available Players
@@ -108,7 +107,7 @@ User.prototype.singleJSON = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Games
-			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
+			that.config.Games.find({$or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]}).sort({dateTime: -1}).execFind(function (err, games) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
@@ -193,6 +192,46 @@ User.prototype.add = function(req, res){
 			});
 		}
 	});
+};
+
+User.prototype.edit = function(req, res){
+
+	var that = this;
+
+	this.config.Players.update({"_id": req.body.id}, req.body.data, function(err, player) {
+		if (err){ // TODO handle err
+			console.log(err)
+		} else{
+			res.json({"Success": true});
+		}
+	});
+};
+
+User.prototype.delete = function(req, res){
+	var playerID = req.params.id;
+	var that = this;
+
+	async.parallel([
+		function(pcb){ // Remove Player
+			that.config.Players.remove({"_id": playerID}, function(err){
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null);
+				}
+			});
+		}
+	], function(error, args){
+		if(error){
+			res.json({"Success": false, "Error": error});
+		}else{
+			res.json({"Success": true});
+		}
+
+	});
+
+
+
 };
 
 function calculateStreak(currentStreak, newGame){

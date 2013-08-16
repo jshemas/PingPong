@@ -54,8 +54,11 @@ http.createServer(app).listen(app.get('port'), function(){
 app.get('/', routes.index);
 app.get('/users', function(){ user.list.apply(user, arguments) });
 app.get('/users/:id/json', function(){ user.singleJSON.apply(user, arguments) });
+app.get('/users/:id/delete', function(){ user.delete.apply(user, arguments) });
+app.put('/users/:id/edit', function(){ user.edit.apply(user, arguments) });
 app.get('/users/json', function(){ user.listJSON.apply(user, arguments) });
 app.post('/users', function(){ user.add.apply(user, arguments) });
+
 
 app.get('/games', function(){ game.list.apply(game, arguments) });
 app.post('/games', function(){ game.add.apply(game, arguments) });

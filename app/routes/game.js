@@ -1,4 +1,6 @@
 var async = require('async');
+var http = require('http');
+var url = require('url');
 
 function Game(config){
 	this.config = config;
@@ -87,6 +89,15 @@ Game.prototype.singleGame = function(req, res){
 
 Game.prototype.json = function(req, res){
 	var that = this;
+
+
+	var query = {};
+	var _url = url.parse(req.url, true);
+	if(typeof _url.query.playerID !== "undefined"){
+		var playerId = _url.query.playerID;
+		query = {$or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]};
+	}
+
 	async.parallel([
 		function(pcb){ // Get All Available Players
 			that.config.Players.find(function (err, players) {
@@ -98,7 +109,7 @@ Game.prototype.json = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Games
-			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
+			that.config.Games.find(query).sort({dateTime: -1}).execFind(function (err, games) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{

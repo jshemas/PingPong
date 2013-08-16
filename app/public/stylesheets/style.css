@@ -17,9 +17,12 @@ a {
 .float-right {
   float: right;
 }
-/*
- * Games Table
- */
+.list-style-none {
+  list-style: none;
+}
+/***************************
+*	Games Table
+***************************/
 .gamesPlayed {
   margin: 0;
   list-style: none;
@@ -28,4 +31,15 @@ a {
   border-top: 1px solid #ddd;
   margin-bottom: 20px;
   padding-top: 10px;
+}
+/***************************
+*	Player Detail Page
+***************************/
+.userImageWrapper img {
+  padding: 5px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  width: 210px;
+  height: 210px;
+  border: 1px solid #ddd;
 }
