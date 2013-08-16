@@ -1,27 +1,27 @@
 <h1><%= title %></h1>
 <div>
-	<div ng-controller="GameListCtrl">
+	<div ng-controller="MatchListCtrl">
 		Search: <input ng-model="query">
-		<ul class="gamesPlayed" style="margin:0; list-style: none;">
-			<li ng-repeat="game in games | filter:query ">
+		<ul class="matchesPlayed" style="margin:0; list-style: none;">
+			<li ng-repeat="match in matches | filter:query ">
 				<div class="row">
-					<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.redPlayerDetails.0.fname}} "{{game.redPlayerDetails.0.nickname}}" {{game.redPlayerDetails.0.lname}}</a> </div>
-					<div class="span2 center"><a href="#/games/{{game._id}}">VS</a></div>
-					<div class="span5 center"><a href="#/players/{{game.redPlayerDetails.0._id}}">{{game.bluePlayerDetails.0.fname}} "{{game.bluePlayerDetails.0.nickname}}" {{game.bluePlayerDetails.0.lname}}</a></div>
+					<div class="span5 center"><a href="#/players/{{match.redPlayerDetails.0._id}}">{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}</a> </div>
+					<div class="span2 center"><a href="#/matches/{{match._id}}">VS</a></div>
+					<div class="span5 center"><a href="#/players/{{match.redPlayerDetails.0._id}}">{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}</a></div>
 				</div>
-				<div ng-repeat="match in game.matches | filter:query | orderBy:orderProp" class="row">
-					<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
-					<div class="span2 center">MATCH {{ $index +1 }}</div>
-					<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
+				<div ng-repeat="zooom in match.zoooms | filter:query | orderBy:orderProp" class="row">
+					<div class="span5 center"><span class="badge">{{zooom.redScore}}</span></div>
+					<div class="span2 center">ZOOOM {{ $index +1 }}</div>
+					<div class="span5 center"><span class="badge">{{zooom.blueScore}}</span></div>
 				</div>
 			</li>
 		</ul>
-		Games Played: ({{games.length}}) <br>
-		<a href="Javascript:alert('{{games | json}}');">Show JSON</a>
+		Matches Played: ({{matches.length}}) <br>
+		<a href="Javascript:alert('{{matches | json}}');">Show JSON</a>
 	</div>
 	<hr>
-	<h2>Add Game</h2>
-	<form name="input" action="/games" method="post">
+	<h2>Add Match</h2>
+	<form name="input" action="/matches" method="post">
 		Player 1: 	<select name="redPlayer" id="redPlayer">
 						<% for(var i=0; i<players.length; i++) {%>
 							<option value="<%= players[i]._id %>"><%= players[i].fname + " " + players[i].lname %></option>
@@ -33,27 +33,27 @@
 						<% } %>
 					</select>
 
-		<h3>Match 1 Scores</h3>
-		Player 1: <input type="text" name="match1RedPlayer"><br>
-		Player 2: <input type="text" name="match1BluePlayer"><br>
+		<h3>Zooom 1 Scores</h3>
+		Player 1: <input type="text" name="zooom1RedPlayer"><br>
+		Player 2: <input type="text" name="zooom1BluePlayer"><br>
 
-		<h3>Match 2 Scores</h3>
-		Player 1: <input type="text" name="match2RedPlayer"><br>
-		Player 2: <input type="text" name="match2BluePlayer"><br>
+		<h3>Zooom 2 Scores</h3>
+		Player 1: <input type="text" name="zooom2RedPlayer"><br>
+		Player 2: <input type="text" name="zooom2BluePlayer"><br>
 
-		<h3>Match 3 Scores</h3>
-		Player 1: <input type="text" name="match3RedPlayer"><br>
-		Player 2: <input type="text" name="match3BluePlayer"><br>
+		<h3>Zooom 3 Scores</h3>
+		Player 1: <input type="text" name="zooom3RedPlayer"><br>
+		Player 2: <input type="text" name="zooom3BluePlayer"><br>
 		<input type="submit" value="Submit">
 	</form>
 </div>
-<div id="addGame"></div>
+<div id="addMatch"></div>
 <script type="text/javascript">
 	$(function(){
 		$( "#dialog" ).dialog({
 			buttons: [
 				{
-					text: "Save Game",
+					text: "Save Match",
 					click: function() {
 						$( this ).dialog( "close" );
 					}

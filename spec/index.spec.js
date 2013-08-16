@@ -19,16 +19,16 @@ var userData = {
 	nickname: 'Nick Name'
 };
 
-// data for test game
-var gameData = {
+// data for test match
+var matchData = {
 	redPlayer: '51f30f045718d9f813000005',
 	bluePlayer: '51f30003c8bbdf6c0c000001',
-	match1RedPlayer: '1',
-	match1BluePlayer: '2',
-	match2RedPlayer: '3',
-	match2BluePlayer: '4',
-	match3RedPlayer: '5',
-	match3BluePlayer: '6'
+	game1RedPlayer: '1',
+	game1BluePlayer: '2',
+	game2RedPlayer: '3',
+	game2BluePlayer: '4',
+	game3RedPlayer: '5',
+	game3BluePlayer: '6'
 };
 
 describe('GET - Load Some Pages:', function (done) {
@@ -41,9 +41,9 @@ describe('GET - Load Some Pages:', function (done) {
 				done();
 			});
 	});
-	it('Games', function(done) {
+	it('Matches', function(done) {
 		request(baseURL)
-			.get('games')
+			.get('matches')
 			.end( function(err, result) {
 				// response from our service
 				expect(result.res.statusCode).to.be(200);
@@ -74,11 +74,11 @@ describe('POST - Add User:', function (done) {
 	});
 });
 
-describe('POST - Add Game:', function (done) {
-	it('Valid Add Game', function(done) {
+describe('POST - Add Match:', function (done) {
+	it('Valid Add Match', function(done) {
 		request(baseURL)
-			.post('games')
-			.send(gameData)
+			.post('matches')
+			.send(matchData)
 			.end( function(err, result) {
 				// response from our service
 				expect(result.res.statusCode).to.be(302);

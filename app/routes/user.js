@@ -28,25 +28,25 @@ User.prototype.listJSON = function(req, res){
 				}
 			});
 		},
-		function(pcb){ // Get all Games
-			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
+		function(pcb){ // Get all Matches
+			that.config.Matches.find({}).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
-					pcb(null,games)
+					pcb(null,matches)
 				}
 			});
 		}
 	], function(error, args){
 		var myPlayers = args[0];
-		var myGames = args[1];
+		var myMatches = args[1];
 
 
 		myPlayers.forEach(function(player, j){
 
 			var wins = 0,
 				losses = 0,
-				gamesPlayed = 0,
+				matchesPlayed = 0,
 				ratio = 500,
 				currentStreak = {
 					type: "?",
@@ -55,12 +55,12 @@ User.prototype.listJSON = function(req, res){
 
 
 
-			myGames.forEach(function(game, i){
+			myMatches.forEach(function(match, i){
 
-				var finalMatch = ( typeof game.matches[2] == "undefined" ) ? game.matches[1] : game.matches[2];
-				if( player._id == game.bluePlayer){
-					gamesPlayed++;
-					if(finalMatch.redScore > finalMatch.blueScore){
+				var finalGame = ( typeof match.games[2] == "undefined" ) ? match.games[1] : match.games[2];
+				if( player._id == match.bluePlayer){
+					matchesPlayed++;
+					if(finalGame.redScore > finalGame.blueScore){
 						losses++;
 						currentStreak = calculateStreak(currentStreak, "L");
 					}else{
@@ -68,9 +68,9 @@ User.prototype.listJSON = function(req, res){
 						currentStreak = calculateStreak(currentStreak, "W");
 					}
 
-				}else if( player._id == game.redPlayer ){
-					gamesPlayed++;
-					if(finalMatch.redScore > finalMatch.blueScore){
+				}else if( player._id == match.redPlayer ){
+					matchesPlayed++;
+					if(finalGame.redScore > finalGame.blueScore){
 						wins++;
 						currentStreak = calculateStreak(currentStreak, "W");
 					}else{
@@ -83,7 +83,7 @@ User.prototype.listJSON = function(req, res){
 			myPlayers[j].ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
 			myPlayers[j].wins = wins;
 			myPlayers[j].losses = losses;
-			myPlayers[j].gamesPlayed = gamesPlayed;
+			myPlayers[j].matchesPlayed = matchesPlayed;
 			myPlayers[j].streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
 		});
 
@@ -107,34 +107,34 @@ User.prototype.singleJSON = function(req, res){
 				}
 			});
 		},
-		function(pcb){ // Get all Games
-			that.config.Games.find({}).sort({dateTime: -1}).execFind(function (err, games) {
+		function(pcb){ // Get all Matches
+			that.config.Matches.find({}).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
-					pcb(null,games)
+					pcb(null,matches)
 				}
 			});
 		}
 	], function(error, args){
 		var player = args[0];
-		var myGames = args[1];
+		var myMatches = args[1];
 
 		var wins = 0,
 			losses = 0,
-			gamesPlayed = 0,
+			matchesPlayed = 0,
 			ratio = 500,
 			currentStreak = {
 				type: "?",
 				count: 0
 			};
 
-		myGames.forEach(function(game, i){
+		myMatches.forEach(function(match, i){
 
-			var finalMatch = ( typeof game.matches[2] == "undefined" ) ? game.matches[1] : game.matches[2];
-			if( player._id == game.bluePlayer){
-				gamesPlayed++;
-				if(finalMatch.redScore > finalMatch.blueScore){
+			var finalGame = ( typeof match.games[2] == "undefined" ) ? match.games[1] : match.games[2];
+			if( player._id == match.bluePlayer){
+				matchesPlayed++;
+				if(finalGame.redScore > finalGame.blueScore){
 					losses++;
 					currentStreak = calculateStreak(currentStreak, "L");
 				}else{
@@ -142,9 +142,9 @@ User.prototype.singleJSON = function(req, res){
 					currentStreak = calculateStreak(currentStreak, "W");
 				}
 
-			}else if( player._id == game.redPlayer ){
-				gamesPlayed++;
-				if(finalMatch.redScore > finalMatch.blueScore){
+			}else if( player._id == match.redPlayer ){
+				matchesPlayed++;
+				if(finalGame.redScore > finalGame.blueScore){
 					wins++;
 					currentStreak = calculateStreak(currentStreak, "W");
 				}else{
@@ -157,7 +157,7 @@ User.prototype.singleJSON = function(req, res){
 		player.ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
 		player.wins = wins;
 		player.losses = losses;
-		player.gamesPlayed = gamesPlayed;
+		player.matchesPlayed = matchesPlayed;
 		player.streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
 
 
@@ -195,16 +195,16 @@ User.prototype.add = function(req, res){
 	});
 };
 
-function calculateStreak(currentStreak, newGame){
+function calculateStreak(currentStreak, newMatch){
 	//calculateStreak({ type, count }, L)
-	if(currentStreak.type === newGame){
+	if(currentStreak.type === newMatch){
 		return {
 			type: currentStreak.type,
 			count: currentStreak.count + 1
 		}
 	}else{
 		return {
-			type: newGame,
+			type: newMatch,
 			count: 1
 		}
 	}

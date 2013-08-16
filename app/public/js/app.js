@@ -4,13 +4,13 @@
 angular.module('arena', []).
 	config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider.
-		when('/games', {
-			templateUrl: 'partials/game-list.html',
-			controller: GameListCtrl
+		when('/matches', {
+			templateUrl: 'partials/match-list.html',
+			controller: MatchListCtrl
 		}).
-		when('/games/:gameId', {
-			templateUrl: 'partials/game-detail.html',
-			controller: GameDetailCtrl
+		when('/matches/:matchId', {
+			templateUrl: 'partials/match-detail.html',
+			controller: MatchDetailCtrl
 		}).
 		when('/players', {
 			templateUrl: 'partials/users-list.html',
@@ -20,6 +20,6 @@ angular.module('arena', []).
 			templateUrl: 'partials/users-detail.html',
 			controller: PlayerDetailCtrl
 		}).
-		otherwise({redirectTo: '/games'});
+		otherwise({redirectTo: '/matches'});
 	//$locationProvider.html5Mode(true); // Use HTML5 strategy if available for how application deep linking paths are stored
 }]);

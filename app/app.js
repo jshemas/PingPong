@@ -1,7 +1,7 @@
 var express = require('express'),
 	routes = require('./routes'),
 	User = require('./routes/user'),
-	Game = require('./routes/game'),
+	Match = require('./routes/match'),
 	http = require('http'),
 	expressLayouts = require('express-ejs-layouts'),
 	path = require('path'),
@@ -42,10 +42,10 @@ if ('development' == app.get('env')) {
 
 // import models
 var Players = require('./models/Player')(mongoose);
-var Games = require('./models/Game')(mongoose);
+var Matches = require('./models/Match')(mongoose);
 
-user = new User({Games: Games.Game, Players: Players.Players});
-game = new Game({Games: Games.Game, Players: Players.Players});
+user = new User({Matches: Matches.Match, Players: Players.Players});
+match = new Match({Matches: Matches.Match, Players: Players.Players});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -57,7 +57,7 @@ app.get('/users/:id/json', function(){ user.singleJSON.apply(user, arguments) })
 app.get('/users/json', function(){ user.listJSON.apply(user, arguments) });
 app.post('/users', function(){ user.add.apply(user, arguments) });
 
-app.get('/games', function(){ game.list.apply(game, arguments) });
-app.post('/games', function(){ game.add.apply(game, arguments) });
-app.get('/games/json', function(){ game.json.apply(game, arguments) });
-app.get('/games/:id/json', function(){ game.singleGame.apply(game, arguments) });
+app.get('/matches', function(){ match.list.apply(match, arguments) });
+app.post('/matches', function(){ match.add.apply(match, arguments) });
+app.get('/matches/json', function(){ match.json.apply(match, arguments) });
+app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, arguments) });

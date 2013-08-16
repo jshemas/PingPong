@@ -1,15 +1,15 @@
 <h1>{{title}}</h1>
-<ul class="gamesPlayed" style="margin:0; list-style: none;">
+<ul class="matchesPlayed" style="margin:0; list-style: none;">
 	<li>
 		<div class="row">
-			<div class="span5 center"><a href="#/players/{{gameData.redPlayerDetails.0._id}}">{{gameData.redPlayerDetails.0.fname}} "{{gameData.redPlayerDetails.0.nickname}}" {{gameData.redPlayerDetails.0.lname}}</a> </div>
-			<div class="span2 center"><a href="#/gameDatas/{{gameData._id}}">VS</a></div>
-			<div class="span5 center"><a href="#/players/{{gameData.redPlayerDetails.0._id}}">{{gameData.bluePlayerDetails.0.fname}} "{{gameData.bluePlayerDetails.0.nickname}}" {{gameData.bluePlayerDetails.0.lname}}</a></div>
+			<div class="span5 center"><a href="#/players/{{matchData.redPlayerDetails.0._id}}">{{matchData.redPlayerDetails.0.fname}} "{{matchData.redPlayerDetails.0.nickname}}" {{matchData.redPlayerDetails.0.lname}}</a> </div>
+			<div class="span2 center"><a href="#/matchDatas/{{matchData._id}}">VS</a></div>
+			<div class="span5 center"><a href="#/players/{{matchData.redPlayerDetails.0._id}}">{{matchData.bluePlayerDetails.0.fname}} "{{matchData.bluePlayerDetails.0.nickname}}" {{matchData.bluePlayerDetails.0.lname}}</a></div>
 		</div>
-		<div ng-repeat="match in gameData.matches | filter:query | orderBy:orderProp" class="row">
-			<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
-			<div class="span2 center">MATCH {{ $index +1 }}</div>
-			<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
+		<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp" class="row">
+			<div class="span5 center"><span class="badge">{{game.redScore}}</span></div>
+			<div class="span2 center">GAME {{ $index +1 }}</div>
+			<div class="span5 center"><span class="badge">{{game.blueScore}}</span></div>
 		</div>
 	</li>
 </ul>

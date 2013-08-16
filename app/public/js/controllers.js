@@ -1,11 +1,11 @@
 'use strict';
 /* Controllers */
 
-function GameListCtrl($scope, $http, $location, $route) {
-	$scope.title = "Games Played";
-	$http.get('/games/json').success(function(data) {
+function MatchListCtrl($scope, $http, $location, $route) {
+	$scope.title = "Matches Played";
+	$http.get('/matches/json').success(function(data) {
 		//console.log(data);
-		$scope.games = data;
+		$scope.matches = data;
 	});
 	$http.get('/users/json').success(function(data) {
 		//console.log(data);
@@ -13,8 +13,8 @@ function GameListCtrl($scope, $http, $location, $route) {
 	});
 
 	$scope.form = {};
-	$scope.addGame = function () {
-		$http.post('/games', $scope.form).success(function(data) {
+	$scope.addMatch = function () {
+		$http.post('/matches', $scope.form).success(function(data) {
 			//console.log("SUCCESS!", data);
 			//$location.path('/players');
 			$route.reload();
@@ -24,12 +24,12 @@ function GameListCtrl($scope, $http, $location, $route) {
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
 
-function GameDetailCtrl($scope, $routeParams, $http) {
-	$scope.title = "Game Details";
-	$scope.gameId = $routeParams.gameId;
-	$http.get('/games/' + $scope.gameId + '/json').success(function(data) {
-		//console.log("Game Data", data);
-		$scope.gameData = data;
+function MatchDetailCtrl($scope, $routeParams, $http) {
+	$scope.title = "Match Details";
+	$scope.matchId = $routeParams.matchId;
+	$http.get('/matches/' + $scope.matchId + '/json').success(function(data) {
+		//console.log("Match Data", data);
+		$scope.matchData = data;
 	});
 }
 
