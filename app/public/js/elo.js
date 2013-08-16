@@ -1,5 +1,5 @@
 function pow_rate(rating) {
-    return Math.pow(10,rating/400)
+    return Math.pow(10,rating/400);
 }
 
 function exp_score(r1,r2) {
@@ -10,5 +10,6 @@ function exp_score(r1,r2) {
 
 module.exports.delta = function delta(r1,r2,result) {
     var K = 32;
-    return Math.round(K * (result - exp_score(r1,r2)));
+    return K * (result - exp_score(r1,r2));
 }
+
