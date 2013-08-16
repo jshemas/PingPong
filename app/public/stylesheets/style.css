@@ -18,13 +18,13 @@ a {
   float: right;
 }
 /*
- * Matches Table
+ * Games Table
  */
-.matchesPlayed {
+.gamesPlayed {
   margin: 0;
   list-style: none;
 }
-.matchesPlayed li {
+.gamesPlayed li {
   border-top: 1px solid #ddd;
   margin-bottom: 20px;
   padding-top: 10px;
