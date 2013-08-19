@@ -7,6 +7,7 @@
 		<thead class="center">
 			<tr>
 				<th>Player:</th>
+				<th>Rating</th>
 				<th>Games Played</th>
 				<th>Wins</th>
 				<th>Losses</th>
@@ -17,6 +18,7 @@
 		<tbody>
 			<tr ng-repeat="player in players | filter:query | orderBy:predicate:reverse " class="center">
 				<td><a href="#/players/{{player._id}}">{{player.fname}} "{{player.nickname}}" {{player.lname}}</a> </td>
+				<td>{{player.rating}}</td>
 				<td>{{player.gamesPlayed}}</td>
 				<td>{{player.wins}}</td>
 				<td>{{player.losses}}</td>
