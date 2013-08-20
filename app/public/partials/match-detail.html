@@ -1,0 +1,24 @@
+<div class="float-right">
+	<ul class="list-style-none">
+		<li>
+			<a href="#Edit"><i class="icon-edit"></i> Edit</a>
+		</li>
+		<li><a href="#Delete"><i class="icon-remove"></i> Delete</a></li>
+	</ul>
+
+</div>
+<h1>{{title}}</h1>
+<ul class="matchesPlayed" style="margin:0; list-style: none;">
+	<li>
+		<div class="row">
+			<div class="span5 center"><a href="#/players/{{matchData.redPlayerDetails.0._id}}">{{matchData.redPlayerDetails.0.fname}} "{{matchData.redPlayerDetails.0.nickname}}" {{matchData.redPlayerDetails.0.lname}}</a> </div>
+			<div class="span2 center"><a href="#/matchDatas/{{matchData._id}}">VS</a></div>
+			<div class="span5 center"><a href="#/players/{{matchData.redPlayerDetails.0._id}}">{{matchData.bluePlayerDetails.0.fname}} "{{matchData.bluePlayerDetails.0.nickname}}" {{matchData.bluePlayerDetails.0.lname}}</a></div>
+		</div>
+		<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp" class="row">
+			<div class="span5 center"><span class="badge">{{game.redScore}}</span></div>
+			<div class="span2 center">GAME {{ $index +1 }}</div>
+			<div class="span5 center"><span class="badge">{{game.blueScore}}</span></div>
+		</div>
+	</li>
+</ul>

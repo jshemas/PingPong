@@ -1,15 +1,15 @@
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
-	var gameSchema = mongoose.Schema({
+	var matchSchema = mongoose.Schema({
 		redPlayer: { type: String, required: true },
 		bluePlayer: { type: String, required: true },
-		matches: [matchSchema],
+		games: [gameSchema],
 		createdDate: { type: Date, default: Date.now },
 		redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
 		bluePlayerDetails: [playerSchema] // TODO: Get these out of arrays
 	});
 
-	var matchSchema = mongoose.Schema({
+	var gameSchema = mongoose.Schema({
 		redScore: { type: Number, required: true },
 		blueScore: { type: Number, required: true }
 	});
@@ -20,7 +20,6 @@ module.exports = function(mongoose) {
 		bluePlayer: { type: String, required: true }
 	});
 
-	//why is playerSchema inside gameSchema? 
 	//We should used a foreign key here to link to the player
 	var playerSchema = mongoose.Schema({
 		fname: { type: String, required: true },
@@ -28,9 +27,9 @@ module.exports = function(mongoose) {
 		nickname: { type: String, required: true }
 	});
 
-	var Game = mongoose.model('games', gameSchema);
+	var Match = mongoose.model('matches', matchSchema);
 
 	return {
-		Game: Game
+		Match: Match
 	};
 };
