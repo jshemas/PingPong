@@ -80,6 +80,7 @@ User.prototype.listJSON = function(req, res){
 			});
 
 			myPlayers[j].ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
+			myPlayers[j].ratio = (parseFloat(myPlayers[j].ratio) * 100).toFixed(1);
 			myPlayers[j].wins = wins;
 			myPlayers[j].losses = losses;
 			myPlayers[j].matchesPlayed = matchesPlayed;
@@ -153,6 +154,7 @@ User.prototype.singleJSON = function(req, res){
 		});
 
 		player.ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
+		player.ratio = (parseFloat(player.ratio) * 100).toFixed(1);
 		player.wins = wins;
 		player.losses = losses;
 		player.matchesPlayed = matchesPlayed;
