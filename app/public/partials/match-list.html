@@ -65,3 +65,10 @@
 		<button ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Game</button>
 	</div>
 </div>
+
+
+<script type="text/javascript">
+	$('#addGameDialog').on('shown', function () {
+		$('select:visible:first', this).focus();
+	});
+</script>
