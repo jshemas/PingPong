@@ -25,7 +25,7 @@ function MatchListCtrl($scope, $http, $location, $route) {
 	};
 
 	$scope.addMatch = function () {
-		$http.post('/matches', $scope.addMatchForm).success(function(data) {
+		$http.post('/matches', $scope.form).success(function(data) {
 			//console.log("SUCCESS!", data);
 			//$location.path('/players');
 			$route.reload();
@@ -35,13 +35,25 @@ function MatchListCtrl($scope, $http, $location, $route) {
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
 
-function MatchDetailCtrl($scope, $routeParams, $http) {
+function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 	$scope.title = "Match Details";
 	$scope.matchId = $routeParams.matchId;
 	$http.get('/matches/' + $scope.matchId + '/json').success(function(data) {
 		//console.log("Match Data", data);
 		$scope.matchData = data;
 	});
+
+	$scope.deleteMatch = function () {
+
+		$('#removePlayerConfirmation').modal('hide')
+		$http.get('/matches/' + $scope.matchId + '/delete').success(function(data) {
+			//console.log("SUCCESS!", data);
+			//$location.path('/players');
+			console.log("Match removed");
+			$location.path( "/matches" );
+
+		});
+	};
 }
 
 function PlayerListCtrl($scope, $http, $location, $route) {

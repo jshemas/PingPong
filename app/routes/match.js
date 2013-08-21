@@ -89,12 +89,13 @@ Match.prototype.json = function(req, res){
 	var that = this;
 
 
-	var query = {};
+	var query = {deleted: false};
 	var _url = url.parse(req.url, true);
 	if(typeof _url.query.playerID !== "undefined"){
 		var playerId = _url.query.playerID;
-		query = {$or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]};
+		query = {deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]};
 	}
+
 
 	async.parallel([
 		function(pcb){ // Get All Available Players
@@ -173,5 +174,29 @@ Match.prototype.add = function(req, res){
 				success: true
 			});
 		};
+	});
+};
+
+Match.prototype.delete = function(req, res){
+	var matchID = req.params.id;
+	var that = this;
+
+	async.parallel([
+		function(pcb){ // Remove Player
+			that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null);
+				}
+			});
+		}
+	], function(error, args){
+		if(error){
+			res.json({"Success": false, "Error": error});
+		}else{
+			res.json({"Success": true});
+		}
+
 	});
 };

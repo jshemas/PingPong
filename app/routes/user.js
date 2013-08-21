@@ -230,9 +230,6 @@ User.prototype.delete = function(req, res){
 		}
 
 	});
-
-
-
 };
 
 function calculateStreak(currentStreak, newMatch){

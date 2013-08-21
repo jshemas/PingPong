@@ -3,7 +3,7 @@
 		<li>
 			<a href="#Edit"><i class="icon-edit"></i> Edit</a>
 		</li>
-		<li><a href="#Delete"><i class="icon-remove"></i> Delete</a></li>
+		<li><a href="#removeMatchConfirmation" data-toggle="modal" ><i class="icon-remove"></i> Delete!</a></li>
 	</ul>
 
 </div>
@@ -22,3 +22,18 @@
 		</div>
 	</li>
 </ul>
+
+<div id="removeMatchConfirmation" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Remove Match" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="removePlayerConfirmationLabel">Delete Match</h3>
+	</div>
+	<div class="modal-body">
+		<p>Are you sure you wish to remove this match?</p>
+		<p>This match will be added to a public "Recently Deleted Matches" area for all to see!</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click="deleteMatch()" class="btn btn-primary">Yes, remove.</button>
+	</div>
+</div>
