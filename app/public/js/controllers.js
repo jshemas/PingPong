@@ -3,6 +3,8 @@
 
 function MatchListCtrl($scope, $http, $location, $route) {
 	$scope.title = "Matches Played";
+	$scope.predicate = '-createdDate';
+
 	$http.get('/matches/json').success(function(data) {
 		//console.log(data);
 		$scope.matches = data;

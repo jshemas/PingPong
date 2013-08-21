@@ -5,11 +5,11 @@
 <h1>{{title}}</h1>
 <div>
 	<ul class="gamesPlayed" style="margin:0; list-style: none;">
-		<li ng-repeat="match in matches | filter:query ">
+		<li ng-repeat="match in matches | filter:query | orderBy:predicate:reverse ">
 			<div class="row">
 				<div class="span5 center"><a href="#/players/{{match.redPlayerDetails.0._id}}">{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}</a> </div>
-				<div class="span2 center"><a href="#/matches/{{match._id}}">VS
-					{{ match.dateTime | date:'yyyy-MM-dd HH:mm:ss'}}
+				<div class="span2 center"><a href="#/matches/{{match._id}}">
+					{{ match.createdDate | date:'MM-dd-yyyy HH:mm'}}
 				</a></div>
 				<div class="span5 center"><a href="#/players/{{match.bluePlayerDetails.0._id}}">{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}</a></div>
 			</div>
