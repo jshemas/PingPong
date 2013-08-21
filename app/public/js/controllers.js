@@ -12,9 +12,20 @@ function MatchListCtrl($scope, $http, $location, $route) {
 		$scope.players = data;
 	});
 
-	$scope.form = {};
+	$scope.master = {
+		game1RedPlayer: 11,
+		game1BluePlayer: 11,
+		game2RedPlayer: 11,
+		game2BluePlayer: 11
+	};
+	$scope.form = angular.copy($scope.master);
+
+	$scope.reset = function() {
+		$scope.user = angular.copy($scope.master);
+	};
+
 	$scope.addMatch = function () {
-		$http.post('/matches', $scope.form).success(function(data) {
+		$http.post('/matches', $scope.addMatchForm).success(function(data) {
 			//console.log("SUCCESS!", data);
 			//$location.path('/players');
 			$route.reload();
