@@ -20,6 +20,9 @@ angular.module('arena', []).
 			templateUrl: 'partials/users-detail.html',
 			controller: PlayerDetailCtrl
 		}).
+		when('/updates', {
+			templateUrl: 'partials/recent-updates.html'
+		}).
 		otherwise({redirectTo: '/matches'});
 	//$locationProvider.html5Mode(true); // Use HTML5 strategy if available for how application deep linking paths are stored
 }]);
