@@ -1,0 +1,74 @@
+<div class="searchBox float-right">
+	Search: <input ng-model="query">
+	<a href="#addGameDialog" data-toggle="modal" class="btn btn-primary">Add Game</a>
+</div>
+<h1>{{title}}</h1>
+<div>
+	<ul class="gamesPlayed" style="margin:0; list-style: none;">
+		<li ng-repeat="match in matches | filter:query ">
+			<div class="row">
+				<div class="span5 center"><a href="#/players/{{match.redPlayerDetails.0._id}}">{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}</a> </div>
+				<div class="span2 center"><a href="#/matches/{{match._id}}">VS
+					{{ match.dateTime | date:'yyyy-MM-dd HH:mm:ss'}}
+				</a></div>
+				<div class="span5 center"><a href="#/players/{{match.bluePlayerDetails.0._id}}">{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}</a></div>
+			</div>
+			<div ng-repeat="match in match.games | filter:query | orderBy:orderProp" class="row">
+				<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
+				<div class="span2 center">Game {{ $index +1 }}</div>
+				<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
+			</div>
+		</li>
+	</ul>
+	Matches Played: ({{matches.length}}) <br>
+
+</div>
+
+
+<div id="addGameDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add Game" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="editPlayerDialogLabel">Add a new game</h3>
+	</div>
+	<div class="modal-body">
+		<form name="addMatchForm" class="ng-valid-required" novalidate>
+
+			<table class="table table-striped center">
+				<tbody>
+					<tr>
+						<td><select ng-options="player.lname for player in players" name="redPlayer" id="redPlayer" ng-model='form.redPlayer' required></select></td>
+						<th>vs</th>
+						<td><select ng-options="player.lname for player in players" name="redPlayer" id="bluePlayer" ng-model='form.bluePlayer' required></select></td>
+					</tr>
+					<tr>
+						<td><input name="game1RedPlayer" ng-model='form.game1RedPlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"></td>
+						<th>Game 1</th>
+						<td><input name="game1BluePlayer" ng-model='form.game1BluePlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"></td>
+					</tr>
+					<tr>
+						<td><input name="game2RedPlayer" ng-model='form.game2RedPlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"><br></td>
+						<th>Game 2</th>
+						<td><input name="game2BluePlayer" ng-model='form.game2BluePlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"></td>
+					</tr>
+					<tr>
+						<td><input name="game3RedPlayer" ng-model='form.game3RedPlayer' type="number" ng-pattern="/\d+/" step="1" min="0"></td>
+						<th>Game 3</th>
+						<td><input name="game3BluePlayer" ng-model='form.game3BluePlayer' type="number" ng-pattern="/\d+/" step="1" min="0"><br></td>
+					</tr>
+				</tbody>
+			</table>
+
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Game</button>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	$('#addGameDialog').on('shown', function () {
+		$('select:visible:first', this).focus();
+	});
+</script>
