@@ -200,3 +200,28 @@ Match.prototype.delete = function(req, res){
 
 	});
 };
+
+Match.prototype.rebuildRatings = function(req, res) {
+    var that = this;
+    async.parallel({
+        players: function(pcb){
+            that.config.Players.find(function(err,players) {
+                pcb(null,players);
+            })
+        },
+        matches: function(pcb){
+            that.config.Matches.find(function(err,matches) {
+                pcb(null,matches);
+            })
+        }
+        
+    },
+    function(error,args) {
+        
+        res.json({
+            sucess: true,
+            players: args.players,
+            matches: args.matches
+        });
+    });
+};
