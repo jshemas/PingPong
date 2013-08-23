@@ -217,7 +217,44 @@ Match.prototype.rebuildRatings = function(req, res) {
         
     },
     function(error,args) {
+        var players = args.players;
+        var matches = args.matches;
+        var playerHash = {};
+
+        var determineResult = function(games) {
+            var resultString = '';
+            games.forEach(function(game,i) {
+                resultString += whoWon(game);
+            });
+            if (resultString == 'RR') {
+                return 1;
+            } else if (resultString == 'BB') {
+                return 0;
+            } else if (resultString.slice(-1) == 'R') {
+                return 0.75;
+            } else {
+                return 0.25;
+            }
+        }
         
+        var whoWon = function(game) {
+            if (game.redScore > game.blueScore) {
+                return 'R';
+            } else {
+                return 'B';
+            }
+        }
+        players.forEach(function(player,i) {
+            player.rating = 1200;
+            playerHash[player._id] = player;
+        });
+        matches.forEach(function(match,i) {
+            red = playerHash[match.redPlayer];
+            blue = playerHash[match.bluePlayer];
+            result = determineResult(match.games);
+            red.rating += result*100;
+            blue.rating -= result*100;
+        });
         res.json({
             sucess: true,
             players: args.players,

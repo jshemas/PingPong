@@ -1,4 +1,3 @@
-
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
 	var matchSchema = mongoose.Schema({
