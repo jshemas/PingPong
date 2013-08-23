@@ -262,10 +262,19 @@ Match.prototype.rebuildRatings = function(req, res) {
             red.rating += ratingChange;
             blue.rating -= ratingChange;
         });
+        players.forEach(function(player,i) {
+            player.save(function(err,player) {
+                if (err) {
+                    console.log('Save player failed: ', err);
+                } else {
+                    console.log('Player rating updated');
+                }
+            });
+        });
         res.json({
             sucess: true,
-            players: args.players,
-            matches: args.matches
+            players: players,
+            matches: matches
         });
     });
 };
