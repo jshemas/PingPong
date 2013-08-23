@@ -1,6 +1,7 @@
 var async = require('async');
 var http = require('http');
 var url = require('url');
+var elo = require('../public/js/elo')
 
 function Match(config){
 	this.config = config;
@@ -227,12 +228,16 @@ Match.prototype.rebuildRatings = function(req, res) {
                 resultString += whoWon(game);
             });
             if (resultString == 'RR') {
+                console.log('Red sweep');
                 return 1;
             } else if (resultString == 'BB') {
+                console.log('Blue sweep');
                 return 0;
             } else if (resultString.slice(-1) == 'R') {
+                console.log('Red wins split match');
                 return 0.75;
             } else {
+                console.log('Blue wins split match');
                 return 0.25;
             }
         }
@@ -249,11 +254,13 @@ Match.prototype.rebuildRatings = function(req, res) {
             playerHash[player._id] = player;
         });
         matches.forEach(function(match,i) {
-            red = playerHash[match.redPlayer];
-            blue = playerHash[match.bluePlayer];
-            result = determineResult(match.games);
-            red.rating += result*100;
-            blue.rating -= result*100;
+            var red = playerHash[match.redPlayer];
+            var blue = playerHash[match.bluePlayer];
+            var result = determineResult(match.games);
+            var ratingChange = elo.delta(red.rating, blue.rating, result);
+            console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
+            red.rating += ratingChange;
+            blue.rating -= ratingChange;
         });
         res.json({
             sucess: true,
