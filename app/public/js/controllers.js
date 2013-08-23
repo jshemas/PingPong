@@ -1,8 +1,11 @@
 'use strict';
 /* Controllers */
 
-function MatchListCtrl($scope, $http, $location, $route) {
+function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
 	$scope.title = "Matches Played";
+	$rootScope.title = "Matches Played";
+	$scope.predicate = '-createdDate';
+
 	$http.get('/matches/json').success(function(data) {
 		//console.log(data);
 		$scope.matches = data;

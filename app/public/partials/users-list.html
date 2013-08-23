@@ -1,5 +1,6 @@
 <div class="searchBox float-right">
 	Search: <input ng-model="query">
+	<a href="#addPlayerDialog" data-toggle="modal" class="btn btn-primary">Add Player</a>
 </div>
 <h1>{{title}}</h1>
 <div>
@@ -28,9 +29,28 @@
 		</tbody>
 	</table>
 	<hr>
-	<h2>Add Player</h2>
-	First name: <input type="text" name="firstName" ng-model='form.firstName'><br>
-	Last name: <input type="text" name="lastName" ng-model='form.lastName'>
-	Nickname: <input type="text" name="nickname" ng-model='form.nickname'>
-	<button ng-click='addPlayer()'>Add Player</button>
+
 </div>
+
+
+<div id="addPlayerDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add Game" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="editPlayerDialogLabel">Add a new player</h3>
+	</div>
+	<div class="modal-body">
+		First name: <input type="text" name="firstName" ng-model='form.firstName'><br>
+		Nickname: <input type="text" name="nickname" ng-model='form.nickname'><br>
+		Last name: <input type="text" name="lastName" ng-model='form.lastName'><br>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click='addPlayer()' ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Player</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#addPlayerDialog').on('shown', function () {
+		$('input:visible:first', this).focus();
+	});
+</script>

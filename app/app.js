@@ -6,6 +6,7 @@ var express = require('express'),
 	expressLayouts = require('express-ejs-layouts'),
 	path = require('path'),
 	app = express(),
+	nconf = require('nconf'),
 	mongoose = require('mongoose');
 
 //shared server
@@ -17,7 +18,14 @@ var ObjectId = Schema.ObjectId;
 
 // configure Express
 app.configure(function() {
-	app.set('port', process.env.PORT || 3000);
+
+	nconf.argv()
+		.env()
+		.file({ file: __dirname + '/arena.' + nconf.get('NODE_ENV') + '.conf' });
+
+	console.log("using config: " + nconf.get('NODE_ENV'));
+
+	app.set('port', nconf.get('PORT') || 3000);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'ejs');
 	app.set('layout', 'layout');
