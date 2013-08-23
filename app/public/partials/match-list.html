@@ -62,7 +62,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		<button ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Game</button>
+		<button id="AddGameBtn" ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Game</button>
 	</div>
 </div>
 
@@ -70,5 +70,11 @@
 <script type="text/javascript">
 	$('#addGameDialog').on('shown', function () {
 		$('select:visible:first', this).focus();
+	});
+
+	$("form input").keypress(function(e){
+		if(e.keyCode == 13){
+			$("#AddGameBtn").trigger("click");
+		}
 	});
 </script>
