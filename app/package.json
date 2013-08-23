@@ -12,6 +12,7 @@
     "stylus": "0.34.1",
     "async": "0.2.9",
     "supertest": "0.7.0",
-    "expect.js": "0.2.0"
+    "expect.js": "0.2.0",
+	"nconf": "0.6.7"
   }
 }
