@@ -1,9 +1,23 @@
 var request = require('../app/node_modules/supertest'),
-	expect = require('../app/node_modules/expect.js');
+	mongoose = require( '../app/node_modules/mongoose'),
+	expect = require('../app/node_modules/expect.js'),
+	User = require('../app/routes/user'),
+	Match = require('../app/routes/match');
+
 console.log("Starting Tests");
+
+var dbPath = 'mongodb://localhost/local';
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
+mongoose.connect(dbPath, function onMongooseError(err) {
+	if (err) throw err;
+});
+
 
 //enter your domain
 var baseURL = "http://localhost:3000/";
+var Players = require('../app/models/Player.js')(mongoose);
+var Matches = require('../app/models/Match.js')(mongoose);
 
 //sometimes error don't show in the log...
 //http://stackoverflow.com/questions/8794008/no-stack-trace-for-jasmine-node-errors
@@ -21,18 +35,22 @@ var userData = {
 
 // data for test game
 var gameData = {
-	redPlayer: '51f30f045718d9f813000005',
-	bluePlayer: '51f30003c8bbdf6c0c000001',
-	match1RedPlayer: '1',
-	match1BluePlayer: '2',
-	match2RedPlayer: '3',
-	match2BluePlayer: '4',
-	match3RedPlayer: '5',
-	match3BluePlayer: '6'
+	redPlayer: {
+		_id: '51f3f91a18d69e141e000001'
+	},
+	bluePlayer: {
+		_id: '52168f59196ac38af7000001'
+	},
+	game1RedPlayer: '1',
+	game1BluePlayer: '15',
+	game2RedPlayer: '1',
+	game2BluePlayer: '15',
+	game3RedPlayer: '1',
+	game3BluePlayer: '15'
 };
 
 describe('GET - Load Some Pages:', function (done) {
-	it('Hompage', function(done) {
+	it('Should load the homepage', function(done) {
 		request(baseURL)
 			.get('')
 			.end( function(err, result) {
@@ -41,48 +59,101 @@ describe('GET - Load Some Pages:', function (done) {
 				done();
 			});
 	});
-	it('Games', function(done) {
+	it('Should load the games', function(done) {
 		request(baseURL)
-			.get('games')
+			.get('matches/json')
 			.end( function(err, result) {
 				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				done();
 			});
 	});
-	it('User', function(done) {
+	it('Should load the users', function(done) {
 		request(baseURL)
-			.get('users')
+			.get('users/json')
 			.end( function(err, result) {
 				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				done();
 			});
 	});
-});
-
-describe('POST - Add User:', function (done) {
-	it('Valid Add User', function(done) {
+	it('Should load a specific users data', function(done) {
 		request(baseURL)
-			.post('users')
-			.send(userData)
+			.get('users/51f8776a3c76404bdf000001/json')
 			.end( function(err, result) {
 				// response from our service
-				expect(result.res.statusCode).to.be(302);
+				expect(result.res.statusCode).to.be(200);
 				done();
 			});
 	});
-});
-
-describe('POST - Add Game:', function (done) {
-	it('Valid Add Game', function(done) {
+	it('Should load a specific matchs data', function(done) {
 		request(baseURL)
-			.post('games')
+			.get('matches/5215604e61102da2b0000001/json')
+			.end( function(err, result) {
+				// response from our service
+				expect(result.res.statusCode).to.be(200);
+				done();
+
+			});
+	});
+});
+//
+//describe('POST - Add User:', function (done) {
+//	it('Valid Add User', function(done) {
+//		console.log("USER DATA", userData);
+//		request(baseURL)
+//			.post('users')
+//			.send(userData)
+//			.end( function(err, result) {
+//				// response from our service
+//				expect(result.res.statusCode).to.be(302);
+//				done();
+//			});
+//	});
+//});
+//
+
+var gameID;
+describe('Add a new Game:', function (done) {
+	it('Adds a game to the database', function(done) {
+		request(baseURL)
+			.post('matches')
 			.send(gameData)
 			.end( function(err, result) {
 				// response from our service
-				expect(result.res.statusCode).to.be(302);
+				//expect(result.res.statusCode).to.be(200);
+
+				gameID = result.res.body.match["_id"];
+
+				// Check game is in database
+				Matches.Match.find({"_id": gameID}, function(error, match){
+					var numberOfMatches = match.length;
+					expect(numberOfMatches).to.be(1); // The 1 game we just added should be present
+
+				});
+
+
 				done();
 			});
+	});
+});
+
+describe("Remove an existing game", function(done){
+	it('Should mark the game as removed.', function(done){
+		request(baseURL)
+			.get('matches/' + gameID + '/delete')
+			.send()
+			.end( function(err, results ) {
+				console.log("HERE");
+				// Check game is in database
+				Matches.Match.find({"_id": gameID, "deleted": true}, function(error, match){
+					var numberOfMatches = match.length;
+					console.log("MAtch", match, match.length);
+					expect(numberOfMatches).to.be(1); // The game we deleted should be marked as deleted
+
+				});
+				done();
+			});
+
 	});
 });
