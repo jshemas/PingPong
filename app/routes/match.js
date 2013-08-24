@@ -229,11 +229,7 @@ Match.prototype.rebuildRatings = function(req, res) {
         matches.forEach(function(match,i) {
             var red = playerHash[match.redPlayer];
             var blue = playerHash[match.bluePlayer];
-            var result = determineResult(match.games);
-            var ratingChange = elo.delta(red.rating, blue.rating, result);
-            console.log(match.createdDate + ' -- ' + red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
-            red.rating += ratingChange;
-            blue.rating -= ratingChange;
+            adjustRatings(match,red,blue);
         });
         players.forEach(function(player,i) {
             player.save(function(err,player) {
@@ -251,6 +247,14 @@ Match.prototype.rebuildRatings = function(req, res) {
         });
     });
 };
+
+var adjustRatings = function(match,red,blue) {
+    var result = determineResult(match.games);
+    var ratingChange = elo.delta(red.rating, blue.rating, result);
+    console.log(match.createdDate + ' -- ' + red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
+    red.rating += ratingChange;
+    blue.rating -= ratingChange;
+}
 
 var determineResult = function(games) {
     var resultString = '';
