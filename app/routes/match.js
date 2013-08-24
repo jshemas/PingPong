@@ -158,12 +158,12 @@ Match.prototype.add = function(req, res){
     var that = this;
     async.parallel({
         red: function(pcb){
-            that.config.Players.find({"_id":redPlayer}, function(err,red) {
+            that.config.Players.findById(redPlayer, function(err,red) {
                 pcb(null,red);
             });
         },
         blue: function(pcb){
-            that.config.Players.find({"_id":bluePlayer}, function(err,blue) {
+            that.config.Players.findById(bluePlayer, function(err,blue) {
                 pcb(null,blue);
             });
         },
@@ -171,20 +171,18 @@ Match.prototype.add = function(req, res){
     function(error,args) {
         var red = args.red;
         var blue = args.blue;
-        console.log("$$$" + args.red);
-        console.log("%%%%" + red);
-        console.log("^^^" + red['lname']);
+        console.log("^^^" + args.red.rating);
         console.log(red.lname + ' played againse ' + blue.lname);
         adjustRatings(games,red,blue);
         console.log('New red rating: ' + red.rating);
         console.log('New blue rating: ' + blue.rating);
-        red.save(function(err,player) {
-            if (err) {
-                console.log('Save player failed: ', err);
-            } else {
-                console.log('Player rating updated');
-            }
-        });
+//        red.save(function(err,player) {
+  //          if (err) {
+    //            console.log('Save player failed: ', err);
+      //      } else {
+        //        console.log('Player rating updated');
+          //  }
+        //});
         [red,blue].forEach(function(player,i) {
             player.save(function(err,player) {
                 if (err) {
