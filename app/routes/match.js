@@ -155,6 +155,46 @@ Match.prototype.add = function(req, res){
 			blueScore: parseInt(req.body["game3BluePlayer"]) || 0
 		});
 	};
+    var that = this;
+    async.parallel({
+        red: function(pcb){
+            that.config.Players.find({"_id":redPlayer}, function(err,red) {
+                pcb(null,red);
+            });
+        },
+        blue: function(pcb){
+            that.config.Players.find({"_id":bluePlayer}, function(err,blue) {
+                pcb(null,blue);
+            });
+        },
+    },
+    function(error,args) {
+        var red = args.red;
+        var blue = args.blue;
+        console.log("$$$" + args.red);
+        console.log("%%%%" + red);
+        console.log("^^^" + red['lname']);
+        console.log(red.lname + ' played againse ' + blue.lname);
+        adjustRatings(games,red,blue);
+        console.log('New red rating: ' + red.rating);
+        console.log('New blue rating: ' + blue.rating);
+        red.save(function(err,player) {
+            if (err) {
+                console.log('Save player failed: ', err);
+            } else {
+                console.log('Player rating updated');
+            }
+        });
+        [red,blue].forEach(function(player,i) {
+            player.save(function(err,player) {
+                if (err) {
+                    console.log('Save player failed: ', err);
+                } else {
+                    console.log('Player rating updated');
+                }
+            });
+        });
+    });
 
 	var newMatch = new this.config.Matches({
 		redPlayer: redPlayer,
@@ -229,7 +269,7 @@ Match.prototype.rebuildRatings = function(req, res) {
         matches.forEach(function(match,i) {
             var red = playerHash[match.redPlayer];
             var blue = playerHash[match.bluePlayer];
-            adjustRatings(match,red,blue);
+            adjustRatings(match.games,red,blue);
         });
         players.forEach(function(player,i) {
             player.save(function(err,player) {
@@ -248,12 +288,14 @@ Match.prototype.rebuildRatings = function(req, res) {
     });
 };
 
-var adjustRatings = function(match,red,blue) {
-    var result = determineResult(match.games);
+var adjustRatings = function(games,red,blue) {
+    var result = determineResult(games);
     var ratingChange = elo.delta(red.rating, blue.rating, result);
-    console.log(match.createdDate + ' -- ' + red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
+    console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
     red.rating += ratingChange;
     blue.rating -= ratingChange;
+    console.log('New red rating: ' + red.rating);
+    console.log('New blue rating: ' + blue.rating);
 }
 
 var determineResult = function(games) {
