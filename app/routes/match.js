@@ -109,7 +109,7 @@ Match.prototype.json = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Matches
-			that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
+		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
@@ -208,47 +208,20 @@ Match.prototype.rebuildRatings = function(req, res) {
         players: function(pcb){
             that.config.Players.find(function(err,players) {
                 pcb(null,players);
-            })
+            });
         },
         matches: function(pcb){
             that.config.Matches.find(function(err,matches) {
                 pcb(null,matches);
-            })
+            });
         }
-        
+
     },
     function(error,args) {
         var players = args.players;
         var matches = args.matches;
         var playerHash = {};
 
-        var determineResult = function(games) {
-            var resultString = '';
-            games.forEach(function(game,i) {
-                resultString += whoWon(game);
-            });
-            if (resultString == 'RR') {
-                console.log('Red sweep');
-                return 1;
-            } else if (resultString == 'BB') {
-                console.log('Blue sweep');
-                return 0;
-            } else if (resultString.slice(-1) == 'R') {
-                console.log('Red wins split match');
-                return 0.75;
-            } else {
-                console.log('Blue wins split match');
-                return 0.25;
-            }
-        }
-        
-        var whoWon = function(game) {
-            if (game.redScore > game.blueScore) {
-                return 'R';
-            } else {
-                return 'B';
-            }
-        }
         players.forEach(function(player,i) {
             player.rating = 1200;
             playerHash[player._id] = player;
@@ -258,7 +231,7 @@ Match.prototype.rebuildRatings = function(req, res) {
             var blue = playerHash[match.bluePlayer];
             var result = determineResult(match.games);
             var ratingChange = elo.delta(red.rating, blue.rating, result);
-            console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
+            console.log(match.createdDate + ' -- ' + red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
             red.rating += ratingChange;
             blue.rating -= ratingChange;
         });
@@ -278,3 +251,31 @@ Match.prototype.rebuildRatings = function(req, res) {
         });
     });
 };
+
+var determineResult = function(games) {
+    var resultString = '';
+    games.forEach(function(game,i) {
+        resultString += whoWon(game);
+    });
+    if (resultString == 'RR') {
+        console.log('Red sweep');
+        return 1;
+    } else if (resultString == 'BB') {
+        console.log('Blue sweep');
+        return 0;
+    } else if (resultString.slice(-1) == 'R') {
+        console.log('Red wins split match');
+        return 0.75;
+    } else {
+        console.log('Blue wins split match');
+        return 0.25;
+    }
+}
+
+var whoWon = function(game) {
+    if (game.redScore > game.blueScore) {
+        return 'R';
+    } else {
+        return 'B';
+    }
+}
