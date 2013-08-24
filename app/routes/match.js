@@ -171,18 +171,7 @@ Match.prototype.add = function(req, res){
     function(error,args) {
         var red = args.red;
         var blue = args.blue;
-        console.log("^^^" + args.red.rating);
-        console.log(red.lname + ' played againse ' + blue.lname);
         adjustRatings(games,red,blue);
-        console.log('New red rating: ' + red.rating);
-        console.log('New blue rating: ' + blue.rating);
-//        red.save(function(err,player) {
-  //          if (err) {
-    //            console.log('Save player failed: ', err);
-      //      } else {
-        //        console.log('Player rating updated');
-          //  }
-        //});
         [red,blue].forEach(function(player,i) {
             player.save(function(err,player) {
                 if (err) {
