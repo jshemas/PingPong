@@ -238,7 +238,7 @@ Match.prototype.rebuildRatings = function(req, res) {
             });
         },
         matches: function(pcb){
-            that.config.Matches.find(function(err,matches) {
+            that.config.Matches.find({deleted: false}, function(err,matches) {
                 pcb(null,matches);
             });
         }
