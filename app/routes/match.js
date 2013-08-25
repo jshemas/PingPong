@@ -197,9 +197,9 @@ Match.prototype.add = function(req, res){
 				error: err
 			});
 		} else {
-			console.log("Match Added");
 			res.json({
-				success: true
+				success: true,
+				match: newMatch
 			});
 		};
 	});

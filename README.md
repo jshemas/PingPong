@@ -13,6 +13,10 @@ This was build using Node.js(v0.10.10) and MongoDB(v2.4.4).
 
 To install with a package manager on linux, follow these [instructions](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
 
+### Install Dependencies
+npm install
+npm install nconf
+
 #### Start app
 Just Run...
 ```
