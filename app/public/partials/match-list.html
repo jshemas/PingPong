@@ -1,6 +1,6 @@
 <div class="searchBox float-right">
 	Search: <input ng-model="query">
-	<a href="#addGameDialog" data-toggle="modal" class="btn btn-primary">Add Game</a>
+	<a href="#addGameDialog" data-toggle="modal" class="btn btn-primary">Add Match</a>
 </div>
 <h1>{{title}}</h1>
 <div>
@@ -28,7 +28,7 @@
 <div id="addGameDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add Game" aria-hidden="true">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		<h3 id="editPlayerDialogLabel">Add a new game</h3>
+		<h3 id="editPlayerDialogLabel">Add a new match</h3>
 	</div>
 	<div class="modal-body">
 		<form name="addMatchForm" class="ng-valid-required" novalidate>
@@ -62,7 +62,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		<button id="AddGameBtn" ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Game</button>
+		<button id="AddGameBtn" ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Match</button>
 	</div>
 </div>
 
