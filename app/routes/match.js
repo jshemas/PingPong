@@ -1,6 +1,7 @@
 var async = require('async');
 var http = require('http');
 var url = require('url');
+var elo = require('../public/js/elo')
 
 function Match(config){
 	this.config = config;
@@ -108,7 +109,7 @@ Match.prototype.json = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Matches
-			that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
+		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
@@ -154,6 +155,33 @@ Match.prototype.add = function(req, res){
 			blueScore: parseInt(req.body["game3BluePlayer"]) || 0
 		});
 	};
+    var that = this;
+    async.parallel({
+        red: function(pcb){
+            that.config.Players.findById(redPlayer, function(err,red) {
+                pcb(null,red);
+            });
+        },
+        blue: function(pcb){
+            that.config.Players.findById(bluePlayer, function(err,blue) {
+                pcb(null,blue);
+            });
+        },
+    },
+    function(error,args) {
+        var red = args.red;
+        var blue = args.blue;
+        adjustRatings(games,red,blue);
+        [red,blue].forEach(function(player,i) {
+            player.save(function(err,player) {
+                if (err) {
+                    console.log('Save player failed: ', err);
+                } else {
+                    console.log('Player rating updated');
+                }
+            });
+        });
+    });
 
 	var newMatch = new this.config.Matches({
 		redPlayer: redPlayer,
@@ -181,22 +209,120 @@ Match.prototype.delete = function(req, res){
 	var matchID = req.params.id;
 	var that = this;
 
-	async.parallel([
-		function(pcb){ // Remove Player
-			that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
-				if (err){ // TODO handle err
-					console.log(err)
-				} else{
-					pcb(null);
-				}
-			});
-		}
-	], function(error, args){
+	async.parallel({
+	    match: function(pcb){ // Remove Player
+		that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
+		    if (err){ // TODO handle err
+			console.log(err)
+		    } else{
+			pcb(null);
+		    }
+		});
+	    },
+            players: function(pcb){
+                that.config.Players.find(function(err,players) {
+                    pcb(null,players);
+                });
+            },
+            matches: function(pcb){
+                that.config.Matches.find({deleted: false}, function(err,matches) {
+                    pcb(null,matches);
+                });
+            }
+
+	}, function(error, args){
 		if(error){
 			res.json({"Success": false, "Error": error});
 		}else{
-			res.json({"Success": true});
+                    replayMatches(args.players,args.matches);
+		    res.json({"Success": true});
 		}
-
 	});
 };
+
+Match.prototype.rebuildRatings = function(req, res) {
+    var that = this;
+    async.parallel({
+        players: function(pcb){
+            that.config.Players.find(function(err,players) {
+                pcb(null,players);
+            });
+        },
+        matches: function(pcb){
+            that.config.Matches.find({deleted: false}, function(err,matches) {
+                pcb(null,matches);
+            });
+        }
+
+    },
+    function(error,args) {
+        var players = args.players;
+        var matches = args.matches;
+        replayMatches(players,matches);
+        res.json({
+            sucess: true,
+            players: players,
+            matches: matches
+        });
+    });
+};
+
+var replayMatches = function(players,matches) {
+    var playerHash = {};
+    players.forEach(function(player,i) {
+        player.rating = 1200;
+        playerHash[player._id] = player;
+    });
+    matches.forEach(function(match,i) {
+        var red = playerHash[match.redPlayer];
+        var blue = playerHash[match.bluePlayer];
+        adjustRatings(match.games,red,blue);
+    });
+    players.forEach(function(player,i) {
+        player.save(function(err,player) {
+            if (err) {
+                console.log('Save player failed: ', err);
+            } else {
+                console.log('Player rating updated');
+            }
+        });
+    });
+}
+
+var adjustRatings = function(games,red,blue) {
+    var result = determineResult(games);
+    var ratingChange = elo.delta(red.rating, blue.rating, result);
+    console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
+    red.rating += ratingChange;
+    blue.rating -= ratingChange;
+    console.log('New red rating: ' + red.rating);
+    console.log('New blue rating: ' + blue.rating);
+}
+
+var determineResult = function(games) {
+    var resultString = '';
+    games.forEach(function(game,i) {
+        resultString += whoWon(game);
+    });
+    if (resultString == 'RR') {
+        console.log('Red sweep');
+        return 1;
+    } else if (resultString == 'BB') {
+        console.log('Blue sweep');
+        return 0;
+    } else if (resultString.slice(-1) == 'R') {
+        console.log('Red wins split match');
+        return 0.75;
+    } else {
+        console.log('Blue wins split match');
+        return 0.25;
+    }
+}
+
+var whoWon = function(game) {
+    if (game.redScore > game.blueScore) {
+        return 'R';
+    } else {
+        return 'B';
+    }
+}

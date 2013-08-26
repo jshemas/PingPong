@@ -73,3 +73,4 @@ app.post('/matches', function(){ match.add.apply(match, arguments) });
 app.get('/matches/json', function(){ match.json.apply(match, arguments) });
 app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, arguments) });
 app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments) });
+app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments) });
