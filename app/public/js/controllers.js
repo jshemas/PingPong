@@ -65,7 +65,7 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 		//console.log(data);
 		$scope.players = data;
 	});
-	$scope.predicate = '-ratio';
+	$scope.predicate = '-rating';
 
 	$scope.form = {};
 	$scope.addPlayer = function () {
