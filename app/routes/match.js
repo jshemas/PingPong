@@ -209,23 +209,34 @@ Match.prototype.delete = function(req, res){
 	var matchID = req.params.id;
 	var that = this;
 
-	async.parallel([
-		function(pcb){ // Remove Player
-			that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
-				if (err){ // TODO handle err
-					console.log(err)
-				} else{
-					pcb(null);
-				}
-			});
-		}
-	], function(error, args){
+	async.parallel({
+	    match: function(pcb){ // Remove Player
+		that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
+		    if (err){ // TODO handle err
+			console.log(err)
+		    } else{
+			pcb(null);
+		    }
+		});
+	    },
+            players: function(pcb){
+                that.config.Players.find(function(err,players) {
+                    pcb(null,players);
+                });
+            },
+            matches: function(pcb){
+                that.config.Matches.find({deleted: false}, function(err,matches) {
+                    pcb(null,matches);
+                });
+            }
+
+	}, function(error, args){
 		if(error){
 			res.json({"Success": false, "Error": error});
 		}else{
-			res.json({"Success": true});
+                    replayMatches(args.players,args.matches);
+		    res.json({"Success": true});
 		}
-
 	});
 };
 
