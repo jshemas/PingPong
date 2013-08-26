@@ -8,7 +8,11 @@ module.exports = function(mongoose) {
 		redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
 		bluePlayerDetails: [playerSchema], // TODO: Get these out of arrays
 		deleted: { type: Boolean, default: false },
-		removedDate: { type: Date }
+		removedDate: { type: Date },
+		ratingChange: { type: Number, required: false },
+		redPlayerRating: { type: Number },
+		bluePlayerRating: { type: Number }
+
 	});
 
 	var gameSchema = mongoose.Schema({

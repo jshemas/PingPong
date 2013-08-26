@@ -276,8 +276,24 @@ var replayMatches = function(players,matches) {
     matches.forEach(function(match,i) {
         var red = playerHash[match.redPlayer];
         var blue = playerHash[match.bluePlayer];
-        adjustRatings(match.games,red,blue);
+
+        var ratingChange = adjustRatings(match.games,red,blue);
+		match.ratingChange = ratingChange;
+		match.redPlayerRating = red.rating;
+		match.bluePlayerRating = blue.rating;
+
+		console.log("MATCH", match);
+		match.save(function(err, match){
+			if(err){
+				console.log("**** ERROR saving match");
+			}else{
+				console.log("*** Match Updated Successful", match);
+			}
+		});
     });
+
+	console.log("PLAYERS", players);
+
     players.forEach(function(player,i) {
         player.save(function(err,player) {
             if (err) {
@@ -295,8 +311,10 @@ var adjustRatings = function(games,red,blue) {
     console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
     red.rating += ratingChange;
     blue.rating -= ratingChange;
+
     console.log('New red rating: ' + red.rating);
     console.log('New blue rating: ' + blue.rating);
+	return ratingChange;
 }
 
 var determineResult = function(games) {
