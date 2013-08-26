@@ -9,7 +9,8 @@ module.exports = function(mongoose) {
 		gamesPlayed: { type: String, required: false },
 		streak: { type: String, required: false },
 		ratio: { type: String, required: false },
-		createdDate: { type: Date, default: Date.now }
+		createdDate: { type: Date, default: Date.now },
+	    rating: { type: Number, default: 1200 }
 	});
 
 	var Players = mongoose.model('players', playerSchema);
