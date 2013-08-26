@@ -247,26 +247,7 @@ Match.prototype.rebuildRatings = function(req, res) {
     function(error,args) {
         var players = args.players;
         var matches = args.matches;
-        var playerHash = {};
-
-        players.forEach(function(player,i) {
-            player.rating = 1200;
-            playerHash[player._id] = player;
-        });
-        matches.forEach(function(match,i) {
-            var red = playerHash[match.redPlayer];
-            var blue = playerHash[match.bluePlayer];
-            adjustRatings(match.games,red,blue);
-        });
-        players.forEach(function(player,i) {
-            player.save(function(err,player) {
-                if (err) {
-                    console.log('Save player failed: ', err);
-                } else {
-                    console.log('Player rating updated');
-                }
-            });
-        });
+        replayMatches(players,matches);
         res.json({
             sucess: true,
             players: players,
@@ -274,6 +255,28 @@ Match.prototype.rebuildRatings = function(req, res) {
         });
     });
 };
+
+var replayMatches = function(players,matches) {
+    var playerHash = {};
+    players.forEach(function(player,i) {
+        player.rating = 1200;
+        playerHash[player._id] = player;
+    });
+    matches.forEach(function(match,i) {
+        var red = playerHash[match.redPlayer];
+        var blue = playerHash[match.bluePlayer];
+        adjustRatings(match.games,red,blue);
+    });
+    players.forEach(function(player,i) {
+        player.save(function(err,player) {
+            if (err) {
+                console.log('Save player failed: ', err);
+            } else {
+                console.log('Player rating updated');
+            }
+        });
+    });
+}
 
 var adjustRatings = function(games,red,blue) {
     var result = determineResult(games);
