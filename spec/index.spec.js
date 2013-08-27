@@ -131,12 +131,41 @@ describe('Add Game: ', function (done) {
 			.end( function(err, result) {
 				// response from our service
 				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body.success).to.be(true);
 				gameID = result.res.body.match["_id"];
 				// Check game is in database
 				Matches.Match.find({"_id": gameID}, function(error, match){
 					var numberOfMatches = match.length;
 					expect(numberOfMatches).to.be(1); // The 1 game we just added should be present
 				});
+				done();
+			});
+	});
+	it('Adds a game to the database - failed same user IDS', function(done) {
+		//update the test game data with the new users we added
+		gameData.redPlayer._id = userID1;
+		gameData.bluePlayer._id = userID1;
+		request(baseURL)
+			.post('matches')
+			.send(gameData)
+			.end( function(err, result) {
+				// response from our service
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body.success).to.be(false);
+				done();
+			});
+	});
+	it('Adds a game to the database - failed no user IDS', function(done) {
+		//update the test game data with the new users we added
+		gameData.redPlayer._id = '';
+		gameData.bluePlayer._id = '';
+		request(baseURL)
+			.post('matches')
+			.send(gameData)
+			.end( function(err, result) {
+				// response from our service
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body.success).to.be(false);
 				done();
 			});
 	});

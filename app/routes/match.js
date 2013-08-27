@@ -138,6 +138,23 @@ Match.prototype.json = function(req, res){
 Match.prototype.add = function(req, res){
 	var redPlayer = req.body.redPlayer._id;
 	var bluePlayer = req.body.bluePlayer._id;
+	//validate your inputs
+	if(validateVar(redPlayer) || validateVar(bluePlayer)){
+		console.log("Match Add Failed: ", 'no player ID');
+		res.json({
+			success: false,
+			error: 'no player ID'
+		});
+		return;
+	};
+	if(redPlayer == bluePlayer){
+		console.log("Match Add Failed: ", 'same Player ID');
+		res.json({
+			success: false,
+			error: 'same player ID'
+		});
+		return;
+	};
 	var games = [
 		{
 			redScore: parseInt(req.body["game1RedPlayer"]) || 0,
@@ -344,3 +361,17 @@ var whoWon = function(game) {
         return 'B';
     }
 }
+
+/**
+ * validate var
+ * @param string var - user input
+ * @param function callback
+ */
+var validateVar = function(inputVar, callback) {
+	if ( inputVar == null || inputVar.length < 1 ) {
+		return true;
+	} else {
+		return false;
+	};
+};
+
