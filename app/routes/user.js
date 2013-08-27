@@ -189,7 +189,8 @@ User.prototype.add = function(req, res){
 		else{
 			console.log("Player Added");
 			res.json({
-				success: true
+				success: true,
+				player: newPlayer
 			});
 		}
 	});
