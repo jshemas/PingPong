@@ -344,3 +344,27 @@ var whoWon = function(game) {
         return 'B';
     }
 }
+
+Match.prototype.recommend = function(req, res) {
+    var that = this;
+    async.parallel({
+        players: function(pcb){
+            that.config.Players.find(function(err,players) {
+                pcb(null,players);
+            });
+        },
+        matches: function(pcb){
+            that.config.Matches.find({deleted: false}, function(err,matches) {
+                pcb(null,matches);
+            });
+        }
+
+    }, function(error,args) {
+        var players = args.players;
+        var matches = args.matches;
+        res.json({
+            sucess: true,
+        });
+    });
+};
+
