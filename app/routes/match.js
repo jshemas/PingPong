@@ -379,29 +379,56 @@ Match.prototype.recommend = function(req, res) {
     }, function(error,args) {
         var players = args.players;
         var matches = args.matches;
-        pairs = buildPairs(players, matches);
-        
+//        var pairs = buildPairs(players, matches);
+        var matchCount = countMatches(matches);
         res.json({
             success: true,
             players: players,
-            pairs: pairs
+  //          pairs: pairs,
+            matchCount: matchCount
         });
     });
 }
 
 var buildPairs = function(players, matches) {
-    pairs = []
+    var pairs = []
     if (players.length == 2) {
         pairs[0] = { red: players[0], blue: players[1] };
     } else if (players.length == 1) {
         // nothing
     } else {
-        red = players.shift();
+        var red = players.shift();
+        scores = {}
+        matchCount = countMatches(red, matches);
+        console.log(matchCount);
+//        players.forEach(function(player,i) {
+            
+  //      })
         blue = players.shift();
         pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches));
     }
     return pairs;
 }
+
+var countMatches = function(matches) {
+    var matchCount = {}
+    console.log('matches: ' + matches)
+    matches.forEach(function(match,i) {
+        console.log('A match: ' + match);
+        if (match.bluePlayer in matchCount) {
+            matchCount[match.bluePlayer]++;
+        } else {
+            matchCount[match.bluePlayer] = 1;
+        }
+        if (match.redPlayer in matchCount) {
+            matchCount[match.redPlayer]++;
+        } else {
+            matchCount[match.redPlayer] = 1;
+        }
+    });
+    return matchCount;
+}
+
 /**
  * validate var
  * @param string var - user input
