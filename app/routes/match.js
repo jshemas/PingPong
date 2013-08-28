@@ -366,7 +366,7 @@ Match.prototype.recommend = function(req, res) {
     var that = this;
     async.parallel({
         players: function(pcb){
-            that.config.Players.find(function(err,players) {
+            that.config.Players.find({}).sort({rating:-1}).execFind(function(err,players) {
                 pcb(null,players);
             });
         },
@@ -379,11 +379,29 @@ Match.prototype.recommend = function(req, res) {
     }, function(error,args) {
         var players = args.players;
         var matches = args.matches;
+        pairs = buildPairs(players, matches);
+        
         res.json({
-            sucess: true,
+            success: true,
+            players: players,
+            pairs: pairs
         });
     });
+}
 
+var buildPairs = function(players, matches) {
+    pairs = []
+    if (players.length == 2) {
+        pairs[0] = { red: players[0], blue: players[1] };
+    } else if (players.length == 1) {
+        // nothing
+    } else {
+        red = players.shift();
+        blue = players.shift();
+        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches));
+    }
+    return pairs;
+}
 /**
  * validate var
  * @param string var - user input
@@ -397,4 +415,3 @@ var validateVar = function(inputVar, callback) {
 	};
 
 };
-
