@@ -379,12 +379,13 @@ Match.prototype.recommend = function(req, res) {
     }, function(error,args) {
         var players = args.players;
         var matches = args.matches;
-//        var pairs = buildPairs(players, matches);
+
         var matchCount = countMatches(matches);
+        var pairs = buildPairs(players, matches, matchCount);
         res.json({
             success: true,
             players: players,
-  //          pairs: pairs,
+            pairs: pairs,
             matchCount: matchCount
         });
     });
@@ -399,8 +400,8 @@ var buildPairs = function(players, matches) {
     } else {
         var red = players.shift();
         scores = {}
-        matchCount = countMatches(red, matches);
-        console.log(matchCount);
+        playerMatchCount = countPlayerMatches(red, matches);
+        console.log("@@@" + JSON.stringify(playerMatchCount));
 //        players.forEach(function(player,i) {
             
   //      })
@@ -412,7 +413,6 @@ var buildPairs = function(players, matches) {
 
 var countMatches = function(matches) {
     var matchCount = {}
-    console.log('matches: ' + matches)
     matches.forEach(function(match,i) {
         console.log('A match: ' + match);
         if (match.bluePlayer in matchCount) {
@@ -424,6 +424,26 @@ var countMatches = function(matches) {
             matchCount[match.redPlayer]++;
         } else {
             matchCount[match.redPlayer] = 1;
+        }
+    });
+    return matchCount;
+}
+var countPlayerMatches = function(plr, matches) {
+    var matchCount = {};
+    var id = plr._id;
+    matches.forEach(function(match,i) {
+        if (id == match.redPlayer) {
+            if (match.bluePlayer in matchCount) {
+                matchCount[match.bluePlayer]++;
+            } else {
+                matchCount[match.bluePlayer] = 1;
+            }
+        } else if (id == match.bluePlayer) {
+            if (match.redPlayer in matchCount) {
+                matchCount[match.redPlayer]++;
+            } else {
+                matchCount[match.redPlayer] = 1;
+            }
         }
     });
     return matchCount;
