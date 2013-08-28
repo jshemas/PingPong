@@ -9,7 +9,7 @@ function exp_score(r1,r2) {
 }
 
 module.exports.delta = function delta(r1,r2,result) {
-    var K = 32;
+    var K = 64;
     return Math.round(K * (result - exp_score(r1,r2)));
 }
 
