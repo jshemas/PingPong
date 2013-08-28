@@ -6,7 +6,7 @@ module.exports = function(mongoose) {
 		nickname: { type: String, required: true },
 		wins: { type: String, required: false },
 		losses: { type: String, required: false },
-		gamesPlayed: { type: String, required: false },
+		matchesPlayed: { type: String, required: false },
 		streak: { type: String, required: false },
 		ratio: { type: String, required: false },
 		createdDate: { type: Date, default: Date.now },
