@@ -7,11 +7,23 @@
 	<ul class="gamesPlayed" style="margin:0; list-style: none;">
 		<li ng-repeat="match in matches | filter:query | orderBy:predicate:reverse ">
 			<div class="row">
-				<div class="span5 center"><a href="#/players/{{match.redPlayerDetails.0._id}}">{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}</a> </div>
+				<div class="span5 center">
+					<a href="#/players/{{match.redPlayerDetails.0._id}}">
+						{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}
+					</a>
+					<br>
+					{{ match.redPlayerRating }} ({{match.ratingChange}})
+				</div>
 				<div class="span2 center"><a href="#/matches/{{match._id}}">
 					{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}
 				</a></div>
-				<div class="span5 center"><a href="#/players/{{match.bluePlayerDetails.0._id}}">{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}</a></div>
+				<div class="span5 center">
+					<a href="#/players/{{match.bluePlayerDetails.0._id}}">
+						{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}
+					</a>
+					<br>
+					{{ match.bluePlayerRating }} ({{match.ratingChange}})
+				</div>
 			</div>
 			<div ng-repeat="match in match.games | filter:query | orderBy:orderProp" class="row">
 				<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>

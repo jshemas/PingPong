@@ -32,6 +32,14 @@ a {
   margin-bottom: 20px;
   padding-top: 10px;
 }
+.redWins .redPlayer,
+.blueWins .bluePlayer {
+  background: #daffd5;
+}
+.blueWins .redPlayer,
+.redWins .bluePlayer {
+  background: #ffe4e4;
+}
 /***************************
 *	Player Detail Page
 ***************************/
