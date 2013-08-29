@@ -1,7 +1,8 @@
 var async = require('async');
 var http = require('http');
 var url = require('url');
-var elo = require('../public/js/elo')
+var elo = require('../public/js/elo');
+var rec = require('./recommend');
 
 function Match(config){
 	this.config = config;
@@ -380,11 +381,9 @@ Match.prototype.recommend = function(req, res) {
     }, function(error,args) {
         var players = args.players;
         var matches = args.matches;
-
-        var matchCount = countMatches(matches);
-        var ratingRange = findRange(players);
-        console.log("$$$$: " + ratingRange);
-        var pairs = buildPairs(players, matches, matchCount, ratingRange);
+        var matchCount = rec.countMatches(matches);
+        var ratingRange = rec.findRange(players);
+        var pairs = rec.buildPairs(players, matches, matchCount, ratingRange);
         res.json({
             success: true,
             players: players,
@@ -394,94 +393,6 @@ Match.prototype.recommend = function(req, res) {
     });
 }
 
-var buildPairs = function(players, matches, matchCount, ratingRange) {
-    var pairs = [];
-    if (players.length == 2) {
-        pairs[0] = { red: players[0], blue: players[1] };
-    } else if (players.length == 1) {
-        // nothing
-    } else {
-        var red = players.shift();
-        playerMatchCount = countPlayerMatches(red, matches);
-        var leastFrequent = '';
-        var minCompScore = 10;
-        var idx = 0;
-        players.forEach(function(player,i) {
-            var pid = player._id;
-            var minTotalGames = Math.min(matchCount[red._id],matchCount[pid]);
-            console.log('pmc:' + playerMatchCount[pid]);
-            console.log('mtg:' + minTotalGames);
-            var count = playerMatchCount[pid] ? playerMatchCount[pid] : 0;
-            var ratio = count/minTotalGames;
-            console.log('ratio to compare:' + ratio);
-            var diff = Math.abs(player.rating - red.rating)/ratingRange;
-            var compScore = (2*diff) + ratio;
-            if (compScore < minCompScore) {
-                console.log('new smaller');
-                minCompScore = compScore;
-                leastFrequent = pid;
-                idx = i;
-            }
-            console.log(minCompScore + ' ' + idx);
-        });
-        blue = players.splice(idx,1)[0];
-        console.log('loop done ...');
-        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches,matchCount,ratingRange));
-    }
-    return pairs;
-}
-
-var countMatches = function(matches) {
-    var matchCount = {}
-    matches.forEach(function(match,i) {
-        if (match.bluePlayer in matchCount) {
-            matchCount[match.bluePlayer]++;
-        } else {
-            matchCount[match.bluePlayer] = 1;
-        }
-        if (match.redPlayer in matchCount) {
-            matchCount[match.redPlayer]++;
-        } else {
-            matchCount[match.redPlayer] = 1;
-        }
-    });
-    return matchCount;
-}
-var countPlayerMatches = function(plr, matches) {
-    var matchCount = {};
-    var id = plr._id;
-    matches.forEach(function(match,i) {
-        if (id == match.redPlayer) {
-            if (match.bluePlayer in matchCount) {
-                matchCount[match.bluePlayer]++;
-            } else {
-                matchCount[match.bluePlayer] = 1;
-            }
-        } else if (id == match.bluePlayer) {
-            if (match.redPlayer in matchCount) {
-                matchCount[match.redPlayer]++;
-            } else {
-                matchCount[match.redPlayer] = 1;
-            }
-        }
-    });
-    return matchCount;
-}
-
-var findRange = function(players) {
-    var high = 0;
-    var low = 2400;
-    players.forEach(function(player,i) {
-        var r = player.rating;
-        if (r > high) {
-            high = r;
-        }
-        if (r < low) {
-            low = r;
-        }
-    });
-    return high - low;
-}
 /**
  * validate var
  * @param string var - user input
