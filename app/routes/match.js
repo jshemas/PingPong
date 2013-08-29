@@ -48,6 +48,7 @@ Match.prototype.list = function(req, res){
 			});
 		});
 		res.render('matches', { title: 'Matches Played', matches: myMatches, players: myPlayers });
+
 	});
 };
 
@@ -391,8 +392,8 @@ Match.prototype.recommend = function(req, res) {
     });
 }
 
-var buildPairs = function(players, matches) {
-    var pairs = []
+var buildPairs = function(players, matches, matchCount) {
+    var pairs = [];
     if (players.length == 2) {
         pairs[0] = { red: players[0], blue: players[1] };
     } else if (players.length == 1) {
@@ -401,12 +402,28 @@ var buildPairs = function(players, matches) {
         var red = players.shift();
         scores = {}
         playerMatchCount = countPlayerMatches(red, matches);
-        console.log("@@@" + JSON.stringify(playerMatchCount));
-//        players.forEach(function(player,i) {
-            
-  //      })
-        blue = players.shift();
-        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches));
+        var leastFrequent = '';
+        var minGameRatio = 1;
+        var idx = 0;
+        players.forEach(function(player,i) {
+            var pid = player._id;
+            var minTotalGames = Math.min(matchCount[red._id],matchCount[pid]);
+            console.log('pmc:' + playerMatchCount[pid]);
+            console.log('mtg:' + minTotalGames);
+            var count = playerMatchCount[pid] ? playerMatchCount[pid] : 0;
+            var ratio = count/minTotalGames;
+            console.log('ratio to compare:' + ratio);
+            if (ratio < minGameRatio) {
+                console.log('new smaller');
+                minGameRatio = ratio;
+                leastFrequent = pid;
+                idx = i;
+            }
+            console.log(minGameRatio + ' ' + idx);
+        });
+        blue = players.splice(idx,1)[0];
+        console.log('loop done ...');
+        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches,matchCount));
     }
     return pairs;
 }
@@ -414,7 +431,6 @@ var buildPairs = function(players, matches) {
 var countMatches = function(matches) {
     var matchCount = {}
     matches.forEach(function(match,i) {
-        console.log('A match: ' + match);
         if (match.bluePlayer in matchCount) {
             matchCount[match.bluePlayer]++;
         } else {
