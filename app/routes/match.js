@@ -384,7 +384,7 @@ Match.prototype.recommend = function(req, res) {
         var matchCount = countMatches(matches);
         var ratingRange = findRange(players);
         console.log("$$$$: " + ratingRange);
-        var pairs = buildPairs(players, matches, matchCount);
+        var pairs = buildPairs(players, matches, matchCount, ratingRange);
         res.json({
             success: true,
             players: players,
@@ -394,7 +394,7 @@ Match.prototype.recommend = function(req, res) {
     });
 }
 
-var buildPairs = function(players, matches, matchCount) {
+var buildPairs = function(players, matches, matchCount, ratingRange) {
     var pairs = [];
     if (players.length == 2) {
         pairs[0] = { red: players[0], blue: players[1] };
@@ -402,10 +402,9 @@ var buildPairs = function(players, matches, matchCount) {
         // nothing
     } else {
         var red = players.shift();
-        scores = {}
         playerMatchCount = countPlayerMatches(red, matches);
         var leastFrequent = '';
-        var minGameRatio = 1;
+        var minCompScore = 10;
         var idx = 0;
         players.forEach(function(player,i) {
             var pid = player._id;
@@ -415,17 +414,19 @@ var buildPairs = function(players, matches, matchCount) {
             var count = playerMatchCount[pid] ? playerMatchCount[pid] : 0;
             var ratio = count/minTotalGames;
             console.log('ratio to compare:' + ratio);
-            if (ratio < minGameRatio) {
+            var diff = Math.abs(player.rating - red.rating)/ratingRange;
+            var compScore = (2*diff) + ratio;
+            if (compScore < minCompScore) {
                 console.log('new smaller');
-                minGameRatio = ratio;
+                minCompScore = compScore;
                 leastFrequent = pid;
                 idx = i;
             }
-            console.log(minGameRatio + ' ' + idx);
+            console.log(minCompScore + ' ' + idx);
         });
         blue = players.splice(idx,1)[0];
         console.log('loop done ...');
-        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches,matchCount));
+        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches,matchCount,ratingRange));
     }
     return pairs;
 }
