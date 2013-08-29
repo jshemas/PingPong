@@ -382,6 +382,8 @@ Match.prototype.recommend = function(req, res) {
         var matches = args.matches;
 
         var matchCount = countMatches(matches);
+        var ratingRange = findRange(players);
+        console.log("$$$$: " + ratingRange);
         var pairs = buildPairs(players, matches, matchCount);
         res.json({
             success: true,
@@ -465,6 +467,20 @@ var countPlayerMatches = function(plr, matches) {
     return matchCount;
 }
 
+var findRange = function(players) {
+    var high = 0;
+    var low = 2400;
+    players.forEach(function(player,i) {
+        var r = player.rating;
+        if (r > high) {
+            high = r;
+        }
+        if (r < low) {
+            low = r;
+        }
+    });
+    return high - low;
+}
 /**
  * validate var
  * @param string var - user input
