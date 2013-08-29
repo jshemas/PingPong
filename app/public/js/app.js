@@ -1,7 +1,7 @@
 'use strict';
 /* App Module */
 
-angular.module('arena', []).
+angular.module('arena', ['PingPongFilters']).
 	config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider.
 	when('/matches', {

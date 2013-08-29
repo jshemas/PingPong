@@ -7,7 +7,7 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
 	$scope.predicate = '-createdDate';
 
 	$http.get('/matches/json').success(function(data) {
-		//console.log(data);
+//		console.log(data);
 		$scope.matches = data;
 	});
 	$http.get('/users/json').success(function(data) {
@@ -62,7 +62,7 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 function PlayerListCtrl($scope, $http, $location, $route) {
 	$scope.title = "Players"
 	$http.get('/users/json').success(function(data) {
-		//console.log(data);
+		console.log(data);
 		$scope.players = data;
 	});
 	$scope.predicate = '-rating';

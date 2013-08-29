@@ -13,7 +13,7 @@
 		<div class="row">
 			<div class="span5 center"><a href="#/players/{{matchData.redPlayerDetails.0._id}}">{{matchData.redPlayerDetails.0.fname}} "{{matchData.redPlayerDetails.0.nickname}}" {{matchData.redPlayerDetails.0.lname}}</a> </div>
 			<div class="span2 center"><a href="#/matchDatas/{{matchData._id}}">{{ matchData.createdDate | date:'MM/dd/yyyy h:mm'}}</a></div>
-			<div class="span5 center"><a href="#/players/{{matchData.bluePlayerDetails.0._id}}">{{match.bluePlayerDetails.0.fname}} "{{matchData.bluePlayerDetails.0.nickname}}" {{matchData.bluePlayerDetails.0.lname}}</a></div>
+			<div class="span5 center"><a href="#/players/{{matchData.bluePlayerDetails.0._id}}">{{matchData.bluePlayerDetails.0.fname}} "{{matchData.bluePlayerDetails.0.nickname}}" {{matchData.bluePlayerDetails.0.lname}}</a></div>
 		</div>
 		<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp" class="row">
 			<div class="span5 center"><span class="badge">{{game.redScore}}</span></div>
