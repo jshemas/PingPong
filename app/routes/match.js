@@ -51,6 +51,7 @@ Match.prototype.list = function(req, res){
 	});
 };
 
+
 Match.prototype.singleMatch = function(req, res){
 	var matchId = req.params.id;
 	//console.log("MatchID", matchId);
@@ -86,53 +87,24 @@ Match.prototype.singleMatch = function(req, res){
 	});
 };
 
+// gets a list of all of the matches
 Match.prototype.json = function(req, res){
 	var that = this;
-
-
 	var query = {deleted: false};
 	var _url = url.parse(req.url, true);
 	if(typeof _url.query.playerID !== "undefined"){
 		var playerId = _url.query.playerID;
 		query = {deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]};
-	}
+	};
+	getMatchAndPlayerInfo(req, res, that, query, _url);
+};
 
-
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-				} else{
-					pcb(null,players)
-				}
-			});
-		},
-		function(pcb){ // Get all Matches
-		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
-				if (err){ // TODO handle err
-					console.log(err)
-				} else{
-					pcb(null,matches)
-				}
-			});
-		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var myMatches = args[1];
-		myMatches.forEach(function(match, i){
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == match.redPlayer){
-					myMatches[i].redPlayerDetails = player;
-				}
-				if(player["_id"] == match.bluePlayer){
-					myMatches[i].bluePlayerDetails = player;
-				}
-			});
-		});
-		//console.log("My Matches", myMatches);
-		res.json(myMatches)
-	});
+// gets a list of all of the deleted matches
+Match.prototype.delList = function(req, res){
+	var that = this;
+	var query = {deleted: true};
+	var _url = url.parse(req.url, true);
+	getMatchAndPlayerInfo(req, res, that, query, _url);
 };
 
 Match.prototype.add = function(req, res){
@@ -320,7 +292,7 @@ var replayMatches = function(players,matches) {
             }
         });
     });
-}
+};
 
 var adjustRatings = function(games,red,blue) {
     var result = determineResult(games);
@@ -332,7 +304,7 @@ var adjustRatings = function(games,red,blue) {
     console.log('New red rating: ' + red.rating);
     console.log('New blue rating: ' + blue.rating);
 	return ratingChange;
-}
+};
 
 var determineResult = function(games) {
     var resultString = '';
@@ -352,7 +324,7 @@ var determineResult = function(games) {
         console.log('Blue wins split match');
         return 0.25;
     }
-}
+};
 
 var whoWon = function(game) {
     if (game.redScore > game.blueScore) {
@@ -360,7 +332,45 @@ var whoWon = function(game) {
     } else {
         return 'B';
     }
-}
+};
+
+var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
+	async.parallel([
+		function(pcb){ // Get All Available Players
+			that.config.Players.find(function (err, players) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,players)
+				}
+			});
+		},
+		function(pcb){ // Get all Matches
+		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
+				if (err){ // TODO handle err
+					console.log(err)
+				} else{
+					pcb(null,matches)
+				}
+			});
+		}
+	], function(error, args){
+		var myPlayers = args[0];
+		var myMatches = args[1];
+		myMatches.forEach(function(match, i){
+			myPlayers.forEach(function(player, j){
+				if(player["_id"] == match.redPlayer){
+					myMatches[i].redPlayerDetails = player;
+				}
+				if(player["_id"] == match.bluePlayer){
+					myMatches[i].bluePlayerDetails = player;
+				}
+			});
+		});
+		res.json(myMatches)
+	});
+
+};
 
 /**
  * validate var
