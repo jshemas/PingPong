@@ -1,7 +1,8 @@
 var async = require('async');
 var http = require('http');
 var url = require('url');
-var elo = require('../public/js/elo')
+var elo = require('../public/js/elo');
+var rec = require('./recommend');
 
 function Match(config){
 	this.config = config;
@@ -48,6 +49,7 @@ Match.prototype.list = function(req, res){
 			});
 		});
 		res.render('matches', { title: 'Matches Played', matches: myMatches, players: myPlayers });
+
 	});
 };
 
@@ -372,6 +374,35 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 
 };
 
+Match.prototype.recommend = function(req, res) {
+    var that = this;
+    async.parallel({
+        players: function(pcb){
+            that.config.Players.find({}).sort({rating:-1}).execFind(function(err,players) {
+                pcb(null,players);
+            });
+        },
+        matches: function(pcb){
+            that.config.Matches.find({deleted: false}, function(err,matches) {
+                pcb(null,matches);
+            });
+        }
+
+    }, function(error,args) {
+        var players = args.players;
+        var matches = args.matches;
+        var matchCount = rec.countMatches(matches);
+        var ratingRange = rec.findRange(players);
+        var pairs = rec.buildPairs(players, matches, matchCount, ratingRange);
+        res.json({
+            success: true,
+            players: players,
+            pairs: pairs,
+            matchCount: matchCount
+        });
+    });
+}
+
 /**
  * validate var
  * @param string var - user input
@@ -383,5 +414,5 @@ var validateVar = function(inputVar, callback) {
 	} else {
 		return false;
 	};
-};
 
+};
