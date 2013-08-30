@@ -76,6 +76,8 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 		});
 	};
 
+	$scope.predicate = '-wins';
+
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
 
