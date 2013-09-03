@@ -4,6 +4,7 @@ module.exports = function(mongoose) {
 		fname: { type: String, required: true },
 		lname: { type: String, required: true },
 		nickname: { type: String, required: true },
+		email: { type: String, required: false },
 		wins: { type: String, required: false },
 		losses: { type: String, required: false },
 		matchesPlayed: { type: String, required: false },
