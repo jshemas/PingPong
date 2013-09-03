@@ -82,6 +82,8 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 function PlayerDetailCtrl($scope, $routeParams, $http, $location) {
 	//console.log("Route Params", $routeParams);
 	$scope.userId = $routeParams.userId;
+	$scope.predicate = '-createdDate';
+
 	$http.get('/users/' + $scope.userId + '/json').success(function(data) {
 		//console.log("user Data", data);
 		$scope.userData = data;
