@@ -1,0 +1,18 @@
+{ "__v" : 0, "_id" : { "$oid" : "520944f7ae5c253d32000001" }, "createdDate" : { "$date" : 1376339191724 }, "fname" : "Corey", "lname" : "Snyder", "nickname" : "Spin Doctor", "rating" : 1313 }
+{ "__v" : 0, "_id" : { "$oid" : "52094540ae5c253d32000002" }, "createdDate" : { "$date" : 1376339264622 }, "fname" : "Brian", "lname" : "Hoover", "nickname" : "Hoov", "rating" : 1253 }
+{ "__v" : 0, "_id" : { "$oid" : "52094546ae5c253d32000003" }, "createdDate" : { "$date" : 1376339270141 }, "fname" : "Nasser", "lname" : "Lopez", "nickname" : "Nasser", "rating" : 1237 }
+{ "__v" : 0, "_id" : { "$oid" : "52094584ae5c253d32000004" }, "createdDate" : { "$date" : 1376339332692 }, "fname" : "Keith", "lname" : "Baker", "nickname" : "Better Than Corey", "rating" : 1202 }
+{ "__v" : 0, "_id" : { "$oid" : "52094652ae5c253d32000005" }, "createdDate" : { "$date" : 1376339538391 }, "fname" : "Prishant", "lname" : "Mantrao", "nickname" : "DeePacific", "rating" : 1181 }
+{ "__v" : 0, "_id" : { "$oid" : "520aa0f4945794454a000001" }, "createdDate" : { "$date" : 1376428276302 }, "fname" : "Andrew", "lname" : "Nichols", "nickname" : "Duran Duran", "rating" : 1092 }
+{ "__v" : 0, "_id" : { "$oid" : "520ba7b59a4bb3b038000001" }, "createdDate" : { "$date" : 1376495541796 }, "fname" : "Nate", "lname" : "Romano", "nickname" : "Balls of Fury", "rating" : 1274 }
+{ "__v" : 0, "_id" : { "$oid" : "520bb92ba1609f343b000001" }, "createdDate" : { "$date" : 1376500011066 }, "fname" : "Rob", "lname" : "Zakrzewski", "nickname" : "Z", "rating" : 1325 }
+{ "__v" : 0, "_id" : { "$oid" : "520bd12f164642813b000002" }, "createdDate" : { "$date" : 1376506159975 }, "fname" : "Johnson", "lname" : "Denen", "nickname" : "Tiny", "rating" : 1178 }
+{ "__v" : 0, "_id" : { "$oid" : "520bdc81164642813b000004" }, "createdDate" : { "$date" : 1376509057724 }, "fname" : "Jon", "lname" : "Lein", "nickname" : "J-Sleezy", "rating" : 1214 }
+{ "__v" : 0, "_id" : { "$oid" : "520d4ae8164642813b00000c" }, "createdDate" : { "$date" : 1376602856528 }, "fname" : "Mike", "lname" : "Bruce", "nickname" : "reprehensible", "rating" : 1139 }
+{ "__v" : 0, "_id" : { "$oid" : "520d5807164642813b00000d" }, "createdDate" : { "$date" : 1376606215526 }, "fname" : "Shan", "lname" : "He", "nickname" : "HEMAN", "rating" : 1174 }
+{ "__v" : 0, "_id" : { "$oid" : "52126611164642813b000011" }, "createdDate" : { "$date" : 1376937489097 }, "fname" : "Ryan", "lname" : "Hohman", "nickname" : "Wingman", "rating" : 1072 }
+{ "__v" : 0, "_id" : { "$oid" : "5214fa1ad621995a11000012" }, "createdDate" : { "$date" : 1377106458632 }, "fname" : "Eric", "lname" : "Wilson", "nickname" : "Greybeard", "rating" : 1215 }
+{ "__v" : 0, "_id" : { "$oid" : "52163892d621995a11000018" }, "createdDate" : { "$date" : 1377187986835 }, "fname" : "Brian", "lname" : "Rolland", "nickname" : "The Commissioner", "rating" : 1321 }
+{ "__v" : 0, "_id" : { "$oid" : "521775a239f7d3fe40000001" }, "createdDate" : { "$date" : 1377269154212 }, "fname" : "Adam", "lname" : "Mclane", "nickname" : "Die Hard", "rating" : 1104 }
+{ "fname" : "Akash", "lname" : "Kushwaha", "nickname" : "akku", "_id" : { "$oid" : "521bab172f4175cc64000002" }, "rating" : 1206, "createdDate" : { "$date" : 1377544983460 }, "__v" : 0 }
+{ "fname" : "Jerry", "lname" : "Mindek", "nickname" : "Slo-hands", "_id" : { "$oid" : "521e3a259759210a03000001" }, "rating" : 1100, "createdDate" : { "$date" : 1377712677334 }, "__v" : 0 }
