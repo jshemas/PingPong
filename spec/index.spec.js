@@ -221,3 +221,6 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 });
+
+//need to close the mongo connection, otherwise the tests will never finish.
+mongoose.connection.close();
