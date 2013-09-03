@@ -391,14 +391,10 @@ Match.prototype.recommend = function(req, res) {
     }, function(error,args) {
         var players = args.players;
         var matches = args.matches;
-        var matchCount = rec.countMatches(matches);
-        var ratingRange = rec.findRange(players);
-        var pairs = rec.buildPairs(players, matches, matchCount, ratingRange);
+        var pairs = rec.buildPairs(players, matches);
         res.json({
             success: true,
-            players: players,
-            pairs: pairs,
-            matchCount: matchCount
+            pairs: pairs
         });
     });
 }

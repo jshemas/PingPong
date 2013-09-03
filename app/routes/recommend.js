@@ -1,4 +1,11 @@
-module.exports.buildPairs = function buildPairs(players, matches, matchCount, ratingRange) {
+module.exports.buildPairs = function buildPairs(players, matches) {
+    var matchCount = countMatches(matches);
+    var ratingRange = findRange(players);
+    return findPairs(players, matches, matchCount, ratingRange);
+}
+
+
+var findPairs = function(players, matches, matchCount, ratingRange) {
     var pairs = [];
     if (players.length == 2) {
         // Base case of recursive function ... if only two players, pair them
@@ -29,12 +36,12 @@ module.exports.buildPairs = function buildPairs(players, matches, matchCount, ra
             }
         });
         blue = players.splice(idx,1)[0];
-        pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches,matchCount,ratingRange));
+        pairs = [ {red: red, blue: blue} ].concat(findPairs(players,matches,matchCount,ratingRange));
     }
     return pairs;
 }
 
-module.exports.countMatches = function countMatches(matches) {
+var countMatches = function(matches) {
     var matchCount = {}
     matches.forEach(function(match,i) {
         if (match.bluePlayer in matchCount) {
@@ -72,7 +79,7 @@ var countPlayerMatches = function(plr, matches) {
     return matchCount;
 }
 
-module.exports.findRange = function findRange(players) {
+var findRange = function(players) {
     var high = 0;
     var low = 2400;
     players.forEach(function(player,i) {
