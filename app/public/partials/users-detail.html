@@ -56,7 +56,7 @@
 				<div class="span2 center"><a href="#/matches/{{match._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a></div>
 				<div class="span5 center bluePlayer"><a href="#/players/{{match.bluePlayerDetails.0._id}}">{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}
 					<br>
-					{{ match.bluePlayerRating }} {{match.ratingChange}} </a>
+					{{ match.bluePlayerRating }} ({{-match.ratingChange}}) </a>
 				</div>
 			</div>
 			<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">

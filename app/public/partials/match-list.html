@@ -22,7 +22,7 @@
 						{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}
 					</a>
 					<br>
-					{{ match.bluePlayerRating }} ({{match.ratingChange}})
+					{{ match.bluePlayerRating }} ({{-match.ratingChange}})
 				</div>
 			</div>
 			<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
