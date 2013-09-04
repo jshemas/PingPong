@@ -29,7 +29,8 @@ process.on('uncaughtException',function(e) {
 var userData = {
 	firstName: 'First Name',
 	lastName: 'Last Name',
-	nickname: 'Nick Name'
+	nickname: 'Nick Name',
+	email: "test@gmail.com"
 };
 
 // the first test user
@@ -97,10 +98,13 @@ describe('Add Player: ', function (done) {
 				expect(result.res.statusCode).to.be(200);
 				userID1 = result.res.body.player["_id"];
 				// Check player is in database
-				Players.Players.find({"_id": userID1}, function(error, player){
-					expect(player.length).to.be(1);
+				Players.Players.findById(userID1, function(error, player){
+					expect(player).not.toBeNull;
+					console.log("PLAYER", player);
+					expect(player.fname, "corey");
+					done();
 				});
-				done();
+
 			});
 	});
 	it('Adds a player Two to the database', function(done) {
@@ -217,3 +221,6 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 });
+
+//need to close the mongo connection, otherwise the tests will never finish.
+mongoose.connection.close();

@@ -47,7 +47,7 @@
 <div class="row">
 	<h3>Player's Recent Matches ({{matchData.length}})</h3>
 	<ul class="matchesPlayed" style="margin:0; list-style: none;">
-		<li ng-repeat="match in matchData | filter:query " class="{{match.ratingChange | WinLoss}}">
+		<li ng-repeat="match in matchData | filter:query | orderBy:predicate" class="{{match.ratingChange | WinLoss}}">
 			<div class="row">
 				<div class="span5 center redPlayer"><a href="#/players/{{match.redPlayerDetails.0._id}}">{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}</a>
 					<br>
@@ -106,6 +106,12 @@
 				<label class="control-label" for="inputLastName">LastName</label>
 				<div class="controls">
 					<input type="text" id="inputLastName" ng-model='user.lname' placeholder="Last Name" value="{{userData.lname}}">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="inputEmail">Email</label>
+				<div class="controls">
+					<input type="text" id="inputEmail" ng-model='user.email' placeholder="Test@gmail.com" value="{{userData.email}}">
 				</div>
 			</div>
 		</form>

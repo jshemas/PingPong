@@ -52,14 +52,15 @@ if ('development' == app.get('env')) {
 var Players = require('./models/Player')(mongoose);
 var Matches = require('./models/Match')(mongoose);
 
-user = new User({Matches: Matches.Match, Players: Players.Players});
-match = new Match({Matches: Matches.Match, Players: Players.Players});
+var user = new User({Matches: Matches.Match, Players: Players.Players});
+var match = new Match({Matches: Matches.Match, Players: Players.Players});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
 app.get('/', routes.index);
+
 app.get('/users/:id/json', function(){ user.singleJSON.apply(user, arguments) });
 app.get('/users/:id/delete', function(){ user.delete.apply(user, arguments) });
 app.put('/users/:id/edit', function(){ user.edit.apply(user, arguments) });
@@ -69,6 +70,8 @@ app.post('/users', function(){ user.add.apply(user, arguments) });
 
 app.post('/matches', function(){ match.add.apply(match, arguments) });
 app.get('/matches/json', function(){ match.json.apply(match, arguments) });
+app.get('/matches/delList/json', function(){ match.delList.apply(match, arguments) });
 app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, arguments) });
 app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments) });
 app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments) });
+app.get('/matches/recommend', function(){ match.recommend.apply(match, arguments) });
