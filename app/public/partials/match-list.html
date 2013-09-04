@@ -25,10 +25,10 @@
 					{{ match.bluePlayerRating }} ({{match.ratingChange}})
 				</div>
 			</div>
-			<div ng-repeat="match in match.games | filter:query | orderBy:orderProp" class="row">
-				<div class="span5 center"><span class="badge">{{match.redScore}}</span></div>
+			<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
+				<div class="span5 center"><span class="badge">{{game.redScore}}</span></div>
 				<div class="span2 center">Game {{ $index +1 }}</div>
-				<div class="span5 center"><span class="badge">{{match.blueScore}}</span></div>
+				<div class="span5 center"><span class="badge">{{game.blueScore}}</span></div>
 			</div>
 		</li>
 	</ul>
