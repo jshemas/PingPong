@@ -162,38 +162,64 @@ Match.prototype.add = function(req, res){
     function(error,args) {
         var red = args.red;
         var blue = args.blue;
-        adjustRatings(games,red,blue);
-        [red,blue].forEach(function(player,i) {
-            player.save(function(err,player) {
+        var ratingChange = adjustRatings(games,red,blue);
+
+        // save the red and blue players with the ratings change and create the match
+        async.parallel([
+            function(pcb){
+                red.save(function(err, player) {
+                    if (err) {
+                        console.log('Save red player failed: ', err);
+                        pcb(err);
+                    } else {
+                        console.log('Red player rating updated');
+                        pcb(null, player);
+                    }
+                });
+            },
+            function(pcb){
+                blue.save(function(err, player) {
+                    if (err) {
+                        console.log('Save blue player failed: ', err);
+                        pcb(err);
+                    } else {
+                        console.log('Blue player rating updated');
+                        pcb(null, player);
+                    }
+                });
+            },
+            function(pcb){
+                var newMatch = new that.config.Matches({
+                    redPlayer: redPlayer,
+                    bluePlayer: bluePlayer,
+                    games: games,
+                    ratingChange: ratingChange,
+                    bluePlayerRating: blue.rating,
+                    redPlayerRating: red.rating
+                });
+
+                newMatch.save(function (err, newMatch) {
+                    if (err){ // TODO handle the error
+                        console.log("Match Add Failed: ", err);
+                        pcb({success: false, error: err});
+                    } else {
+                        pcb(null);
+                    };
+                });
+            }
+            ], function(err, data) {
                 if (err) {
-                    console.log('Save player failed: ', err);
+                    res.json(500, err);
                 } else {
-                    console.log('Player rating updated');
+                    res.json({
+                        success: true,
+                        match: data
+                    });
                 }
-            });
         });
+
     });
 
-	var newMatch = new this.config.Matches({
-		redPlayer: redPlayer,
-		bluePlayer: bluePlayer,
-		games: games
-	});
-
-	newMatch.save(function (err, newMatch) {
-		if (err){ // TODO handle the error
-			console.log("Match Add Failed: ", err);
-			res.json({
-				success: false,
-				error: err
-			});
-		} else {
-			res.json({
-				success: true,
-				match: newMatch
-			});
-		};
-	});
 };
 
 Match.prototype.delete = function(req, res){
