@@ -2,6 +2,7 @@ var express = require('express'),
 	routes = require('./routes'),
 	User = require('./routes/user'),
 	Match = require('./routes/match'),
+	Team = require('./routes/team')
 	http = require('http'),
 	expressLayouts = require('express-ejs-layouts'),
 	path = require('path'),
@@ -51,9 +52,11 @@ if ('development' == app.get('env')) {
 // import models
 var Players = require('./models/Player')(mongoose);
 var Matches = require('./models/Match')(mongoose);
+var Teams = require('./models/Team')(mongoose);
 
 var user = new User({Matches: Matches.Match, Players: Players.Players});
 var match = new Match({Matches: Matches.Match, Players: Players.Players});
+var team = new Team({Matches: Matches.Match, Players: Players.Players, Teams: Teams.Teams})
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -75,3 +78,6 @@ app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, argument
 app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments) });
 app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments) });
 app.get('/matches/recommend', function(){ match.recommend.apply(match, arguments) });
+
+app.post('/teams', function(){ team.add.apply(team, arguments )});
+app.get('/teams', function(){ team.list.apply(team, arguments )});

@@ -157,7 +157,7 @@ Match.prototype.add = function(req, res){
             that.config.Players.findById(bluePlayer, function(err,blue) {
                 pcb(null,blue);
             });
-        },
+        }
     },
     function(error,args) {
         var red = args.red;
