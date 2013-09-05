@@ -10,7 +10,8 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 });
 
 
-module.exports.send = function send(subject, message, recipients) {
+var send = function(subject, message, recipients) {
+    console.log('PREPARING TO SEND');
     mailOpts = {
         from: "Ping Pong <manta.ping.pong@gmail.com>", // sender address
         to: recipients.join(),
@@ -34,6 +35,6 @@ module.exports.sendRecMatches = function sendRecMatches(pairs) {
             redName + ' vs ' + blueName;
         console.log(message);
         var subject = 'PingPong required match';
-        
+        send(subject,message,[pair.red.email,pair.blue.email]);
     });
 }

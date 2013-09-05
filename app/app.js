@@ -62,7 +62,7 @@ http.createServer(app).listen(app.get('port'), function(){
 
 var cronJob = require('cron').CronJob;
 
-new cronJob('* * * * * *', function() { 
+new cronJob('0 * * * * *', function() { 
     match.recMatches();
 }, null, true, "America/Los_Angeles");
 
