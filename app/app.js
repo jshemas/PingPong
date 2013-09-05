@@ -9,6 +9,7 @@ var express = require('express'),
 	nconf = require('nconf'),
 	mongoose = require('mongoose');
 
+
 //shared server
 //var dbPath = 'mongodb://192.168.241.233/pingpong';
 //local server
@@ -58,6 +59,12 @@ var match = new Match({Matches: Matches.Match, Players: Players.Players});
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+var cronJob = require('cron').CronJob;
+
+new cronJob('* * * * * *', function() { 
+    match.recMatches();
+}, null, true, "America/Los_Angeles");
 
 app.get('/', routes.index);
 

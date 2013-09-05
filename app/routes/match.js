@@ -3,6 +3,7 @@ var http = require('http');
 var url = require('url');
 var elo = require('../public/js/elo');
 var rec = require('./recommend');
+var mailer = require('../public/js/mailer');
 
 function Match(config){
 	this.config = config;
@@ -422,6 +423,29 @@ Match.prototype.recommend = function(req, res) {
             success: true,
             pairs: pairs
         });
+    });
+}
+
+Match.prototype.recMatches = function recMatches() {
+    console.log('starting rec');
+    var that = this;
+    async.parallel({
+        players: function(pcb){
+            that.config.Players.find({email:{$exists:true}}).sort({rating:-1}).execFind(function(err,players) {
+                pcb(null,players);
+            });
+        },
+        matches: function(pcb){
+            that.config.Matches.find({deleted: false}, function(err,matches) {
+                pcb(null,matches);
+            });
+        }
+
+    }, function(error,args) {
+        var players = args.players;
+        var matches = args.matches;
+        var pairs = rec.buildPairs(players, matches);
+        mailer.sendRecMatches(pairs);
     });
 }
 
