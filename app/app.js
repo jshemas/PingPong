@@ -62,8 +62,8 @@ http.createServer(app).listen(app.get('port'), function(){
 
 var cronJob = require('cron').CronJob;
 
-if ('development' != app.get('env')) {
-    new cronJob('* * * * * *', function() { 
+if (nconf.get('NODE_ENV') == 'prod') {
+    new cronJob('0 30 7 * * 1', function() { 
         console.log("Cron scheduling kicking off", new Date());
         match.recMatches();
     }, null, true, null);
