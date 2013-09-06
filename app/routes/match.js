@@ -401,31 +401,6 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 
 };
 
-Match.prototype.recommend = function(req, res) {
-    var that = this;
-    async.parallel({
-        players: function(pcb){
-            that.config.Players.find({}).sort({rating:-1}).execFind(function(err,players) {
-                pcb(null,players);
-            });
-        },
-        matches: function(pcb){
-            that.config.Matches.find({deleted: false}, function(err,matches) {
-                pcb(null,matches);
-            });
-        }
-
-    }, function(error,args) {
-        var players = args.players;
-        var matches = args.matches;
-        var pairs = rec.buildPairs(players, matches);
-        res.json({
-            success: true,
-            pairs: pairs
-        });
-    });
-}
-
 Match.prototype.recMatches = function recMatches() {
     console.log('starting rec');
     var that = this;
