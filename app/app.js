@@ -62,9 +62,10 @@ http.createServer(app).listen(app.get('port'), function(){
 
 var cronJob = require('cron').CronJob;
 
-new cronJob('0 * * * * *', function() { 
+new cronJob('0 0 8 * * 1', function() { 
+    console.log("Cron scheduling kicking off", new Date());
     match.recMatches();
-}, null, true, "America/Los_Angeles");
+}, null, true, null);
 
 app.get('/', routes.index);
 

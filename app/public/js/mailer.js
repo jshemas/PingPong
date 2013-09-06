@@ -11,13 +11,13 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 
 
 var send = function(subject, message, recipients) {
-    console.log('PREPARING TO SEND');
     mailOpts = {
         from: "Ping Pong <manta.ping.pong@gmail.com>", // sender address
         to: recipients.join(),
         subject: subject,
         text: message
     }
+    console.log('Preparing to send message:',mailOpts);
     smtpTransport.sendMail(mailOpts, function(error, response){
         if(error){
             console.log(error);
