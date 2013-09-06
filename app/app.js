@@ -46,7 +46,7 @@ app.configure(function() {
 
 // development only
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+    app.use(express.errorHandler());
 }
 
 // import models
@@ -62,10 +62,12 @@ http.createServer(app).listen(app.get('port'), function(){
 
 var cronJob = require('cron').CronJob;
 
-new cronJob('0 0 8 * * 1', function() { 
-    console.log("Cron scheduling kicking off", new Date());
-    match.recMatches();
-}, null, true, null);
+if ('development' != app.get('env')) {
+    new cronJob('* * * * * *', function() { 
+        console.log("Cron scheduling kicking off", new Date());
+        match.recMatches();
+    }, null, true, null);
+}
 
 app.get('/', routes.index);
 
