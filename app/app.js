@@ -9,6 +9,7 @@ var express = require('express'),
 	nconf = require('nconf'),
 	mongoose = require('mongoose');
 
+
 //shared server
 //var dbPath = 'mongodb://192.168.241.233/pingpong';
 //local server
@@ -45,7 +46,7 @@ app.configure(function() {
 
 // development only
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+    app.use(express.errorHandler());
 }
 
 // import models
@@ -58,6 +59,15 @@ var match = new Match({Matches: Matches.Match, Players: Players.Players});
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+var cronJob = require('cron').CronJob;
+
+if (nconf.get('NODE_ENV') == 'prod') {
+    new cronJob('0 30 7 * * 1', function() { 
+        console.log("Cron scheduling kicking off", new Date());
+        match.recMatches();
+    }, null, true, null);
+}
 
 app.get('/', routes.index);
 
