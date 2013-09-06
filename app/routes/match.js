@@ -3,6 +3,7 @@ var http = require('http');
 var url = require('url');
 var elo = require('../public/js/elo');
 var rec = require('./recommend');
+var mailer = require('../public/js/mailer');
 
 function Match(config){
 	this.config = config;
@@ -400,11 +401,12 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 
 };
 
-Match.prototype.recommend = function(req, res) {
+Match.prototype.recMatches = function recMatches() {
+    console.log('starting rec');
     var that = this;
     async.parallel({
         players: function(pcb){
-            that.config.Players.find({}).sort({rating:-1}).execFind(function(err,players) {
+            that.config.Players.find({email:{$exists:true}}).sort({rating:-1}).execFind(function(err,players) {
                 pcb(null,players);
             });
         },
@@ -417,15 +419,8 @@ Match.prototype.recommend = function(req, res) {
     }, function(error,args) {
         var players = args.players;
         var matches = args.matches;
-        var matchCount = rec.countMatches(matches);
-        var ratingRange = rec.findRange(players);
-        var pairs = rec.buildPairs(players, matches, matchCount, ratingRange);
-        res.json({
-            success: true,
-            players: players,
-            pairs: pairs,
-            matchCount: matchCount
-        });
+        var pairs = rec.buildPairs(players, matches);
+        mailer.sendRecMatches(pairs);
     });
 }
 
