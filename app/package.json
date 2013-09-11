@@ -14,6 +14,7 @@
 		"expect.js": "0.2.0",
 		"nconf": "0.6.7",
 		"async": "0.2.9",
-		"nodemailer": "0.5.2"
+		"nodemailer": "0.5.2",
+		"twitter" : "0.2.2"
 	}
 }
