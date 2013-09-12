@@ -2,6 +2,7 @@ var async = require('async');
 var http = require('http');
 var url = require('url');
 var elo = require('../public/js/elo');
+var twitter_mod = require('./twitter_module');
 var rec = require('./recommend');
 var mailer = require('../public/js/mailer');
 
@@ -111,6 +112,8 @@ Match.prototype.delList = function(req, res){
 };
 
 Match.prototype.add = function(req, res){
+	var redPlayerObj = req.body.redPlayer;
+	var bluePlayerObj = req.body.bluePlayer;
 	var redPlayer = req.body.redPlayer._id;
 	var bluePlayer = req.body.bluePlayer._id;
 	//validate your inputs
@@ -147,7 +150,22 @@ Match.prototype.add = function(req, res){
 			blueScore: parseInt(req.body["game3BluePlayer"]) || 0
 		});
 	};
-    var that = this;
+var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
+var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
+
+
+var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
++', '+games[1].redScore+'-'+games[1].blueScore;
+
+if(games.length > 2) {
+tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
+}else{
+//lost in 2 straight games.
+}
+
+
+
+   var that = this;
     async.parallel({
         red: function(pcb){
             that.config.Players.findById(redPlayer, function(err,red) {
@@ -216,6 +234,9 @@ Match.prototype.add = function(req, res){
                         success: true,
                         match: data
                     });
+//adding tweet code;
+			twitter_mod.update_status(tweet_status);
+
                 }
         });
 
