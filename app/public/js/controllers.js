@@ -65,7 +65,6 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 		console.log(data);
 		$scope.players = data;
 	});
-	$scope.predicate = '-rating';
 
 	$scope.form = {};
 	$scope.addPlayer = function () {
@@ -75,8 +74,7 @@ function PlayerListCtrl($scope, $http, $location, $route) {
 			$route.reload();
 		});
 	};
-
-	$scope.predicate = '-wins';
+	$scope.predicate = '-rating';
 
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
