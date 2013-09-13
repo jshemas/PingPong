@@ -288,7 +288,7 @@ Match.prototype.rebuildRatings = function(req, res) {
             });
         },
         matches: function(pcb){
-            that.config.Matches.find({deleted: false}, function(err,matches) {
+            that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(function(err,matches) {
                 pcb(null,matches);
             });
         }
@@ -317,18 +317,18 @@ var replayMatches = function(players,matches) {
         var blue = playerHash[match.bluePlayer];
 
         var ratingChange = adjustRatings(match.games,red,blue);
-		match.ratingChange = ratingChange;
-		match.redPlayerRating = red.rating;
-		match.bluePlayerRating = blue.rating;
+	match.ratingChange = ratingChange;
+	match.redPlayerRating = red.rating;
+	match.bluePlayerRating = blue.rating;
 
-		console.log("MATCH", match);
-		match.save(function(err, match){
-			if(err){
-				console.log("**** ERROR saving match");
-			}else{
-				console.log("*** Match Updated Successful", match);
-			}
-		});
+	console.log("MATCH", match);
+	match.save(function(err, match){
+	    if(err){
+		console.log("**** ERROR saving match");
+	    }else{
+		console.log("*** Match Updated Successful", match);
+	    }
+	});
     });
 
 	console.log("PLAYERS", players);
