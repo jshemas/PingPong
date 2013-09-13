@@ -107,7 +107,7 @@ User.prototype.singleJSON = function(req, res){
 			});
 		},
 		function(pcb){ // Get all Matches
-			that.config.Matches.find({$or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]}).sort({dateTime: -1}).execFind(function (err, matches) {
+			that.config.Matches.find({deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]}).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 				} else{
