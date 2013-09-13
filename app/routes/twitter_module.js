@@ -1,5 +1,7 @@
 var util = require('util'),
+    nconf = require('nconf'),
     twitter = require('twitter');
+
 var twit = new twitter({
     consumer_key: '0N1pSWYOZ8qlcZrQXZUCPg',
     consumer_secret: 'cYtwDyn6EYfKOZS1HSEadMiQaAm5Qx09BebOXBcw',
@@ -8,12 +10,11 @@ var twit = new twitter({
 });
 
 module.exports.update_status = function update_status(status_string){
-twit.verifyCredentials(function(data) {
-        console.log(util.inspect(data));
-    })
-    .updateStatus(status_string,
-        function(data) {
+    if (nconf.get('NODE_ENV') == 'prod') {
+	twit.verifyCredentials(function(data) {
             console.log(util.inspect(data));
-        }
-    );
+	}).updateStatus(status_string, function(data) {
+	    console.log(util.inspect(data));
+	});
+    }
 }
