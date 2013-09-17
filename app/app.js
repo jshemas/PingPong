@@ -7,8 +7,8 @@ var express = require('express'),
 	path = require('path'),
 	app = express(),
 	nconf = require('nconf'),
+	winston = require('winston'),
 	mongoose = require('mongoose');
-
 
 //shared server
 //var dbPath = 'mongodb://192.168.241.233/pingpong';
@@ -25,7 +25,6 @@ app.configure(function() {
 		.file({ file: __dirname + '/arena.' + nconf.get('NODE_ENV') + '.conf' });
 
 	console.log("using config: " + nconf.get('NODE_ENV'));
-
 	app.set('port', nconf.get('PORT') || 3000);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'ejs');
@@ -47,7 +46,11 @@ app.configure(function() {
 // development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
-}
+};
+
+// set up the logger
+winston.add(winston.transports.File, { filename: 'logs/infoLog.log' });
+winston.remove(winston.transports.Console);
 
 // import models
 var Players = require('./models/Player')(mongoose);

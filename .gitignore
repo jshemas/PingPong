@@ -9,7 +9,7 @@ lib-cov
 .idea
 
 pids
-logs
+
 results
 
 npm-debug.log

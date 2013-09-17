@@ -16,6 +16,7 @@
 		"async": "0.2.9",
 		"nodemailer": "0.5.2",
 		"cron": "1.0.1",
-		"twitter": "0.2.2"
+		"twitter": "0.2.2",
+		"winston": "0.7.2"
 	}
 }
