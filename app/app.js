@@ -39,7 +39,10 @@ app.configure(function() {
 	app.use(require('stylus').middleware(__dirname + '/public'));
 	app.use(express.static(path.join(__dirname, 'public')));
 	mongoose.connect(dbPath, function onMongooseError(err) {
-		if (err) throw err;
+		if(err){
+			winston.info(err);
+			throw err;
+		};
 	});
 });
 

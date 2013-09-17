@@ -1,4 +1,5 @@
 var async = require('async');
+var winston = require('winston');
 
 function User(config){
 	this.config = config;
@@ -9,6 +10,7 @@ User.prototype.list = function(req, res){
 	this.config.Players.find(function (err, players) {
 		if (err){ // TODO handle err
 			console.log(err)
+			winston.info(err);
 		} else {
 			res.render('players', { title: 'Players', players: players });
 		}
@@ -23,6 +25,7 @@ User.prototype.listJSON = function(req, res){
 			that.config.Players.find(function (err, players) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,players)
 				}
@@ -32,6 +35,7 @@ User.prototype.listJSON = function(req, res){
 			that.config.Matches.find({deleted: false}).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,matches)
 				}
@@ -101,6 +105,7 @@ User.prototype.singleJSON = function(req, res){
 			that.config.Players.findById(playerId, function(err, player) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,player)
 				}
@@ -110,6 +115,7 @@ User.prototype.singleJSON = function(req, res){
 			that.config.Matches.find({deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]}).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,matches)
 				}
@@ -203,6 +209,7 @@ User.prototype.edit = function(req, res){
 	this.config.Players.update({"_id": req.body.id}, req.body.data, function(err, player) {
 		if (err){ // TODO handle err
 			console.log(err)
+			winston.info(err);
 		} else{
 			res.json({"Success": true});
 		}
@@ -218,6 +225,7 @@ User.prototype.delete = function(req, res){
 			that.config.Players.remove({"_id": playerID}, function(err){
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null);
 				}

@@ -5,6 +5,7 @@ var elo = require('../public/js/elo');
 var twitter_mod = require('./twitter_module');
 var rec = require('./recommend');
 var mailer = require('../public/js/mailer');
+var winston = require('winston');
 
 function Match(config){
 	this.config = config;
@@ -20,6 +21,7 @@ Match.prototype.list = function(req, res){
 			that.config.Players.find(function (err, players) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,players)
 				}
@@ -30,6 +32,7 @@ Match.prototype.list = function(req, res){
 			that.config.Matches.find(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,matches)
 
@@ -65,6 +68,7 @@ Match.prototype.singleMatch = function(req, res){
 			that.config.Players.find(function (err, players) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,players)
 				}
@@ -189,6 +193,7 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
                 red.save(function(err, player) {
                     if (err) {
                         console.log('Save red player failed: ', err);
+                        winston.info(err);
                         pcb(err);
                     } else {
                         console.log('Red player rating updated');
@@ -200,6 +205,7 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
                 blue.save(function(err, player) {
                     if (err) {
                         console.log('Save blue player failed: ', err);
+                        winston.info(err);
                         pcb(err);
                     } else {
                         console.log('Blue player rating updated');
@@ -220,6 +226,7 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
                 newMatch.save(function (err, newMatch) {
                     if (err){ // TODO handle the error
                         console.log("Match Add Failed: ", err);
+                        winston.info(err);
                         pcb({success: false, error: err});
                     } else {
                         pcb(null);
@@ -228,6 +235,7 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
             }
             ], function(err, data) {
                 if (err) {
+                	winston.info(err);
                     res.json(500, err);
                 } else {
                     res.json({
@@ -253,6 +261,7 @@ Match.prototype.delete = function(req, res){
 		that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
 		    if (err){ // TODO handle err
 			console.log(err)
+			winston.info(err);
 		    } else{
 			pcb(null);
 		    }
@@ -324,6 +333,7 @@ var replayMatches = function(players,matches) {
 	console.log("MATCH", match);
 	match.save(function(err, match){
 	    if(err){
+	    winston.info(err);
 		console.log("**** ERROR saving match");
 	    }else{
 		console.log("*** Match Updated Successful", match);
@@ -336,6 +346,7 @@ var replayMatches = function(players,matches) {
     players.forEach(function(player,i) {
         player.save(function(err,player) {
             if (err) {
+            	winston.info(err);
                 console.log('Save player failed: ', err);
             } else {
                 console.log('Player rating updated');
@@ -390,6 +401,7 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 			that.config.Players.find(function (err, players) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,players)
 				}
@@ -399,6 +411,7 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
+					winston.info(err);
 				} else{
 					pcb(null,matches)
 				}
