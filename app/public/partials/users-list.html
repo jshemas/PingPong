@@ -39,9 +39,32 @@
 		<h3 id="editPlayerDialogLabel">Add a new player</h3>
 	</div>
 	<div class="modal-body">
-		First name: <input type="text" name="firstName" ng-model='form.firstName'><br>
-		Nickname: <input type="text" name="nickname" ng-model='form.nickname'><br>
-		Last name: <input type="text" name="lastName" ng-model='form.lastName'><br>
+		<form class='form-horizontal'>
+			<div class='control-group'>
+				<label class='control-label' for='firstName'>First Name</label>
+				<div class='controls'>
+					<input type="text" name="firstName" ng-model='form.firstName' id='fistName'>
+				</div>
+			</div>
+			<div class='control-group'>
+				<label class='control-label' for='nickname'>Nickname</label>
+				<div class='controls'>
+					<input type="text" name="nickname" ng-model='form.nickname' id='nickname'>
+				</div>
+			</div>
+			<div class='control-group'>
+				<label class='control-label' for='lastName'>Last Name</label>
+				<div class='controls'>
+					<input type="text" name="lastName" ng-model='form.lastName' id='lastName'>
+				</div>
+			</div>
+			<div class='control-group'>
+				<label class='control-label' for='email'>Email</label>
+				<div class='controls'>
+					<input type="text" name="email" ng-model="form.email">
+				</div>
+			</div>
+		</form>
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

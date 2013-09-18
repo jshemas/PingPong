@@ -179,10 +179,12 @@ User.prototype.add = function(req, res){
 	var firstName = req.body.firstName;
 	var lastName = req.body.lastName;
 	var nickname = req.body.nickname;
+	var email = req.body.email;
 	var newPlayer = new this.config.Players({
 		fname: firstName,
 		lname: lastName,
-		nickname: nickname
+		nickname: nickname,
+		email: email
 	});
 	newPlayer.save(function (err, newPlayer) {
 		if (err){ // TODO handle the error
