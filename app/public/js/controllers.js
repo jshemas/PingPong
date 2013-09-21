@@ -61,6 +61,10 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 
 		});
 	};
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	}
 }
 
 function PlayerListCtrl($scope, $http, $location, $route) {
