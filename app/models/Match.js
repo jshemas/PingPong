@@ -1,8 +1,8 @@
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
 	var matchSchema = mongoose.Schema({
-		redPlayer: { type: String, required: true },
-		bluePlayer: { type: String, required: true },
+		redPlayer: { type: mongoose.Schema.ObjectId, ref: 'Player', required: true },
+		bluePlayer: { type: mongoose.Schema.ObjectId, ref: 'Player', required: true },
 		games: [gameSchema],
 		createdDate: { type: Date, default: Date.now },
 		redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
