@@ -4,31 +4,46 @@
 </div>
 <h1>{{title}}</h1>
 <div>
-	<ul class="gamesPlayed" style="margin:0; list-style: none;">
+	<ul style="margin:0; list-style: none;">
 		<li ng-repeat="match in matches | filter:query | orderBy:predicate:reverse ">
-			<div class="row">
-				<div class="span5 center">
-					<a href="#/players/{{match.redPlayerDetails.0._id}}">
-						{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}
-					</a>
-					<br>
-					{{ match.redPlayerRating }} ({{match.ratingChange}})
+			<div class="row well" style="padding-bottom: 20px;">
+				<div class="span4 offset1">
+					<div class="pull-left">
+						<img ng-src="{{match.redPlayerDetails.0.gravatar + '&s=125'}}">
+					</div>
+					<div class="center">
+						<a href="#/players/{{match.redPlayerDetails.0._id}}">
+							{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}
+						</a>
+						<br>
+						{{ match.redPlayerRating }} ({{match.ratingChange}})
+						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
+							<div><span class="badge">{{game.redScore}}</span></div>
+						</div>
+					</div>
 				</div>
-				<div class="span2 center"><a href="#/matches/{{match._id}}">
-					{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}
-				</a></div>
-				<div class="span5 center">
-					<a href="#/players/{{match.bluePlayerDetails.0._id}}">
-						{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}
-					</a>
-					<br>
-					{{ match.bluePlayerRating }} ({{-match.ratingChange}})
+				<div class="span2 center">
+					<a href="#/matches/{{match._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
+					<br /><br />
+					<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
+						<div>GAME {{ $index +1 }}</div>
+					</div>
 				</div>
-			</div>
-			<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
-				<div class="span5 center"><span class="badge">{{game.redScore}}</span></div>
-				<div class="span2 center">Game {{ $index +1 }}</div>
-				<div class="span5 center"><span class="badge">{{game.blueScore}}</span></div>
+				<div class="span4">
+					<div class="pull-right">
+						<img ng-src="{{match.bluePlayerDetails.0.gravatar + '&s=125'}}">
+					</div>
+					<div class="center">
+						<a href="#/players/{{match.bluePlayerDetails.0._id}}">
+							{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}
+						</a>
+						<br>
+						{{ match.bluePlayerRating }} ({{-match.ratingChange}})
+						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
+							<div><span class="badge">{{game.blueScore}}</span></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</li>
 	</ul>

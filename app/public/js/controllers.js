@@ -34,6 +34,10 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
 			$route.reload();
 		});
 	};
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare : "badge-success" : "badge-important";
+	}
 
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }

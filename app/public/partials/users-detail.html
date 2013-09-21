@@ -50,7 +50,7 @@
 
 <div class="row">
 	<h3>Player's Recent Matches ({{matchData.length}})</h3>
-	<ul class="matchesPlayed" style="margin:0; list-style: none;">
+	<ul style="margin:0; list-style: none;">
 		<li ng-repeat="match in matchData | filter:query | orderBy:predicate" class="{{match.ratingChange | WinLoss}}">
 			<div class="row" style="padding-bottom: 20px;">
 				<div class="span4 offset1 redPlayer">
