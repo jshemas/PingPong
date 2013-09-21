@@ -50,7 +50,7 @@
 
 <div class="row">
 	<h3>Player's Recent Matches ({{matchData.length}})</h3>
-	<ul class="matchesPlayed" style="margin:0; list-style: none;">
+	<ul style="margin:0; list-style: none;">
 		<li ng-repeat="match in matchData | filter:query | orderBy:predicate" class="{{match.ratingChange | WinLoss}}">
 			<div class="row" style="padding-bottom: 20px;">
 				<div class="span4 offset1 redPlayer">
@@ -64,7 +64,7 @@
 						<br>
 						{{ match.redPlayerRating }} ({{match.ratingChange}})
 						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
-							<div><span class="badge">{{game.redScore}}</span></div>
+							<div><span class="badge {{badgeColor(game.redScore, game.blueScore)}}">{{game.redScore}}</span></div>
 						</div>
 					</div>
 				</div>
@@ -86,7 +86,7 @@
 						<br>
 						{{ match.bluePlayerRating }} ({{-match.ratingChange}})
 						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
-							<div><span class="badge">{{game.blueScore}}</span></div>
+							<div><span class="badge {{badgeColor(game.blueScore, game.redScore)}}">{{game.blueScore}}</span></div>
 						</div>
 					</div>
 				</div>
