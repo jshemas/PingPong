@@ -23,7 +23,7 @@ Match.prototype.list = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 
 			});
@@ -58,6 +58,15 @@ Match.prototype.list = function(req, res){
 	});
 };
 
+Match.prototype.collectionToJSON = function(players, cb) {
+	var docs = [];
+	async.each(players, function(player, f){
+		docs.push(player.toJSON({virtuals: true}));
+		f();
+	}, function(err) {
+		cb(err, docs);
+	});
+};
 
 Match.prototype.singleMatch = function(req, res){
 	var matchId = req.params.id;
@@ -70,7 +79,7 @@ Match.prototype.singleMatch = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 			});
 		},
@@ -293,7 +302,7 @@ Match.prototype.rebuildRatings = function(req, res) {
     async.parallel({
         players: function(pcb){
             that.config.Players.find(function(err,players) {
-                pcb(null,players);
+                that.collectionToJSON(players, pcb);
             });
         },
         matches: function(pcb){
@@ -403,7 +412,7 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 			});
 		},

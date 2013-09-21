@@ -7,13 +7,27 @@ function User(config){
 module.exports = User;
 
 User.prototype.list = function(req, res){
-	this.config.Players.find(function (err, players) {
+	var that = this;
+	that.config.Players.find(function (err, players) {
 		if (err){ // TODO handle err
 			console.log(err)
 			winston.info(err);
 		} else {
-			res.render('players', { title: 'Players', players: players });
+			that.collectionToJSon(players, function(err, docs){
+				if (err) res.render('players', { title: 'Players', players: players });
+				else res.render('players', { title: 'Players', players: docs });
+			});
 		}
+	});
+};
+
+User.prototype.collectionToJSON = function(players, cb) {
+	var docs = [];
+	async.each(players, function(player, f){
+		docs.push(player.toJSON({virtuals: true}));
+		f();
+	}, function(err) {
+		cb(err, docs);
 	});
 };
 
@@ -27,7 +41,7 @@ User.prototype.listJSON = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 			});
 		},
@@ -107,7 +121,7 @@ User.prototype.singleJSON = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,player)
+					pcb(null, player.toJSON({virtuals: true}));
 				}
 			});
 		},
@@ -198,7 +212,7 @@ User.prototype.add = function(req, res){
 			console.log("Player Added");
 			res.json({
 				success: true,
-				player: newPlayer
+				player: newPlayer.toJSON({virtual: true})
 			});
 		}
 	});

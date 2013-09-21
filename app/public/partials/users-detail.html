@@ -13,34 +13,38 @@
 				<li ng-click="showRemovePlayer()"><a href="" ><i class="icon-remove"></i> Delete!</a></li>
 			</ul>
 		</div>
-
-		<h3>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h3>
-
-		<table class="table">
-			<tbody>
-				<tr>
-					<th>Matches Played:</th>
-					<td>{{userData.matchesPlayed}}</td>
-				</tr>
-				<tr>
-					<th>Wins</th>
-					<td>{{userData.wins}}</td>
-				</tr>
-				<tr>
-					<th>Losses</th>
-					<td>{{userData.losses}}</td>
-				</tr>
-				<tr>
-					<th>Win %</th>
-					<td>{{userData.ratio}}%</td>
-				</tr>
-				<tr>
-					<th>Streak</th>
-					<td>{{userData.streak}}</td>
-				</tr>
-
-			</tbody>
-		</table>
+		<div>
+			<div>
+				<img ng-src="{{userData.gravatar + '&s=50'}}" class="pull-left" style="padding: 0 20px 10px 10px">
+				<h3>{{userData.fname}} "{{userData.nickname}}" {{userData.lname}}</h3>
+			</div>
+			
+			<table class="table">
+				<tbody>
+					<tr>
+						<th>Matches Played:</th>
+						<td>{{userData.matchesPlayed}}</td>
+					</tr>
+					<tr>
+						<th>Wins</th>
+						<td>{{userData.wins}}</td>
+					</tr>
+					<tr>
+						<th>Losses</th>
+						<td>{{userData.losses}}</td>
+					</tr>
+					<tr>
+						<th>Win %</th>
+						<td>{{userData.ratio}}%</td>
+					</tr>
+					<tr>
+						<th>Streak</th>
+						<td>{{userData.streak}}</td>
+					</tr>
+	
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 
