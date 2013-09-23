@@ -34,6 +34,10 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
 			$route.reload();
 		});
 	};
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	}
 
 	//$scope.orderProp = 'played_date'; TODO: We need to save the date played
 }
@@ -57,6 +61,10 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 
 		});
 	};
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	}
 }
 
 function PlayerListCtrl($scope, $http, $location, $route) {
@@ -121,5 +129,9 @@ function PlayerDetailCtrl($scope, $routeParams, $http, $location) {
 
 	$scope.showEditPlayer = function(){
 		$('#editPlayerDialog').modal({});
+	}
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
 	}
 }
