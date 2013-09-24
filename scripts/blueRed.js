@@ -33,7 +33,7 @@ db.matches.find().forEach(function(doc){
 			{
 				$set: { winner: new ObjectId(winnerId), loser: new ObjectId(loserId) }
 			}
-		)
+		);
 	}
 });
 
