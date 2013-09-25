@@ -154,73 +154,74 @@ Match.prototype.add = function(req, res){
 			blueScore: parseInt(req.body["game3BluePlayer"]) || 0
 		});
 	};
-var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
-var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
-
-
-var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
-+', '+games[1].redScore+'-'+games[1].blueScore;
-
-if(games.length > 2) {
-tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
-}else{
-//lost in 2 straight games.
-}
+	var gameData = findWinner(games, redPlayer, bluePlayer);
+	var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
+	var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
+	
+	
+	var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
+		+', '+games[1].redScore+'-'+games[1].blueScore;
+	
+	if (games.length > 2) {
+		tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
+	} else {
+		//lost in 2 straight games.
+	}
 
 
 
    var that = this;
     async.parallel({
-        red: function(pcb){
-            that.config.Players.findById(redPlayer, function(err,red) {
-                pcb(null,red);
+        winner: function(pcb){
+            that.config.Players.findById(gameData.winner, function(err,winner) {
+                pcb(null,winner);
             });
         },
-        blue: function(pcb){
-            that.config.Players.findById(bluePlayer, function(err,blue) {
-                pcb(null,blue);
+        loser: function(pcb){
+            that.config.Players.findById(gameData.loser, function(err,loser) {
+                pcb(null,loser);
             });
         },
     },
     function(error,args) {
-        var red = args.red;
-        var blue = args.blue;
-        var ratingChange = adjustRatings(games,red,blue);
+        var winner = args.winner;
+        var loser = args.loser;
+        var ratingChange = adjustRatings(gameData.games,winner,loser);
 
         // save the red and blue players with the ratings change and create the match
         async.parallel([
             function(pcb){
-                red.save(function(err, player) {
+                winner.save(function(err, player) {
                     if (err) {
-                        console.log('Save red player failed: ', err);
+                        console.log('Save winning player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Red player rating updated');
+                        console.log('Winning player rating updated');
                         pcb(null, player);
                     }
                 });
             },
             function(pcb){
-                blue.save(function(err, player) {
+                winner.save(function(err, player) {
                     if (err) {
-                        console.log('Save blue player failed: ', err);
+                        console.log('Save winning player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Blue player rating updated');
+                        console.log('Winning player rating updated');
                         pcb(null, player);
                     }
                 });
             },
             function(pcb){
                 var newMatch = new that.config.Matches({
-                    redPlayer: redPlayer,
-                    bluePlayer: bluePlayer,
-                    games: games,
+                    winner: gameData.winner,
+                    loser: gameData.loser,
+                    games: gameData.games,
                     ratingChange: ratingChange,
-                    bluePlayerRating: blue.rating,
-                    redPlayerRating: red.rating
+                    winnerRating: winner.rating,
+                    loserRating: loser.rating
                 });
 
                 newMatch.save(function (err, newMatch) {
@@ -233,19 +234,18 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
                     };
                 });
             }
-            ], function(err, data) {
-                if (err) {
-                	winston.info(err);
-                    res.json(500, err);
-                } else {
-                    res.json({
-                        success: true,
-                        match: data
-                    });
-//adding tweet code;
-			twitter_mod.update_status(tweet_status);
-
-                }
+		], function(err, data) {
+			if (err) {
+				winston.info(err);
+				res.json(500, err);
+			} else {
+				res.json({
+					success: true,
+					match: data
+				});
+				//adding tweet code;
+				twitter_mod.update_status(tweet_status);
+			}
         });
 
     });
@@ -355,37 +355,55 @@ var replayMatches = function(players,matches) {
     });
 };
 
-var adjustRatings = function(games,red,blue) {
-    var result = determineResult(games);
-    var ratingChange = elo.delta(red.rating, blue.rating, result);
-    console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
-    red.rating += ratingChange;
-    blue.rating -= ratingChange;
+var adjustRatings = function(games,winner,loser) {
+    var result = games.length === 2 ? 1 : 0.75;
+    var ratingChange = elo.delta(winner.rating, loser.rating, result);
+    console.log(winner.lname + ' gains ' + ratingChange + ' points from ' + loser.lname);
+    winner.rating += ratingChange;
+    loser.rating -= ratingChange;
 
-    console.log('New red rating: ' + red.rating);
-    console.log('New blue rating: ' + blue.rating);
+    console.log('New winner rating: ' + winner.rating);
+    console.log('New loser rating: ' + loser.rating);
 	return ratingChange;
 };
 
-var determineResult = function(games) {
-    var resultString = '';
-    games.forEach(function(game,i) {
-        resultString += whoWon(game);
-    });
-    if (resultString == 'RR') {
-        console.log('Red sweep');
-        return 1;
-    } else if (resultString == 'BB') {
-        console.log('Blue sweep');
-        return 0;
-    } else if (resultString.slice(-1) == 'R') {
-        console.log('Red wins split match');
-        return 0.75;
-    } else {
-        console.log('Blue wins split match');
-        return 0.25;
-    }
+var findWinner = function(games, red, blue) {
+	var last = games[games.length - 1];
+	var whoWon = whoWon(last);
+	var newGames = [];
+	games.forEach(function(game, i){
+		var newGame = {
+			winnerScore: whoWon === 'R' ? game.redScore : game.blueScore,
+			loserScore: whoWon === 'B' ? game.blueScore : game.redScore
+		};
+		newGames.push(newGame);
+	});
+	return {
+		winner: whoWon === 'R' ? red : blue,
+		loser: whoWon === 'B' ? blue : red,
+		games: newGames
+	};
 };
+
+// var determineResult = function(games) {
+    // var resultString = '';
+    // games.forEach(function(game,i) {
+        // resultString += whoWon(game);
+    // });
+    // if (resultString == 'RR') {
+        // console.log('Red sweep');
+        // return 1;
+    // } else if (resultString == 'BB') {
+        // console.log('Blue sweep');
+        // return 0;
+    // } else if (resultString.slice(-1) == 'R') {
+        // console.log('Red wins split match');
+        // return 0.75;
+    // } else {
+        // console.log('Blue wins split match');
+        // return 0.25;
+    // }
+// };
 
 var whoWon = function(game) {
     if (game.redScore > game.blueScore) {
