@@ -189,7 +189,7 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
             that.config.Players.findById(bluePlayer, function(err,blue) {
                 pcb(null,blue);
             });
-        },
+        }
     },
     function(error,args) {
         var red = args.red;

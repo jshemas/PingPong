@@ -10,6 +10,7 @@ var dbPath = 'mongodb://localhost/local';
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 mongoose.connect(dbPath, function onMongooseError(err) {
+	console.log("MONGOOSE ERROR", err);
 	if (err) throw err;
 });
 
@@ -17,6 +18,7 @@ mongoose.connect(dbPath, function onMongooseError(err) {
 var baseURL = "http://localhost:3000/";
 var Players = require('../app/models/Player.js')(mongoose);
 var Matches = require('../app/models/Match.js')(mongoose);
+var Teams = require('../app/models/Team.js')(mongoose);
 
 //sometimes error don't show in the log...
 //http://stackoverflow.com/questions/8794008/no-stack-trace-for-jasmine-node-errors
@@ -94,11 +96,14 @@ describe('Add Player: ', function (done) {
 			.post('users')
 			.send(userData)
 			.end( function(err, result) {
+//				console.log("ADD player result", result.res.body);
 				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				userID1 = result.res.body.player["_id"];
 				// Check player is in database
+				console.log("PLayerID", userID1);
 				Players.Players.findById(userID1, function(error, player){
+					console.log("ERR", error);
 					expect(player).not.toBeNull;
 					console.log("PLAYER", player);
 					expect(player.fname, "corey");
@@ -127,13 +132,14 @@ describe('Add Player: ', function (done) {
 describe('Add Game: ', function (done) {
 	it('Adds a game to the database', function(done) {
 		//update the test game data with the new users we added
-		gameData.redPlayer._id = userID1;
-		gameData.bluePlayer._id = userID2;
+		gameData.redPlayer['_id'] = userID1;
+		gameData.bluePlayer['_id'] = userID2;
 		request(baseURL)
 			.post('matches')
 			.send(gameData)
 			.end( function(err, result) {
 				// response from our service
+				console.log(result.body);
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.success).to.be(true);
 				gameID = result.res.body.match["_id"];
@@ -174,53 +180,105 @@ describe('Add Game: ', function (done) {
 			});
 	});
 });
+//
+//describe("Remove Game: ", function(done){
+//	it('Should mark the game as removed.', function(done){
+//		request(baseURL)
+//			.get('matches/' + gameID + '/delete')
+//			.send()
+//			.end( function(err, results ) {
+//				// Check game is in database
+//				Matches.Match.find({"_id": gameID, "deleted": true}, function(error, match){
+//					var numberOfMatches = match.length;
+//					expect(numberOfMatches).to.be(1); // The game we deleted should be marked as deleted
+//				});
+//				done();
+//			});
+//	});
+//});
+//
+//describe('Remove Player: ', function (done) {
+//	it('Removes player One from database', function(done) {
+//		request(baseURL)
+//			.get('users/' + userID1 + '/delete')
+//			.send()
+//			.end( function(err, result) {
+//				// response from our service
+//				expect(result.res.statusCode).to.be(200);
+//				expect(result.res.body.Success).to.be(true);
+//				Players.Players.find({"_id": userID1}, function(error, player){
+//					expect(player.length).to.be(0);
+//				});
+//				done();
+//			});
+//	});
+//	it('Removes player Two from database', function(done) {
+//		request(baseURL)
+//			.get('users/' + userID2 + '/delete')
+//			.send()
+//			.end( function(err, result) {
+//				// response from our service
+//				expect(result.res.statusCode).to.be(200);
+//				expect(result.res.body.Success).to.be(true);
+//				Players.Players.find({"_id": userID2}, function(error, player){
+//					expect(player.length).to.be(0);
+//				});
+//				done();
+//			});
+//	});
+//});
 
-describe("Remove Game: ", function(done){
-	it('Should mark the game as removed.', function(done){
+var teamData = {
+	players: ['51f3f91a18d69e141e000001', '52168f59196ac38af7000001'],
+	TeamName: "The All-Stars"
+
+}
+
+describe('Retrieving A list of teams', function(done){
+	it('Should return the existing teams', function(done){
 		request(baseURL)
-			.get('matches/' + gameID + '/delete')
+			.get('teams/')
 			.send()
-			.end( function(err, results ) {
-				// Check game is in database
-				Matches.Match.find({"_id": gameID, "deleted": true}, function(error, match){
-					var numberOfMatches = match.length;
-					expect(numberOfMatches).to.be(1); // The game we deleted should be marked as deleted
-				});
+			.end( function(err, result) {
+				// response from our service
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body.success).to.be(true);
 				done();
 			});
 	});
 });
 
-describe('Remove Player: ', function (done) {
-	it('Removes player One from database', function(done) {
+describe('Adding a new team', function(done){
+	it('Should add a new team to the database', function(done){
 		request(baseURL)
-			.get('users/' + userID1 + '/delete')
-			.send()
+			.post('teams/')
+			.send(teamData)
 			.end( function(err, result) {
 				// response from our service
 				expect(result.res.statusCode).to.be(200);
-				expect(result.res.body.Success).to.be(true);
-				Players.Players.find({"_id": userID1}, function(error, player){
-					expect(player.length).to.be(0);
+				console.log(result.res.body)
+				expect(result.res.body.success).to.be(true);
+				expect(result.res.body.team["_id"]).not.to.be(null);
+
+				console.log("ID", result.res.body.team["_id"]);
+				var teamID = result.res.body.team["_id"];
+				Teams.Teams.findById(teamID, function(error, team){
+					console.log("TEAM QUERY", team);
+					expect(team).not.to.be(null);
+					done();
 				});
-				done();
-			});
-	});
-	it('Removes player Two from database', function(done) {
-		request(baseURL)
-			.get('users/' + userID2 + '/delete')
-			.send()
-			.end( function(err, result) {
-				// response from our service
-				expect(result.res.statusCode).to.be(200);
-				expect(result.res.body.Success).to.be(true);
-				Players.Players.find({"_id": userID2}, function(error, player){
-					expect(player.length).to.be(0);
-				});
-				done();
+
+//				Matches.Match.findById('5214479972391edc50000001', function(error, match){
+//					console.log("MATCH", match);
+//					done();
+//				});
+
+
+
+
 			});
 	});
 });
 
 //need to close the mongo connection, otherwise the tests will never finish.
-mongoose.connection.close();
+//mongoose.connection.close();

@@ -5,7 +5,9 @@ module.exports = function(mongoose) {
 		bluePlayer: { type: String, required: true },
 		games: [gameSchema],
 		createdDate: { type: Date, default: Date.now },
-		redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
+		//redPlayerDetails: [playerSchema], // TODO: Get these out of arrays
+		//redPlayerDetails: { type:mongoose.Schema.Types.ObjectId, ref:'playerSchema', required: false },
+		//user: { type:mongoose.Schema.Types.ObjectId, ref:'User', required: true },
 		bluePlayerDetails: [playerSchema], // TODO: Get these out of arrays
 		deleted: { type: Boolean, default: false },
 		removedDate: { type: Date },
