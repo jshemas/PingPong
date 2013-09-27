@@ -121,7 +121,11 @@ User.prototype.singleJSON = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null, player.toJSON({virtuals: true}));
+					if(player){	
+						pcb(null, player.toJSON({virtuals: true}));
+					} else {
+						pcb(null, null);
+					};
 				}
 			});
 		},
@@ -136,54 +140,58 @@ User.prototype.singleJSON = function(req, res){
 			});
 		}
 	], function(error, args){
-		var player = args[0];
-		var myMatches = args[1];
+		if(args[0] && args[1]) {
+			var player = args[0];
+			var myMatches = args[1];
 
-		var wins = 0,
-			losses = 0,
-			matchesPlayed = 0,
-			ratio = 500,
-			currentStreak = {
-				type: "?",
-				count: 0
-			};
+			var wins = 0,
+				losses = 0,
+				matchesPlayed = 0,
+				ratio = 500,
+				currentStreak = {
+					type: "?",
+					count: 0
+				};
 
-		myMatches.forEach(function(match, i){
+			myMatches.forEach(function(match, i){
 
-			var finalGame = ( typeof match.games[2] == "undefined" ) ? match.games[1] : match.games[2];
-			if( player._id == match.bluePlayer){
-				matchesPlayed++;
-				if(finalGame.redScore > finalGame.blueScore){
-					losses++;
-					currentStreak = calculateStreak(currentStreak, "L");
-				}else{
-					wins++;
-					currentStreak = calculateStreak(currentStreak, "W");
+				var finalGame = ( typeof match.games[2] == "undefined" ) ? match.games[1] : match.games[2];
+				if( player._id == match.bluePlayer){
+					matchesPlayed++;
+					if(finalGame.redScore > finalGame.blueScore){
+						losses++;
+						currentStreak = calculateStreak(currentStreak, "L");
+					}else{
+						wins++;
+						currentStreak = calculateStreak(currentStreak, "W");
+					}
+
+				}else if( player._id == match.redPlayer ){
+					matchesPlayed++;
+					if(finalGame.redScore > finalGame.blueScore){
+						wins++;
+						currentStreak = calculateStreak(currentStreak, "W");
+					}else{
+						losses++;
+						currentStreak = calculateStreak(currentStreak, "L");
+					}
 				}
+			});
 
-			}else if( player._id == match.redPlayer ){
-				matchesPlayed++;
-				if(finalGame.redScore > finalGame.blueScore){
-					wins++;
-					currentStreak = calculateStreak(currentStreak, "W");
-				}else{
-					losses++;
-					currentStreak = calculateStreak(currentStreak, "L");
-				}
-			}
-		});
-
-		player.ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
-		player.ratio = (parseFloat(player.ratio) * 100).toFixed(1);
-		player.wins = wins;
-		player.losses = losses;
-		player.matchesPlayed = matchesPlayed;
-		player.streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
+			player.ratio = ((wins + losses) == 0) ? 0 : (wins / (wins + losses));
+			player.ratio = (parseFloat(player.ratio) * 100).toFixed(1);
+			player.wins = wins;
+			player.losses = losses;
+			player.matchesPlayed = matchesPlayed;
+			player.streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
 
 
 
-		//console.log("My player", player);
-		res.json(player);
+			//console.log("My player", player);
+			res.json(player);
+		} else {
+			res.json({"Success": false, "Error": 'no record found'});
+		}
 	});
 
 
