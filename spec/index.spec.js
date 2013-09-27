@@ -6,13 +6,6 @@ var request = require('../app/node_modules/supertest'),
 
 console.log("Starting Tests");
 
-var dbPath = 'mongodb://localhost/local';
-var Schema = mongoose.Schema;
-var ObjectId = Schema.ObjectId;
-mongoose.connect(dbPath, function onMongooseError(err) {
-	if (err) throw err;
-});
-
 //enter your domain
 var baseURL = "http://localhost:3000/";
 var Players = require('../app/models/Player.js')(mongoose);
@@ -252,6 +245,3 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 });
-
-//need to close the mongo connection, otherwise the tests will never finish.
-mongoose.connection.close();
