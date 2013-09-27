@@ -1,15 +1,8 @@
 var request = require('../app/node_modules/supertest'),
-	mongoose = require( '../app/node_modules/mongoose'),
-	expect = require('../app/node_modules/expect.js'),
-	User = require('../app/routes/user'),
-	Match = require('../app/routes/match');
+	app = require('../app/app');
+	expect = require('../app/node_modules/expect.js');
 
 console.log("Starting Tests");
-
-//enter your domain
-var baseURL = "http://localhost:3000/";
-var Players = require('../app/models/Player.js')(mongoose);
-var Matches = require('../app/models/Match.js')(mongoose);
 
 //sometimes error don't show in the log...
 //http://stackoverflow.com/questions/8794008/no-stack-trace-for-jasmine-node-errors
@@ -53,7 +46,7 @@ var gameID;
 
 describe('GET - Load Some Pages:', function (done) {
 	it('Should load the homepage', function(done) {
-		request(baseURL)
+		request(app)
 			.get('')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -61,16 +54,16 @@ describe('GET - Load Some Pages:', function (done) {
 			});
 	});
 	it('Should load the games', function(done) {
-		request(baseURL)
-			.get('matches/json')
+		request(app)
+			.get('/matches/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				done();
 			});
 	});
 	it('Should load the users', function(done) {
-		request(baseURL)
-			.get('users/json')
+		request(app)
+			.get('/users/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				done();
@@ -80,8 +73,8 @@ describe('GET - Load Some Pages:', function (done) {
 
 describe('Add Player: ', function (done) {
 	it('Adds player One to the database', function(done) {
-		request(baseURL)
-			.post('users')
+		request(app)
+			.post('/users')
 			.send(userData)
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -90,8 +83,8 @@ describe('Add Player: ', function (done) {
 			});
 	});
 	it('make sure player one exists', function(done) {
-		request(baseURL)
-			.get('users/'+userID1+'/json')
+		request(app)
+			.get('/users/'+userID1+'/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body._id).to.be(userID1);
@@ -99,8 +92,8 @@ describe('Add Player: ', function (done) {
 			});
 	});
 	it('Adds player Two to the database', function(done) {
-		request(baseURL)
-			.post('users')
+		request(app)
+			.post('/users')
 			.send(userData)
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -109,8 +102,8 @@ describe('Add Player: ', function (done) {
 			});
 	});
 	it('make sure player two exists', function(done) {
-		request(baseURL)
-			.get('users/'+userID2+'/json')
+		request(app)
+			.get('/users/'+userID2+'/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body._id).to.be(userID2);
@@ -124,8 +117,8 @@ describe('Add Game: ', function (done) {
 		//update the test game data with the new users we added
 		gameData.redPlayer._id = userID1;
 		gameData.bluePlayer._id = userID2;
-		request(baseURL)
-			.post('matches')
+		request(app)
+			.post('/matches')
 			.send(gameData)
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -143,8 +136,8 @@ describe('Add Game: ', function (done) {
 			});
 	});
 	it('make sure the new game exists', function(done) {
-		request(baseURL)
-			.get('matches/'+gameID+'/json')
+		request(app)
+			.get('/matches/'+gameID+'/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body._id).to.be(gameID);
@@ -155,8 +148,8 @@ describe('Add Game: ', function (done) {
 		//update the test game data with the new users we added
 		gameData.redPlayer._id = userID1;
 		gameData.bluePlayer._id = userID1;
-		request(baseURL)
-			.post('matches')
+		request(app)
+			.post('/matches')
 			.send(gameData)
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -168,8 +161,8 @@ describe('Add Game: ', function (done) {
 		//update the test game data with the new users we added
 		gameData.redPlayer._id = '';
 		gameData.bluePlayer._id = '';
-		request(baseURL)
-			.post('matches')
+		request(app)
+			.post('/matches')
 			.send(gameData)
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -181,21 +174,16 @@ describe('Add Game: ', function (done) {
 
 describe("Remove Game: ", function(done){
 	it('Should mark the game as removed.', function(done){
-		request(baseURL)
-			.get('matches/' + gameID + '/delete')
-			.send()
-			.end( function(err, results ) {
-				// Check game is in database
-				Matches.Match.find({"_id": gameID, "deleted": true}, function(error, match){
-					var numberOfMatches = match.length;
-					expect(numberOfMatches).to.be(1); // The game we deleted should be marked as deleted
-				});
+		request(app)
+			.get('/matches/' + gameID + '/delete')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
 				done();
 			});
 	});
 	it('make sure the new game was deleted', function(done) {
-		request(baseURL)
-			.get('matches/'+gameID+'/json')
+		request(app)
+			.get('/matches/'+gameID+'/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body._id).to.be(gameID);
@@ -207,8 +195,8 @@ describe("Remove Game: ", function(done){
 
 describe('Remove Player: ', function (done) {
 	it('Removes player One from database', function(done) {
-		request(baseURL)
-			.get('users/' + userID1 + '/delete')
+		request(app)
+			.get('/users/' + userID1 + '/delete')
 			.send()
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -217,8 +205,8 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 	it('make sure player one was deleted', function(done) {
-		request(baseURL)
-			.get('users/'+userID1+'/json')
+		request(app)
+			.get('/users/'+userID1+'/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.Success).to.be(false);
@@ -226,8 +214,8 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 	it('Removes player two from database', function(done) {
-		request(baseURL)
-			.get('users/' + userID2 + '/delete')
+		request(app)
+			.get('/users/' + userID2 + '/delete')
 			.send()
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
@@ -236,8 +224,8 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 	it('make sure player two was deleted', function(done) {
-		request(baseURL)
-			.get('users/'+userID2+'/json')
+		request(app)
+			.get('/users/'+userID2+'/json')
 			.end( function(err, result) {
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.Success).to.be(false);
@@ -245,3 +233,4 @@ describe('Remove Player: ', function (done) {
 			});
 	});
 });
+
