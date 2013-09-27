@@ -63,7 +63,6 @@ describe('GET - Load Some Pages:', function (done) {
 		request(baseURL)
 			.get('')
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				done();
 			});
@@ -72,7 +71,6 @@ describe('GET - Load Some Pages:', function (done) {
 		request(baseURL)
 			.get('matches/json')
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				done();
 			});
@@ -81,7 +79,6 @@ describe('GET - Load Some Pages:', function (done) {
 		request(baseURL)
 			.get('users/json')
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				done();
 			});
@@ -94,31 +91,36 @@ describe('Add Player: ', function (done) {
 			.post('users')
 			.send(userData)
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				userID1 = result.res.body.player["_id"];
-				// Check player is in database
-				Players.Players.findById(userID1, function(error, player){
-					expect(player).not.toBeNull;
-					console.log("PLAYER", player);
-					expect(player.fname, "corey");
-					done();
-				});
-
+				done();
 			});
 	});
-	it('Adds a player Two to the database', function(done) {
+	it('make sure player one exists', function(done) {
+		request(baseURL)
+			.get('users/'+userID1+'/json')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body._id).to.be(userID1);
+				done();
+			});
+	});
+	it('Adds player Two to the database', function(done) {
 		request(baseURL)
 			.post('users')
 			.send(userData)
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				userID2 = result.res.body.player["_id"];
-				// Check player is in database
-				Players.Players.find({"_id": userID1}, function(error, player){
-					expect(player.length).to.be(1);
-				});
+				done();
+			});
+	});
+	it('make sure player two exists', function(done) {
+		request(baseURL)
+			.get('users/'+userID2+'/json')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body._id).to.be(userID2);
 				done();
 			});
 	});
@@ -133,15 +135,26 @@ describe('Add Game: ', function (done) {
 			.post('matches')
 			.send(gameData)
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.success).to.be(true);
-				gameID = result.res.body.match["_id"];
-				// Check game is in database
-				Matches.Match.find({"_id": gameID}, function(error, match){
-					var numberOfMatches = match.length;
-					expect(numberOfMatches).to.be(1); // The 1 game we just added should be present
-				});
+				//the return obj has 3 _ids in it
+				//we need to find which one is game ID
+				if(result.res.body.match[0].delete){
+					gameID = result.res.body.match[0]._id;
+				} else if(result.res.body.match[1].delete) {
+					gameID = result.res.body.match[1]._id;
+				} else {
+					gameID = result.res.body.match[2]._id;
+				};
+				done();
+			});
+	});
+	it('make sure the new game exists', function(done) {
+		request(baseURL)
+			.get('matches/'+gameID+'/json')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body._id).to.be(gameID);
 				done();
 			});
 	});
@@ -153,7 +166,6 @@ describe('Add Game: ', function (done) {
 			.post('matches')
 			.send(gameData)
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.success).to.be(false);
 				done();
@@ -167,7 +179,6 @@ describe('Add Game: ', function (done) {
 			.post('matches')
 			.send(gameData)
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.success).to.be(false);
 				done();
@@ -189,6 +200,16 @@ describe("Remove Game: ", function(done){
 				done();
 			});
 	});
+	it('make sure the new game was deleted', function(done) {
+		request(baseURL)
+			.get('matches/'+gameID+'/json')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body._id).to.be(gameID);
+				expect(result.res.body.deleted).to.be(true);
+				done();
+			});
+	});
 });
 
 describe('Remove Player: ', function (done) {
@@ -197,26 +218,36 @@ describe('Remove Player: ', function (done) {
 			.get('users/' + userID1 + '/delete')
 			.send()
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.Success).to.be(true);
-				Players.Players.find({"_id": userID1}, function(error, player){
-					expect(player.length).to.be(0);
-				});
 				done();
 			});
 	});
-	it('Removes player Two from database', function(done) {
+	it('make sure player one was deleted', function(done) {
+		request(baseURL)
+			.get('users/'+userID1+'/json')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body.Success).to.be(false);
+				done();
+			});
+	});
+	it('Removes player two from database', function(done) {
 		request(baseURL)
 			.get('users/' + userID2 + '/delete')
 			.send()
 			.end( function(err, result) {
-				// response from our service
 				expect(result.res.statusCode).to.be(200);
 				expect(result.res.body.Success).to.be(true);
-				Players.Players.find({"_id": userID2}, function(error, player){
-					expect(player.length).to.be(0);
-				});
+				done();
+			});
+	});
+	it('make sure player two was deleted', function(done) {
+		request(baseURL)
+			.get('users/'+userID2+'/json')
+			.end( function(err, result) {
+				expect(result.res.statusCode).to.be(200);
+				expect(result.res.body.Success).to.be(false);
 				done();
 			});
 	});
