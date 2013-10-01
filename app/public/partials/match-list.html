@@ -63,9 +63,9 @@
 			<table class="table table-striped center">
 				<tbody>
 					<tr>
-						<td><select ng-options="player.lname for player in players" name="redPlayer" id="redPlayer" ng-model='form.redPlayer' required></select></td>
+						<td><select ng-options="player.fname for player in players | orderBy:'fname'" name="redPlayer" id="redPlayer" ng-model='form.redPlayer' required></select></td>
 						<th>vs</th>
-						<td><select ng-options="player.lname for player in players" name="redPlayer" id="bluePlayer" ng-model='form.bluePlayer' required></select></td>
+						<td><select ng-options="player.fname for player in players | orderBy:'fname'" name="bluePlayer" id="bluePlayer" ng-model='form.bluePlayer' required></select></td>
 					</tr>
 					<tr>
 						<td><input name="game1RedPlayer" ng-model='form.game1RedPlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"></td>
