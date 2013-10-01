@@ -5,7 +5,7 @@ var express = require('express'),
 	http = require('http'),
 	expressLayouts = require('express-ejs-layouts'),
 	path = require('path'),
-	app = express(),
+	app = module.exports = express(),
 	nconf = require('nconf'),
 	winston = require('winston'),
 	mongoose = require('mongoose');

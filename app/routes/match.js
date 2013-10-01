@@ -89,18 +89,26 @@ Match.prototype.singleMatch = function(req, res){
 				pcb(null, matchInfo);
 			});
 		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var matchDetails = args[1];
-		myPlayers.forEach(function(player, j){
-			if(player["_id"] == matchDetails.redPlayer){
-				matchDetails.redPlayerDetails = player;
-			}
-			if(player["_id"] == matchDetails.bluePlayer){
-				matchDetails.bluePlayerDetails = player;
-			}
-		});
-		res.json(matchDetails)
+	], function(err, args){
+		//we should make sure it found something first...
+		if(err){
+			res.json({"Success": false, "Error": err});
+		}
+		if(args[0] && args[1]){
+			var myPlayers = args[0];
+			var matchDetails = args[1];
+			myPlayers.forEach(function(player, j){
+				if(player["_id"] == matchDetails.redPlayer){
+					matchDetails.redPlayerDetails = player;
+				}
+				if(player["_id"] == matchDetails.bluePlayer){
+					matchDetails.bluePlayerDetails = player;
+				}
+			});
+			res.json(matchDetails)
+		} else {
+			res.json({"Success": false, "Error": 'no record found'});
+		}
 	});
 };
 
@@ -238,15 +246,17 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
                         winston.info(err);
                         pcb({success: false, error: err});
                     } else {
-                        pcb(null);
+                        pcb(null, newMatch.toJSON({virtual: true}));
                     };
                 });
             }
             ], function(err, data) {
+            	console.log(data);
                 if (err) {
                 	winston.info(err);
                     res.json(500, err);
                 } else {
+
                     res.json({
                         success: true,
                         match: data
@@ -291,7 +301,8 @@ Match.prototype.delete = function(req, res){
 		if(error){
 			res.json({"Success": false, "Error": error});
 		}else{
-                    replayMatches(args.players,args.matches);
+			//this is broken, i'm not sure what your trying to do here
+            //replayMatches(args.players,args.matches);
 		    res.json({"Success": true});
 		}
 	});
