@@ -36,6 +36,19 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
 	};
 };
 
+function MatchDeleteListCtrl($scope, $http, $location, $route, $rootScope) {
+	$scope.title = "Deleted Matches Played";
+	$rootScope.title = "Deleted Matches Played";
+	$scope.predicate = '-createdDate';
+
+	$http.get('/matches/delList/json').success(function(data) {
+		$scope.matches = data;
+	});
+	$http.get('/users/json').success(function(data) {
+		$scope.players = data;
+	});
+};
+
 function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 	$scope.title = "Match Details";
 	$scope.matchId = $routeParams.matchId;
