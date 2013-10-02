@@ -20,6 +20,14 @@ module.exports = function(mongoose) {
 		var email = this.email || 'notanemail@manta.com';
 		return 'http://www.gravatar.com/avatar/' + md5(email.trim().toLowerCase()) + '?d=mm';
 	});
+	
+	playerSchema.virtual('displayName').get(function(){
+		return this.fname + ' ' + this.nickname + ' ' + this.lname;
+	});
+	
+	playerSchema.virtual('fullName').get(function(){
+		return this.fname + ' ' + this.lname;
+	});
 
 	var Players = mongoose.model('players', playerSchema);
 

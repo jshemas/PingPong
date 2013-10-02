@@ -1,7 +1,7 @@
 'use strict';
 /* Controllers */
 
-function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
+function MatchListCtrl($scope, $http, $location, $route, $rootScope, alertService) {
 	$scope.title = "Matches Played";
 	$rootScope.title = "Matches Played";
 	$scope.predicate = '-createdDate';
@@ -27,7 +27,15 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope) {
 
 	$scope.addMatch = function () {
 		$http.post('/matches', $scope.form).success(function(data) {
-			$route.reload();
+			if(data.success == true){
+				$route.reload();
+			} else {
+				if(data.error && data.error == 'same player ID'){
+					alertService.add("error", "You can't play against yourself!");
+				} else {
+					alertService.add("error", "Something Wrong!");
+				}
+			};
 		});
 	};
 	
@@ -123,3 +131,12 @@ function PlayerDetailCtrl($scope, $routeParams, $http, $location) {
 		return main > compare ? "badge-success" : "badge-important";
 	};
 };
+
+function RootCtrl($rootScope, $location, alertService) {
+	$rootScope.changeView = function(view) {
+		$location.path(view);
+	};
+	// root binding for alertService
+	$rootScope.closeAlert = alertService.closeAlert; 
+}
+RootCtrl.$inject = ['$scope', '$location', 'alertService'];

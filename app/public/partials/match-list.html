@@ -2,6 +2,9 @@
 	Search: <input ng-model="query">
 	<a href="#addGameDialog" data-toggle="modal" class="btn btn-primary">Add Match</a>
 </div>
+<div>
+	<alert class="errorDisplay" ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{ alert.msg }}</alert>
+</div>
 <h1>{{title}}</h1>
 <div>
 	<ul style="margin:0; list-style: none;">
@@ -63,9 +66,9 @@
 			<table class="table table-striped center">
 				<tbody>
 					<tr>
-						<td><select ng-options="player.fname for player in players | orderBy:'fname'" name="redPlayer" id="redPlayer" ng-model='form.redPlayer' required></select></td>
+						<td><select ng-options="player.fullName for player in players | orderBy:'fname'" name="redPlayer" id="redPlayer" ng-model='form.redPlayer' required></select></td>
 						<th>vs</th>
-						<td><select ng-options="player.fname for player in players | orderBy:'fname'" name="bluePlayer" id="bluePlayer" ng-model='form.bluePlayer' required></select></td>
+						<td><select ng-options="player.fullName for player in players | orderBy:'fname'" name="bluePlayer" id="bluePlayer" ng-model='form.bluePlayer' required></select></td>
 					</tr>
 					<tr>
 						<td><input name="game1RedPlayer" ng-model='form.game1RedPlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"></td>
