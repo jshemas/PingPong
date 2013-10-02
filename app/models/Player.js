@@ -12,8 +12,8 @@ module.exports = function(mongoose) {
 		matchesPlayed: { type: String, required: false },
 		streak: { type: String, required: false },
 		ratio: { type: String, required: false },
-		createdDate: { type: Date, default: Date.now },
-	    rating: { type: Number, default: 1200 }
+		createdDate: { type: Date, 'default': Date.now },
+	    rating: { type: Number, 'default': 1200 }
 	});
 	
 	playerSchema.virtual('gravatar').get(function(){

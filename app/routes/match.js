@@ -240,23 +240,22 @@ var replayMatches = function(players,matches) {
         playerHash[player._id] = player;
     });
     matches.forEach(function(match,i) {
-        var red = playerHash[match.redPlayer];
-        var blue = playerHash[match.bluePlayer];
+        var winner = playerHash[match.winner];
+        var loser = playerHash[match.loser];
 
-        var ratingChange = adjustRatings(match.games,red,blue);
-	match.ratingChange = ratingChange;
-	match.redPlayerRating = red.rating;
-	match.bluePlayerRating = blue.rating;
-
-	console.log("MATCH", match);
-	match.save(function(err, match){
-	    if(err){
-	    winston.info(err);
-		console.log("**** ERROR saving match");
-	    }else{
-		console.log("*** Match Updated Successful", match);
-	    }
-	});
+        match.ratingChange = adjustRatings(match.games,winner,loser);
+		match.winnerRating = winner.rating;
+		match.loserRating = loser.rating;
+	
+		console.log("MATCH", match);
+		match.save(function(err, match){
+		    if(err){
+		    winston.info(err);
+			console.log("**** ERROR saving match");
+		    }else{
+			console.log("*** Match Updated Successful", match);
+		    }
+		});
     });
 
 	console.log("PLAYERS", players);
@@ -302,26 +301,6 @@ var findWinner = function(games, red, blue) {
 		games: newGames
 	};
 };
-
-// var determineResult = function(games) {
-    // var resultString = '';
-    // games.forEach(function(game,i) {
-        // resultString += whoWon(game);
-    // });
-    // if (resultString == 'RR') {
-        // console.log('Red sweep');
-        // return 1;
-    // } else if (resultString == 'BB') {
-        // console.log('Blue sweep');
-        // return 0;
-    // } else if (resultString.slice(-1) == 'R') {
-        // console.log('Red wins split match');
-        // return 0.75;
-    // } else {
-        // console.log('Blue wins split match');
-        // return 0.25;
-    // }
-// };
 
 var whoWon = function(game) {
     if (game.redScore > game.blueScore) {
