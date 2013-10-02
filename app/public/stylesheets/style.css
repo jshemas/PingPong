@@ -74,3 +74,11 @@ input[type="number"].ng-invalid {
     padding: 0;
   }
 }
+/************************
+*    Error STYLES
+*************************/
+.errorDisplay {
+  background-color: #f00;
+  padding: 5px;
+  font-size: 20px;
+}
