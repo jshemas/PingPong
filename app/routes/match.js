@@ -190,39 +190,14 @@ Match.prototype.add = function(req, res){
 };
 
 Match.prototype.delete = function(req, res){
-	var matchID = req.params.id;
-	var that = this;
-
-	async.parallel({
-	    match: function(pcb){ // Remove Player
-		that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
-		    if (err){ // TODO handle err
+	this.config.Matches.update({"_id": req.params.id}, {deleted: true, removedDate: new Date()}, function(err){
+	    if (err){ // TODO handle err
 			console.log(err)
 			winston.info(err);
-		    } else{
-			pcb(null);
-		    }
-		});
-	    },
-            players: function(pcb){
-                that.config.Players.find(function(err,players) {
-                    pcb(null,players);
-                });
-            },
-            matches: function(pcb){
-                that.config.Matches.find({deleted: false}, function(err,matches) {
-                    pcb(null,matches);
-                });
-            }
-
-	}, function(error, args){
-		if(error){
-			res.json({"Success": false, "Error": error});
-		}else{
-			//this is broken, i'm not sure what your trying to do here
-            //replayMatches(args.players,args.matches);
-		    res.json({"Success": true});
-		}
+			res.json({Success: false, "Error": err});
+	    } else{
+			res.json({Success: true});
+	    }
 	});
 };
 
@@ -231,28 +206,33 @@ Match.prototype.rebuildRatings = function(req, res) {
     async.parallel({
         players: function(pcb){
             that.config.Players.find(function(err,players) {
-                that.collectionToJSON(players, pcb);
+                that.collectionToJson(players, pcb);
             });
         },
         matches: function(pcb){
             that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(function(err,matches) {
-                pcb(null,matches);
+                pcb(err,matches);
             });
         }
 
     },
     function(error,args) {
-        var players = args.players;
-        var matches = args.matches;
-        replayMatches(players,matches);
-        res.json({
-            sucess: true,
-            players: players,
-            matches: matches
-        });
+        if (error) {
+        	console.log(error);
+        	winston.info(error);
+        	res.json({success: false, "error": error});
+        } else {
+        	replayMatches(args.players, args.matches);
+	        res.json({
+	            sucess: true,
+	            players: args.players,
+	            matches: agrs.matches
+	        });
+        }
     });
 };
 
+// TODO: anichols
 var replayMatches = function(players,matches) {
     var playerHash = {};
     players.forEach(function(player,i) {
@@ -372,7 +352,7 @@ Match.prototype.recMatches = function recMatches() {
         var pairs = rec.buildPairs(players, matches);
         mailer.sendRecMatches(pairs);
     });
-}
+};
 
 /**
  * validate var
