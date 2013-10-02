@@ -2,6 +2,8 @@ PingPong
 ========
 A simple web app for Ping Pong scores. This is a work in progress.
 
+[![Build Status](https://travis-ci.org/jshemas/PingPong.png?branch=master)](https://travis-ci.org/jshemas/PingPong)
+
 ### Installation
 This was build using Node.js(v0.10.10) and MongoDB(v2.4.4).
 
@@ -33,6 +35,7 @@ Then you can run the tests by turning on the server and run...
 ```
 jasmine-node spec/
 ```
+You can also run the tests by using ```make tests```
 
 ### Dev collections
 In order to import some data for your dev mongo, run the following:
