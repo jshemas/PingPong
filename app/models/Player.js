@@ -14,6 +14,10 @@ module.exports = function(mongoose) {
 		ratio: { type: String, required: false },
 		createdDate: { type: Date, 'default': Date.now },
 	    rating: { type: Number, 'default': 1200 }
+	},
+	{
+		toObject: { getters: true },
+		toJSON: { virtuals: true }
 	});
 	
 	playerSchema.virtual('gravatar').get(function(){

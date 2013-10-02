@@ -33,12 +33,14 @@ Match.prototype.singleMatch = function(req, res){
 // gets a list of all of the matches
 Match.prototype.json = function(req, res){
 	var id = req.query.playerID;
-	var query = id ? {deleted: false} : {deleted: false, $or: [ {'winner': id}, {'loser': id} ]};
+	var query = id ? {deleted: false, $or: [ {'winner': id}, {'loser': id} ]} : {deleted: false};
 	this.config.Matches.find(query).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
 		if (err){ // TODO handle err
 			console.log(err)
 			winston.info(err);
-		} else res.json(matches);
+		} else {
+			res.json(matches);
+		}
 	});
 };
 
