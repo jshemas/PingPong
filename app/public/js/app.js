@@ -8,6 +8,10 @@ angular.module('arena', ['PingPongFilters']).
 			templateUrl: 'partials/match-list.html',
 			controller: MatchListCtrl
 		}).
+		when('/matchesDelete', {
+			templateUrl: 'partials/match-list.html',
+			controller: MatchDeleteListCtrl
+		}).
 		when('/matches/:matchId', {
 			templateUrl: 'partials/match-detail.html',
 			controller: MatchDetailCtrl

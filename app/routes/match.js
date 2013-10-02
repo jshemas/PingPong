@@ -23,7 +23,7 @@ Match.prototype.list = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 
 			});
@@ -58,6 +58,15 @@ Match.prototype.list = function(req, res){
 	});
 };
 
+Match.prototype.collectionToJSON = function(players, cb) {
+	var docs = [];
+	async.each(players, function(player, f){
+		docs.push(player.toJSON({virtuals: true}));
+		f();
+	}, function(err) {
+		cb(err, docs);
+	});
+};
 
 Match.prototype.singleMatch = function(req, res){
 	var matchId = req.params.id;
@@ -70,7 +79,7 @@ Match.prototype.singleMatch = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 			});
 		},
@@ -80,18 +89,26 @@ Match.prototype.singleMatch = function(req, res){
 				pcb(null, matchInfo);
 			});
 		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var matchDetails = args[1];
-		myPlayers.forEach(function(player, j){
-			if(player["_id"] == matchDetails.redPlayer){
-				matchDetails.redPlayerDetails = player;
-			}
-			if(player["_id"] == matchDetails.bluePlayer){
-				matchDetails.bluePlayerDetails = player;
-			}
-		});
-		res.json(matchDetails)
+	], function(err, args){
+		//we should make sure it found something first...
+		if(err){
+			res.json({"Success": false, "Error": err});
+		}
+		if(args[0] && args[1]){
+			var myPlayers = args[0];
+			var matchDetails = args[1];
+			myPlayers.forEach(function(player, j){
+				if(player["_id"] == matchDetails.redPlayer){
+					matchDetails.redPlayerDetails = player;
+				}
+				if(player["_id"] == matchDetails.bluePlayer){
+					matchDetails.bluePlayerDetails = player;
+				}
+			});
+			res.json(matchDetails)
+		} else {
+			res.json({"Success": false, "Error": 'no record found'});
+		}
 	});
 };
 
@@ -230,7 +247,7 @@ Match.prototype.add = function(req, res){
                         winston.info(err);
                         pcb({success: false, error: err});
                     } else {
-                        pcb(null);
+                        pcb(null, newMatch.toJSON({virtual: true}));
                     };
                 });
             }
@@ -282,7 +299,8 @@ Match.prototype.delete = function(req, res){
 		if(error){
 			res.json({"Success": false, "Error": error});
 		}else{
-                    replayMatches(args.players,args.matches);
+			//this is broken, i'm not sure what your trying to do here
+            //replayMatches(args.players,args.matches);
 		    res.json({"Success": true});
 		}
 	});
@@ -293,7 +311,7 @@ Match.prototype.rebuildRatings = function(req, res) {
     async.parallel({
         players: function(pcb){
             that.config.Players.find(function(err,players) {
-                pcb(null,players);
+                that.collectionToJSON(players, pcb);
             });
         },
         matches: function(pcb){
@@ -421,7 +439,7 @@ var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
 					console.log(err)
 					winston.info(err);
 				} else{
-					pcb(null,players)
+					that.collectionToJSON(players, pcb);
 				}
 			});
 		},
