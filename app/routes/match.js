@@ -12,16 +12,6 @@ function Match(config){
 };
 module.exports = Match;
 
-Match.prototype.collectionToJSON = function(players, cb) {
-	var docs = [];
-	async.each(players, function(player, f){
-		docs.push(player.toJSON({virtuals: true}));
-		f();
-	}, function(err) {
-		cb(err, docs);
-	});
-};
-
 Match.prototype.singleMatch = function(req, res){
 	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function (err, match) {
 		if (err) res.json({Success: false, "Error": err});
@@ -208,7 +198,7 @@ Match.prototype.rebuildRatings = function(req, res) {
     async.parallel({
         players: function(pcb){
             that.config.Players.find(function(err,players) {
-                that.collectionToJson(players, pcb);
+                pcb(err, players);
             });
         },
         matches: function(pcb){
@@ -288,18 +278,18 @@ var adjustRatings = function(games,winner,loser) {
 
 var findWinner = function(games, red, blue) {
 	var last = games[games.length - 1];
-	var whoWon = whoWon(last);
+	var w = whoWon(last);
 	var newGames = [];
 	games.forEach(function(game, i){
 		var newGame = {
-			winnerScore: whoWon === 'R' ? game.redScore : game.blueScore,
-			loserScore: whoWon === 'B' ? game.blueScore : game.redScore
+			winnerScore: w === 'R' ? game.redScore : game.blueScore,
+			loserScore: w === 'R' ? game.blueScore : game.redScore
 		};
 		newGames.push(newGame);
 	});
 	return {
-		winner: whoWon === 'R' ? red : blue,
-		loser: whoWon === 'B' ? blue : red,
+		winner: w === 'R' ? red : blue,
+		loser: w === 'R' ? blue : red,
 		games: newGames
 	};
 };

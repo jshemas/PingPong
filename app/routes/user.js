@@ -13,21 +13,8 @@ User.prototype.list = function(req, res){
 			console.log(err)
 			winston.info(err);
 		} else {
-			that.collectionToJSon(players, function(err, docs){
-				if (err) res.render('players', { title: 'Players', players: players });
-				else res.render('players', { title: 'Players', players: docs });
-			});
+			res.render('players', { title: 'Players', players: players });
 		}
-	});
-};
-
-User.prototype.collectionToJSON = function(players, cb) {
-	var docs = [];
-	async.each(players, function(player, f){
-		docs.push(player.toJSON({virtuals: true}));
-		f();
-	}, function(err) {
-		cb(err, docs);
 	});
 };
 
@@ -41,12 +28,12 @@ User.prototype.listJSON = function(req, res){
 					console.log(err)
 					winston.info(err);
 				} else{
-					that.collectionToJSON(players, pcb);
+					pcb(null, players);
 				}
 			});
 		},
 		function(pcb){ // Get all Matches
-			that.config.Matches.find({deleted: false}).sort({dateTime: -1}).populate('redPlayer bluePlayer').execFind(function (err, matches) {
+			that.config.Matches.find({deleted: false}).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 					winston.info(err);
@@ -69,7 +56,7 @@ User.prototype.listJSON = function(req, res){
 				currentStreak = {
 					type: "?",
 					count: 0
-				}
+				};
 
 			myMatches.forEach(function(match, i){
 

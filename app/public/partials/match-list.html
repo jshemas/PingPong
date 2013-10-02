@@ -21,7 +21,7 @@
 						<br>
 						{{ match.winnerRating }} ({{match.ratingChange}})
 						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
-							<div><span class="badge {{badgeColor(game.winningScore, game.losingScore)}}">{{game.winningScore}}</span></div>
+							<div><span class="badge {{badgeColor(game.winnerScore, game.loserScore)}}">{{game.winnerScore}}</span></div>
 						</div>
 					</div>
 				</div>
@@ -43,7 +43,7 @@
 						<br>
 						{{ match.loserRating }} ({{-match.ratingChange}})
 						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
-							<div><span class="badge {{badgeColor(game.losingScore, game.winningScore)}}">{{game.losingScore}}</span></div>
+							<div><span class="badge {{badgeColor(game.loserScore, game.winnerScore)}}">{{game.loserScore}}</span></div>
 						</div>
 					</div>
 				</div>
