@@ -12,52 +12,6 @@ function Match(config){
 };
 module.exports = Match;
 
-Match.prototype.list = function(req, res){
-	var that = this;
-	var matches = [];
-	var players = [];
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					that.collectionToJSON(players, pcb);
-				}
-
-			});
-		},
-		function(pcb){ // Get all Matches
-			that.config.Matches.find(function (err, matches) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					pcb(null,matches)
-
-				}
-
-			});
-		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var myMatches = args[1];
-		myMatches.forEach(function(match, i){
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == match.redPlayer){
-					match.redPlayerDetails = player;
-				}
-				if(player["_id"] == match.bluePlayer){
-					match.bluePlayerDetails = player;
-				}
-			});
-		});
-		res.render('matches', { title: 'Matches Played', matches: myMatches, players: myPlayers });
-
-	});
-};
-
 Match.prototype.collectionToJSON = function(players, cb) {
 	var docs = [];
 	async.each(players, function(player, f){
@@ -69,67 +23,33 @@ Match.prototype.collectionToJSON = function(players, cb) {
 };
 
 Match.prototype.singleMatch = function(req, res){
-	var matchId = req.params.id;
-	//console.log("MatchID", matchId);
-	var that = this;
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					that.collectionToJSON(players, pcb);
-				}
-			});
-		},
-		function(pcb){ // Get all Matches
-			that.config.Matches.findById(matchId, function (err, matchInfo) {
-				//console.log("SingleMatchInfo", matchInfo);
-				pcb(null, matchInfo);
-			});
-		}
-	], function(err, args){
-		//we should make sure it found something first...
-		if(err){
-			res.json({"Success": false, "Error": err});
-		}
-		if(args[0] && args[1]){
-			var myPlayers = args[0];
-			var matchDetails = args[1];
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == matchDetails.redPlayer){
-					matchDetails.redPlayerDetails = player;
-				}
-				if(player["_id"] == matchDetails.bluePlayer){
-					matchDetails.bluePlayerDetails = player;
-				}
-			});
-			res.json(matchDetails)
-		} else {
-			res.json({"Success": false, "Error": 'no record found'});
-		}
+	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function (err, match) {
+		if (err) res.json({Success: false, "Error": err});
+		else if (!match) res.json({Success: false, "Error": "no record found"});
+		else res.json(match);
 	});
 };
 
 // gets a list of all of the matches
 Match.prototype.json = function(req, res){
-	var that = this;
-	var query = {deleted: false};
-	var _url = url.parse(req.url, true);
-	if(typeof _url.query.playerID !== "undefined"){
-		var playerId = _url.query.playerID;
-		query = {deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]};
-	};
-	getMatchAndPlayerInfo(req, res, that, query, _url);
+	var id = req.query.playerID;
+	var query = id ? {deleted: false} : {deleted: false, $or: [ {'winner': id}, {'loser': id} ]};
+	this.config.Matches.find(query).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
+		if (err){ // TODO handle err
+			console.log(err)
+			winston.info(err);
+		} else res.json(matches);
+	});
 };
 
 // gets a list of all of the deleted matches
 Match.prototype.delList = function(req, res){
-	var that = this;
-	var query = {deleted: true};
-	var _url = url.parse(req.url, true);
-	getMatchAndPlayerInfo(req, res, that, query, _url);
+	this.config.Matches.find({deleted: true}).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
+		if (err){ // TODO handle err
+			console.log(err)
+			winston.info(err);
+		} else res.json(matches);
+	});
 };
 
 Match.prototype.add = function(req, res){
@@ -220,13 +140,13 @@ Match.prototype.add = function(req, res){
                 });
             },
             function(pcb){
-                winner.save(function(err, player) {
+                loser.save(function(err, player) {
                     if (err) {
-                        console.log('Save winning player failed: ', err);
+                        console.log('Save losing player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Winning player rating updated');
+                        console.log('Losing player rating updated');
                         pcb(null, player);
                     }
                 });
@@ -429,46 +349,6 @@ var whoWon = function(game) {
     } else {
         return 'B';
     }
-};
-
-var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					that.collectionToJSON(players, pcb);
-				}
-			});
-		},
-		function(pcb){ // Get all Matches
-		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					pcb(null,matches)
-				}
-			});
-		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var myMatches = args[1];
-		myMatches.forEach(function(match, i){
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == match.redPlayer){
-					myMatches[i].redPlayerDetails = player;
-				}
-				if(player["_id"] == match.bluePlayer){
-					myMatches[i].bluePlayerDetails = player;
-				}
-			});
-		});
-		res.json(myMatches)
-	});
-
 };
 
 Match.prototype.recMatches = function recMatches() {
