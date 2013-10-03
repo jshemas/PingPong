@@ -66,7 +66,7 @@ describe('Add Player: ', function (done) {
 	});
 	it('make sure player one exists', function(done) {
 		request(app).get('/users/'+userID1+'/json').expect(200).end(function(err, res){
-			expect(res.body._id).to.be(userID1);
+			expect(res.body.player._id).to.be(userID1);
 			done();
 		});
 	});
@@ -79,7 +79,7 @@ describe('Add Player: ', function (done) {
 	});
 	it('make sure player two exists', function(done) {
 		request(app).get('/users/'+userID2+'/json').expect(200).end(function(err, res){
-			expect(res.body._id).to.be(userID2);
+			expect(res.body.player._id).to.be(userID2);
 			done();
 		});
 	});
