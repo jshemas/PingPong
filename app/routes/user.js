@@ -59,28 +59,15 @@ User.prototype.listJSON = function(req, res){
 				};
 
 			myMatches.forEach(function(match, i){
-
-				if(typeof match.games == "undefined"){ match.games = []; match.games[1] = {"redScore": 1, "redScore": 3}; }
-				var finalGame = ( typeof match.games[2] == "undefined" ) ? match.games[1] : match.games[2];
-				if( player._id == match.bluePlayer){
+				var last = match.games[match.games.length - 1];
+				if ( player._id == match.winner._id){
 					matchesPlayed++;
-					if(finalGame.redScore > finalGame.blueScore){
-						losses++;
-						currentStreak = calculateStreak(currentStreak, "L");
-					}else{
-						wins++;
-						currentStreak = calculateStreak(currentStreak, "W");
-					}
-
-				}else if( player._id == match.redPlayer ){
+					wins++;
+					currentStreak = calculateStreak(currentStreak, "W");
+				} else if ( player._id == match.loser._id ){
 					matchesPlayed++;
-					if(finalGame.redScore > finalGame.blueScore){
-						wins++;
-						currentStreak = calculateStreak(currentStreak, "W");
-					}else{
-						losses++;
-						currentStreak = calculateStreak(currentStreak, "L");
-					}
+					losses++;
+					currentStreak = calculateStreak(currentStreak, "L");
 				}
 			});
 
@@ -91,33 +78,25 @@ User.prototype.listJSON = function(req, res){
 			myPlayers[j].matchesPlayed = matchesPlayed;
 			myPlayers[j].streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
 		});
-
-
-		//console.log("My PLAYERS", myPlayers);
 		res.json(myPlayers);
 	});
 };
 
 User.prototype.singleJSON = function(req, res){
-	var playerId = req.params.id;
 	var that = this;
 	async.parallel([
 		function(pcb){ // Get All Available Players
-			that.config.Players.findById(playerId, function(err, player) {
+			that.config.Players.findById(req.params.id, function(err, player) {
 				if (err){ // TODO handle err
 					console.log(err)
 					winston.info(err);
 				} else{
-					if(player){	
-						pcb(null, player.toJSON({virtuals: true}));
-					} else {
-						pcb(null, null);
-					};
+					pcb(null, player);
 				}
 			});
 		},
 		function(pcb){ // Get all Matches
-			that.config.Matches.find({deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]}).sort({dateTime: -1}).populate('redPlayer bluePlayer').execFind(function (err, matches) {
+			that.config.Matches.find({deleted: false, $or: [ {'winner': playerId},  {'loser': playerId} ]}).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
 					winston.info(err);
@@ -141,27 +120,15 @@ User.prototype.singleJSON = function(req, res){
 				};
 
 			myMatches.forEach(function(match, i){
-
-				var finalGame = ( typeof match.games[2] == "undefined" ) ? match.games[1] : match.games[2];
-				if( player._id == match.bluePlayer){
+				var last = match.games[match.games.length - 1];
+				if ( player._id == match.winner._id){
 					matchesPlayed++;
-					if(finalGame.redScore > finalGame.blueScore){
-						losses++;
-						currentStreak = calculateStreak(currentStreak, "L");
-					}else{
-						wins++;
-						currentStreak = calculateStreak(currentStreak, "W");
-					}
-
-				}else if( player._id == match.redPlayer ){
+					wins++;
+					currentStreak = calculateStreak(currentStreak, "W");
+				} else if ( player._id == match.loser._id ){
 					matchesPlayed++;
-					if(finalGame.redScore > finalGame.blueScore){
-						wins++;
-						currentStreak = calculateStreak(currentStreak, "W");
-					}else{
-						losses++;
-						currentStreak = calculateStreak(currentStreak, "L");
-					}
+					losses++;
+					currentStreak = calculateStreak(currentStreak, "L");
 				}
 			});
 
@@ -171,10 +138,6 @@ User.prototype.singleJSON = function(req, res){
 			player.losses = losses;
 			player.matchesPlayed = matchesPlayed;
 			player.streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
-
-
-
-			//console.log("My player", player);
 			res.json(player);
 		} else {
 			res.json({"Success": false, "Error": 'no record found'});
@@ -185,19 +148,15 @@ User.prototype.singleJSON = function(req, res){
 };
 
 User.prototype.add = function(req, res){
-	var firstName = req.body.firstName;
-	var lastName = req.body.lastName;
-	var nickname = req.body.nickname;
-	var email = req.body.email;
 	var newPlayer = new this.config.Players({
-		fname: firstName,
-		lname: lastName,
-		nickname: nickname,
-		email: email
+		fname: req.body.firstName,
+		lname: req.body.lastName,
+		nickname: req.body.nickname,
+		email: req.body.email
 	});
-	newPlayer.save(function (err, newPlayer) {
+	newPlayer.save(function (err, player) {
 		if (err){ // TODO handle the error
-			console.log("Player Addd Failed: ", err);
+			console.log("Failed to add " + req.body.firstName + " " + req.body.lastName, err);
 			res.json({
 				success: false,
 				error: err
@@ -207,48 +166,32 @@ User.prototype.add = function(req, res){
 			console.log("Player Added");
 			res.json({
 				success: true,
-				player: newPlayer.toJSON({virtual: true})
+				player: player
 			});
 		}
 	});
 };
 
 User.prototype.edit = function(req, res){
-
-	var that = this;
-
 	this.config.Players.update({"_id": req.body.id}, req.body.data, function(err, player) {
-		if (err){ // TODO handle err
+		if (err){
 			console.log(err)
 			winston.info(err);
-		} else{
+			res.json({"Success": false});
+		} else {
 			res.json({"Success": true});
 		}
 	});
 };
 
 User.prototype.delete = function(req, res){
-	var playerID = req.params.id;
 	var that = this;
-
-	async.parallel([
-		function(pcb){ // Remove Player
-			that.config.Players.remove({"_id": playerID}, function(err){
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					pcb(null);
-				}
-			});
-		}
-	], function(error, args){
-		if(error){
+	that.config.Players.remove({"_id": req.params.id}, function(err){
+		if (err) {
+			console.log(err)
+			winston.info(err);
 			res.json({"Success": false, "Error": error});
-		}else{
-			res.json({"Success": true});
-		}
-
+		} else res.json({"Success": true});
 	});
 };
 
@@ -258,11 +201,11 @@ function calculateStreak(currentStreak, newMatch){
 		return {
 			type: currentStreak.type,
 			count: currentStreak.count + 1
-		}
+		};
 	}else{
 		return {
 			type: newMatch,
 			count: 1
-		}
+		};
 	}
-}
+};
