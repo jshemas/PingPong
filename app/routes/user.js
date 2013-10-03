@@ -21,8 +21,8 @@ User.prototype.list = function(req, res){
 User.prototype.listJSON = function(req, res){
 
 	var that = this;
-	async.parallel([
-		function(pcb){ // Get All Available Players
+	async.parallel({
+		players: function(pcb){ // Get All Available Players
 			that.config.Players.find(function (err, players) {
 				if (err){ // TODO handle err
 					console.log(err)
@@ -32,7 +32,7 @@ User.prototype.listJSON = function(req, res){
 				}
 			});
 		},
-		function(pcb){ // Get all Matches
+		matches: function(pcb){ // Get all Matches
 			that.config.Matches.find({deleted: false}).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
 				if (err){ // TODO handle err
 					console.log(err)
@@ -42,11 +42,8 @@ User.prototype.listJSON = function(req, res){
 				}
 			});
 		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var myMatches = args[1];
-
-
+	}, function(error, args){
+		
 		myPlayers.forEach(function(player, j){
 
 			var wins = 0,
@@ -59,6 +56,8 @@ User.prototype.listJSON = function(req, res){
 				};
 
 			myMatches.forEach(function(match, i){
+				console.log('winner: ' + (player._id == match.winner._id));
+				console.log('loser: ' + (player._id == match.loser._id));
 				var last = match.games[match.games.length - 1];
 				if ( player._id == match.winner._id){
 					matchesPlayed++;
@@ -78,6 +77,7 @@ User.prototype.listJSON = function(req, res){
 			myPlayers[j].matchesPlayed = matchesPlayed;
 			myPlayers[j].streak = (currentStreak.type === "?") ? "0" : currentStreak.type + currentStreak.count;
 		});
+		// console.log(myPlayers);
 		res.json(myPlayers);
 	});
 };
