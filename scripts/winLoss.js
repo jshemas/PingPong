@@ -26,5 +26,5 @@ db.matches.find({deleted: false}).sort({createdDate: 1}).forEach(function(match)
 
 db.players.find().forEach(function(player){
 	if (! player.wins || ! player.losses) 
-		db.players.update({_id: player._id}, {set: {wins: (player.wins || 0), losses: (player.losses || 0)}});
+		db.players.update({_id: player._id}, {$set: {wins: (player.wins || 0), losses: (player.losses || 0)}});
 });

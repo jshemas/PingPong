@@ -80,7 +80,8 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 function PlayerListCtrl($scope, $http, $location, $route) {
 	$scope.title = "Players"
 	$http.get('/users/json').success(function(data) {
-		$scope.players = data;
+		$scope.players = data.players;
+		if (! data.Success) $scope.error = data["Error"];
 	});
 
 	$scope.form = {};
@@ -97,8 +98,10 @@ function PlayerDetailCtrl($scope, $routeParams, $http, $location) {
 	$scope.predicate = '-createdDate';
 
 	$http.get('/users/' + $scope.userId + '/json').success(function(data) {
-		$scope.userData = data;
-		$scope.title = data.fname;
+		if (data.Success) {
+			$scope.userData = data.player;
+			$scope.title = data.player.displayName;
+		} else $scope.error = data["Error"];
 	});
 
 	$http.get('/matches/json?playerID=' + $scope.userId).success(function(data) {
