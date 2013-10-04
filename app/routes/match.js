@@ -187,19 +187,29 @@ Match.prototype.add = function(req, res){
 
 Match.prototype['delete'] = function(req, res){
 	var that = this;
+	var errHandler = function(err){
+		console.log(err);
+		res.json({Success: false, 'Error': err});
+	}
 	that.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
+		console.log(match);
 		async.parallel([
-			function(pcb) {
-				that.config.Matches.find({deleted: false})
-				.or([{winner: match.winner._id}, {loser: match.winner._id}])
-				.sort({createdDate: -1}).exec(function(err, matches){
-					var streak = 0;
-					matches.forEach(function(match){
-						
-					});
+			match.winner.recalculateWins,
+			match.winner.recalculateLosses,
+			match.winner.recalculateStreak,
+			match.loser.recalculateWins,
+			match.loser.recalculateLosses,
+			match.loser.recalculateStreak
+		], function(err){
+			if (err) errHandler(err); 
+			else {
+				match.deleted = true;
+				match.save(function(err){
+					if (err) errHandler(err);
+					else that.rebuildRatings(req, res);
 				});
 			}
-		]);
+		});
 	});
 };
 
