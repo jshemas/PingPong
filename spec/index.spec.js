@@ -94,9 +94,9 @@ describe('Add Game: ', function (done) {
 			expect(res.body.success).to.be(true);
 			//the return obj has 3 _ids in it
 			//we need to find which one is game ID
-			if(res.body.match[0].delete){
+			if(res.body.match[0]['delete']){
 				gameID = res.body.match[0]._id;
-			} else if(res.body.match[1].delete) {
+			} else if(res.body.match[1]['delete']) {
 				gameID = res.body.match[1]._id;
 			} else {
 				gameID = res.body.match[2]._id;

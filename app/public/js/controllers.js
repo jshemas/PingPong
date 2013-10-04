@@ -10,7 +10,7 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope, alertServic
 		$scope.matches = data;
 	});
 	$http.get('/users/json').success(function(data) {
-		$scope.players = data;
+		$scope.players = data.players;
 	});
 
 	$scope.master = {
@@ -65,10 +65,12 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 	});
 
 	$scope.deleteMatch = function () {
-		$('#removePlayerConfirmation').modal('hide')
 		$http.get('/matches/' + $scope.matchId + '/delete').success(function(data) {
 			console.log("Match removed");
 			$location.path( "/matches" );
+			$http.get('/matches/rebuildRatings').success(function(data){
+				
+			});
 		});
 	};
 	

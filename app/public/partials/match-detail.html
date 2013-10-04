@@ -27,9 +27,9 @@
 				</div>
 			</div>
 			<div class="span2 center">
-				<a href="#/matches/{{matchData._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
+				<a href="#/matches/{{matchData._id}}">{{ matchData.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
 				<br /><br />
-				<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
+				<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp" class="row">
 					<div>GAME {{ $index +1 }}</div>
 				</div>
 			</div>
@@ -63,6 +63,6 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		<button ng-click="deleteMatch()" class="btn btn-primary">Yes, remove.</button>
+		<button ng-click="deleteMatch()" data-dismiss="modal" class="btn btn-primary">Yes, remove.</button>
 	</div>
 </div>

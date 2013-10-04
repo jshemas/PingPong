@@ -32,10 +32,11 @@ User.prototype.listJSON = function(req, res){
 
 User.prototype.singleJSON = function(req, res){
 	this.config.Players.findById(req.params.id, function(err, player){
-		if (err) {
+		if (err || !player) {
 			console.log(err);
-			winston.info(err);
-			res.json({Success: false, "Error": err});
+			// This causes the tests to fail with ENOENT
+			// winston.info(err);
+			res.json({Success: false, "Error": (err || "Player not found")});
 		} else res.json({Success: true, player: player});
 	});
 };
@@ -78,8 +79,7 @@ User.prototype.edit = function(req, res){
 };
 
 User.prototype.delete = function(req, res){
-	var that = this;
-	that.config.Players.remove({"_id": req.params.id}, function(err){
+	this.config.Players.remove({"_id": req.params.id}, function(err){
 		if (err) {
 			console.log(err)
 			winston.info(err);

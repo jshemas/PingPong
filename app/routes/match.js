@@ -120,6 +120,8 @@ Match.prototype.add = function(req, res){
         // save the red and blue players with the ratings change and create the match
         async.parallel([
             function(pcb){
+            	winner.wins = winner.wins ? ++winner.wins : 1;
+            	winner.streak = winner.streak && winner.streak > 0 ? ++winner.streak : 1;
                 winner.save(function(err, player) {
                     if (err) {
                         console.log('Save winning player failed: ', err);
@@ -132,6 +134,8 @@ Match.prototype.add = function(req, res){
                 });
             },
             function(pcb){
+            	loser.losses = loser.losses ? ++loser.losses : 1;
+            	loser.streak = loser.streak && loser.streak < 0 ? --loser.streak : -1;
                 loser.save(function(err, player) {
                     if (err) {
                         console.log('Save losing player failed: ', err);
@@ -181,15 +185,21 @@ Match.prototype.add = function(req, res){
 
 };
 
-Match.prototype.delete = function(req, res){
-	this.config.Matches.update({"_id": req.params.id}, {deleted: true, removedDate: new Date()}, function(err){
-	    if (err){ // TODO handle err
-			console.log(err)
-			winston.info(err);
-			res.json({Success: false, "Error": err});
-	    } else{
-			res.json({Success: true});
-	    }
+Match.prototype['delete'] = function(req, res){
+	var that = this;
+	that.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
+		async.parallel([
+			function(pcb) {
+				that.config.Matches.find({deleted: false})
+				.or([{winner: match.winner._id}, {loser: match.winner._id}])
+				.sort({createdDate: -1}).exec(function(err, matches){
+					var streak = 0;
+					matches.forEach(function(match){
+						
+					});
+				});
+			}
+		]);
 	});
 };
 
@@ -197,19 +207,13 @@ Match.prototype.rebuildRatings = function(req, res) {
     var that = this;
     async.parallel({
         players: function(pcb){
-            that.config.Players.find(function(err,players) {
-                pcb(err, players);
-            });
+            that.config.Players.find(pcb);
         },
         matches: function(pcb){
-            that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(function(err,matches) {
-                pcb(err,matches);
-            });
+            that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(pcb);
         }
-
-    },
-    function(error,args) {
-        if (error) {
+    }, function(err, args) {
+        if (err || !args) {
         	console.log(error);
         	winston.info(error);
         	res.json({success: false, "error": error});
@@ -218,13 +222,12 @@ Match.prototype.rebuildRatings = function(req, res) {
 	        res.json({
 	            sucess: true,
 	            players: args.players,
-	            matches: agrs.matches
+	            matches: args.matches
 	        });
         }
     });
 };
 
-// TODO: anichols
 var replayMatches = function(players,matches) {
     var playerHash = {};
     players.forEach(function(player,i) {
@@ -241,11 +244,11 @@ var replayMatches = function(players,matches) {
 	
 		console.log("MATCH", match);
 		match.save(function(err, match){
-		    if(err){
-		    winston.info(err);
-			console.log("**** ERROR saving match");
-		    }else{
-			console.log("*** Match Updated Successful", match);
+		    if (err) {
+			    winston.info(err);
+				console.log("**** ERROR saving match");
+		    } else {
+				console.log("*** Match Updated Successful", match);
 		    }
 		});
     });
