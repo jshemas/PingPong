@@ -1,5 +1,4 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 a {
@@ -39,6 +38,15 @@ a {
 .blueWins .redPlayer,
 .redWins .bluePlayer {
   background: #ffe4e4;
+}
+/***************************
+* Players Table
+***************************/
+.player-table th {
+  cursor: pointer;
+}
+.player-table th:hover {
+  background-color: #00b7ff;
 }
 /***************************
 *	Player Detail Page
