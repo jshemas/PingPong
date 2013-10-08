@@ -12,124 +12,36 @@ function Match(config){
 };
 module.exports = Match;
 
-Match.prototype.list = function(req, res){
-	var that = this;
-	var matches = [];
-	var players = [];
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					that.collectionToJSON(players, pcb);
-				}
-
-			});
-		},
-		function(pcb){ // Get all Matches
-			that.config.Matches.find(function (err, matches) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					pcb(null,matches)
-
-				}
-
-			});
-		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var myMatches = args[1];
-		myMatches.forEach(function(match, i){
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == match.redPlayer){
-					match.redPlayerDetails = player;
-				}
-				if(player["_id"] == match.bluePlayer){
-					match.bluePlayerDetails = player;
-				}
-			});
-		});
-		res.render('matches', { title: 'Matches Played', matches: myMatches, players: myPlayers });
-
-	});
-};
-
-Match.prototype.collectionToJSON = function(players, cb) {
-	var docs = [];
-	async.each(players, function(player, f){
-		docs.push(player.toJSON({virtuals: true}));
-		f();
-	}, function(err) {
-		cb(err, docs);
-	});
-};
-
 Match.prototype.singleMatch = function(req, res){
-	var matchId = req.params.id;
-	//console.log("MatchID", matchId);
-	var that = this;
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					that.collectionToJSON(players, pcb);
-				}
-			});
-		},
-		function(pcb){ // Get all Matches
-			that.config.Matches.findById(matchId, function (err, matchInfo) {
-				//console.log("SingleMatchInfo", matchInfo);
-				pcb(null, matchInfo);
-			});
-		}
-	], function(err, args){
-		//we should make sure it found something first...
-		if(err){
-			res.json({"Success": false, "Error": err});
-		}
-		if(args[0] && args[1]){
-			var myPlayers = args[0];
-			var matchDetails = args[1];
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == matchDetails.redPlayer){
-					matchDetails.redPlayerDetails = player;
-				}
-				if(player["_id"] == matchDetails.bluePlayer){
-					matchDetails.bluePlayerDetails = player;
-				}
-			});
-			res.json(matchDetails)
-		} else {
-			res.json({"Success": false, "Error": 'no record found'});
-		}
+	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function (err, match) {
+		if (err) res.json({Success: false, "Error": err});
+		else if (!match) res.json({Success: false, "Error": "no record found"});
+		else res.json(match);
 	});
 };
 
 // gets a list of all of the matches
 Match.prototype.json = function(req, res){
-	var that = this;
-	var query = {deleted: false};
-	var _url = url.parse(req.url, true);
-	if(typeof _url.query.playerID !== "undefined"){
-		var playerId = _url.query.playerID;
-		query = {deleted: false, $or: [ {'bluePlayer': playerId},  {'redPlayer': playerId} ]};
-	};
-	getMatchAndPlayerInfo(req, res, that, query, _url);
+	var id = req.query.playerID;
+	var query = id ? {deleted: false, $or: [ {'winner': id}, {'loser': id} ]} : {deleted: false};
+	this.config.Matches.find(query).sort({createdDate: -1}).populate('winner loser').exec(function (err, matches) {
+		if (err){ // TODO handle err
+			console.log(err)
+			winston.info(err);
+		} else {
+			res.json(matches);
+		}
+	});
 };
 
 // gets a list of all of the deleted matches
 Match.prototype.delList = function(req, res){
-	var that = this;
-	var query = {deleted: true};
-	var _url = url.parse(req.url, true);
-	getMatchAndPlayerInfo(req, res, that, query, _url);
+	this.config.Matches.find({deleted: true}).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
+		if (err){ // TODO handle err
+			console.log(err)
+			winston.info(err);
+		} else res.json(matches);
+	});
 };
 
 Match.prototype.add = function(req, res){
@@ -171,73 +83,78 @@ Match.prototype.add = function(req, res){
 			blueScore: parseInt(req.body["game3BluePlayer"]) || 0
 		});
 	};
-var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
-var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
-
-
-var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
-+', '+games[1].redScore+'-'+games[1].blueScore;
-
-if(games.length > 2) {
-tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
-}else{
-//lost in 2 straight games.
-}
+	var gameData = findWinner(games, redPlayer, bluePlayer);
+	var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
+	var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
+	
+	
+	var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
+		+', '+games[1].redScore+'-'+games[1].blueScore;
+	
+	if (games.length > 2) {
+		tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
+	} else {
+		//lost in 2 straight games.
+	}
 
 
 
    var that = this;
     async.parallel({
-        red: function(pcb){
-            that.config.Players.findById(redPlayer, function(err,red) {
-                pcb(null,red);
+        winner: function(pcb){
+            that.config.Players.findById(gameData.winner, function(err,winner) {
+                pcb(null,winner);
             });
         },
-        blue: function(pcb){
-            that.config.Players.findById(bluePlayer, function(err,blue) {
-                pcb(null,blue);
+        loser: function(pcb){
+            that.config.Players.findById(gameData.loser, function(err,loser) {
+                pcb(null,loser);
             });
         },
     },
     function(error,args) {
-        var red = args.red;
-        var blue = args.blue;
-        var ratingChange = adjustRatings(games,red,blue);
+        var winner = args.winner;
+        var loser = args.loser;
+        var ratingChange = adjustRatings(gameData.games,winner,loser);
 
         // save the red and blue players with the ratings change and create the match
         async.parallel([
             function(pcb){
-                red.save(function(err, player) {
+            	winner.wins = winner.wins ? ++winner.wins : 1;
+            	winner.streak = winner.streak && winner.streak > 0 ? ++winner.streak : 1;
+                winner.save(function(err, player) {
                     if (err) {
-                        console.log('Save red player failed: ', err);
+                        console.log('Save winning player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Red player rating updated');
+                        console.log('Winning player rating updated');
                         pcb(null, player);
                     }
                 });
             },
             function(pcb){
-                blue.save(function(err, player) {
+            	loser.losses = loser.losses ? ++loser.losses : 1;
+            	loser.streak = loser.streak && loser.streak < 0 ? --loser.streak : -1;
+                loser.save(function(err, player) {
                     if (err) {
-                        console.log('Save blue player failed: ', err);
+                        console.log('Save losing player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Blue player rating updated');
+                        console.log('Losing player rating updated');
                         pcb(null, player);
                     }
                 });
             },
             function(pcb){
                 var newMatch = new that.config.Matches({
-                    redPlayer: redPlayer,
-                    bluePlayer: bluePlayer,
-                    games: games,
+                    winner: gameData.winner,
+                    loser: gameData.loser,
+                    games: gameData.games,
                     ratingChange: ratingChange,
-                    bluePlayerRating: blue.rating,
-                    redPlayerRating: red.rating
+                    winnerRating: winner.rating,
+                    loserRating: loser.rating
                 });
 
                 newMatch.save(function (err, newMatch) {
@@ -250,61 +167,49 @@ tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
                     };
                 });
             }
-            ], function(err, data) {
-            	console.log(data);
-                if (err) {
-                	winston.info(err);
-                    res.json(500, err);
-                } else {
-
-                    res.json({
-                        success: true,
-                        match: data
-                    });
-//adding tweet code;
-			twitter_mod.update_status(tweet_status);
-
-                }
+		], function(err, data) {
+			if (err) {
+				winston.info(err);
+				res.json(500, err);
+			} else {
+				res.json({
+					success: true,
+					match: data
+				});
+				//adding tweet code;
+				twitter_mod.update_status(tweet_status);
+			}
         });
 
     });
 
 };
 
-Match.prototype.delete = function(req, res){
-	var matchID = req.params.id;
+Match.prototype['delete'] = function(req, res){
 	var that = this;
-
-	async.parallel({
-	    match: function(pcb){ // Remove Player
-		that.config.Matches.update({"_id": matchID}, {deleted: true, removedDate: new Date()}, function(err){
-		    if (err){ // TODO handle err
-			console.log(err)
-			winston.info(err);
-		    } else{
-			pcb(null);
-		    }
+	var errHandler = function(err){
+		console.log(err);
+		res.json({Success: false, 'Error': err});
+	}
+	that.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
+		console.log(match);
+		async.parallel([
+			match.winner.recalculateWins,
+			match.winner.recalculateLosses,
+			match.winner.recalculateStreak,
+			match.loser.recalculateWins,
+			match.loser.recalculateLosses,
+			match.loser.recalculateStreak
+		], function(err){
+			if (err) errHandler(err); 
+			else {
+				match.deleted = true;
+				match.save(function(err){
+					if (err) errHandler(err);
+					else that.rebuildRatings(req, res);
+				});
+			}
 		});
-	    },
-            players: function(pcb){
-                that.config.Players.find(function(err,players) {
-                    pcb(null,players);
-                });
-            },
-            matches: function(pcb){
-                that.config.Matches.find({deleted: false}, function(err,matches) {
-                    pcb(null,matches);
-                });
-            }
-
-	}, function(error, args){
-		if(error){
-			res.json({"Success": false, "Error": error});
-		}else{
-			//this is broken, i'm not sure what your trying to do here
-            //replayMatches(args.players,args.matches);
-		    res.json({"Success": true});
-		}
 	});
 };
 
@@ -312,26 +217,24 @@ Match.prototype.rebuildRatings = function(req, res) {
     var that = this;
     async.parallel({
         players: function(pcb){
-            that.config.Players.find(function(err,players) {
-                that.collectionToJSON(players, pcb);
-            });
+            that.config.Players.find(pcb);
         },
         matches: function(pcb){
-            that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(function(err,matches) {
-                pcb(null,matches);
-            });
+            that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(pcb);
         }
-
-    },
-    function(error,args) {
-        var players = args.players;
-        var matches = args.matches;
-        replayMatches(players,matches);
-        res.json({
-            sucess: true,
-            players: players,
-            matches: matches
-        });
+    }, function(err, args) {
+        if (err || !args) {
+        	console.log(error);
+        	winston.info(error);
+        	res.json({success: false, "error": error});
+        } else {
+        	replayMatches(args.players, args.matches);
+	        res.json({
+	            sucess: true,
+	            players: args.players,
+	            matches: args.matches
+	        });
+        }
     });
 };
 
@@ -342,23 +245,22 @@ var replayMatches = function(players,matches) {
         playerHash[player._id] = player;
     });
     matches.forEach(function(match,i) {
-        var red = playerHash[match.redPlayer];
-        var blue = playerHash[match.bluePlayer];
+        var winner = playerHash[match.winner];
+        var loser = playerHash[match.loser];
 
-        var ratingChange = adjustRatings(match.games,red,blue);
-	match.ratingChange = ratingChange;
-	match.redPlayerRating = red.rating;
-	match.bluePlayerRating = blue.rating;
-
-	console.log("MATCH", match);
-	match.save(function(err, match){
-	    if(err){
-	    winston.info(err);
-		console.log("**** ERROR saving match");
-	    }else{
-		console.log("*** Match Updated Successful", match);
-	    }
-	});
+        match.ratingChange = adjustRatings(match.games,winner,loser);
+		match.winnerRating = winner.rating;
+		match.loserRating = loser.rating;
+	
+		console.log("MATCH", match);
+		match.save(function(err, match){
+		    if (err) {
+			    winston.info(err);
+				console.log("**** ERROR saving match");
+		    } else {
+				console.log("*** Match Updated Successful", match);
+		    }
+		});
     });
 
 	console.log("PLAYERS", players);
@@ -375,36 +277,34 @@ var replayMatches = function(players,matches) {
     });
 };
 
-var adjustRatings = function(games,red,blue) {
-    var result = determineResult(games);
-    var ratingChange = elo.delta(red.rating, blue.rating, result);
-    console.log(red.lname + ' gains ' + ratingChange + ' points from ' + blue.lname);
-    red.rating += ratingChange;
-    blue.rating -= ratingChange;
+var adjustRatings = function(games,winner,loser) {
+    var result = games.length === 2 ? 1 : 0.75;
+    var ratingChange = elo.delta(winner.rating, loser.rating, result);
+    console.log(winner.lname + ' gains ' + ratingChange + ' points from ' + loser.lname);
+    winner.rating += ratingChange;
+    loser.rating -= ratingChange;
 
-    console.log('New red rating: ' + red.rating);
-    console.log('New blue rating: ' + blue.rating);
+    console.log('New winner rating: ' + winner.rating);
+    console.log('New loser rating: ' + loser.rating);
 	return ratingChange;
 };
 
-var determineResult = function(games) {
-    var resultString = '';
-    games.forEach(function(game,i) {
-        resultString += whoWon(game);
-    });
-    if (resultString == 'RR') {
-        console.log('Red sweep');
-        return 1;
-    } else if (resultString == 'BB') {
-        console.log('Blue sweep');
-        return 0;
-    } else if (resultString.slice(-1) == 'R') {
-        console.log('Red wins split match');
-        return 0.75;
-    } else {
-        console.log('Blue wins split match');
-        return 0.25;
-    }
+var findWinner = function(games, red, blue) {
+	var last = games[games.length - 1];
+	var w = whoWon(last);
+	var newGames = [];
+	games.forEach(function(game, i){
+		var newGame = {
+			winnerScore: w === 'R' ? game.redScore : game.blueScore,
+			loserScore: w === 'R' ? game.blueScore : game.redScore
+		};
+		newGames.push(newGame);
+	});
+	return {
+		winner: w === 'R' ? red : blue,
+		loser: w === 'R' ? blue : red,
+		games: newGames
+	};
 };
 
 var whoWon = function(game) {
@@ -413,46 +313,6 @@ var whoWon = function(game) {
     } else {
         return 'B';
     }
-};
-
-var getMatchAndPlayerInfo = function(req, res, that, query, _url) {
-	async.parallel([
-		function(pcb){ // Get All Available Players
-			that.config.Players.find(function (err, players) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					that.collectionToJSON(players, pcb);
-				}
-			});
-		},
-		function(pcb){ // Get all Matches
-		    that.config.Matches.find(query).sort({dateTime: -1}).execFind(function (err, matches) {
-				if (err){ // TODO handle err
-					console.log(err)
-					winston.info(err);
-				} else{
-					pcb(null,matches)
-				}
-			});
-		}
-	], function(error, args){
-		var myPlayers = args[0];
-		var myMatches = args[1];
-		myMatches.forEach(function(match, i){
-			myPlayers.forEach(function(player, j){
-				if(player["_id"] == match.redPlayer){
-					myMatches[i].redPlayerDetails = player;
-				}
-				if(player["_id"] == match.bluePlayer){
-					myMatches[i].bluePlayerDetails = player;
-				}
-			});
-		});
-		res.json(myMatches)
-	});
-
 };
 
 Match.prototype.recMatches = function recMatches() {
@@ -476,7 +336,7 @@ Match.prototype.recMatches = function recMatches() {
         var pairs = rec.buildPairs(players, matches);
         mailer.sendRecMatches(pairs);
     });
-}
+};
 
 /**
  * validate var
