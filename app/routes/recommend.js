@@ -43,45 +43,45 @@ module.exports.buildPairs = function buildPairs(players, matches, opts) {
         pairs = [ {red: red, blue: blue} ].concat(buildPairs(players,matches,opts));
     }
     return pairs;
-}
+};
 
 var countMatches = function(matches) {
-    var matchCount = {}
+    var matchCount = {};
     matches.forEach(function(match) {
-        if (match.bluePlayer in matchCount) {
-            matchCount[match.bluePlayer]++;
+        if (match.winner in matchCount) {
+            matchCount[match.winner]++;
         } else {
-            matchCount[match.bluePlayer] = 1;
+            matchCount[match.winner] = 1;
         }
-        if (match.redPlayer in matchCount) {
-            matchCount[match.redPlayer]++;
+        if (match.loser in matchCount) {
+            matchCount[match.loser]++;
         } else {
-            matchCount[match.redPlayer] = 1;
+            matchCount[match.loser] = 1;
         }
     });
     return matchCount;
-}
+};
 
 var countPlayerMatches = function(plr, matches) {
     var matchCount = {};
     var id = plr._id;
     matches.forEach(function(match) {
-        if (id == match.redPlayer) {
-            if (match.bluePlayer in matchCount) {
-                matchCount[match.bluePlayer]++;
+        if (id == match.winner) {
+            if (match.loser in matchCount) {
+                matchCount[match.loser]++;
             } else {
-                matchCount[match.bluePlayer] = 1;
+                matchCount[match.loser] = 1;
             }
-        } else if (id == match.bluePlayer) {
-            if (match.redPlayer in matchCount) {
-                matchCount[match.redPlayer]++;
+        } else if (id == match.loser) {
+            if (match.winner in matchCount) {
+                matchCount[match.winner]++;
             } else {
-                matchCount[match.redPlayer] = 1;
+                matchCount[match.winner] = 1;
             }
         }
     });
     return matchCount;
-}
+};
 
 var findRange = function(players) {
     var high = 0;
@@ -96,4 +96,4 @@ var findRange = function(players) {
         }
     });
     return high - low;
-}
+};
