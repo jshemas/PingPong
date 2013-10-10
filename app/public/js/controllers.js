@@ -10,7 +10,7 @@ function MatchListCtrl($scope, $http, $location, $route, $rootScope, alertServic
 		$scope.matches = data;
 	});
 	$http.get('/users/json').success(function(data) {
-		$scope.players = data;
+		$scope.players = data.players;
 	});
 
 	$scope.master = {
@@ -55,6 +55,9 @@ function MatchDeleteListCtrl($scope, $http, $location, $route, $rootScope) {
 	$http.get('/users/json').success(function(data) {
 		$scope.players = data;
 	});
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	};
 };
 
 function MatchDetailCtrl($scope, $routeParams, $http, $location) {
@@ -65,10 +68,12 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 	});
 
 	$scope.deleteMatch = function () {
-		$('#removePlayerConfirmation').modal('hide')
 		$http.get('/matches/' + $scope.matchId + '/delete').success(function(data) {
 			console.log("Match removed");
 			$location.path( "/matches" );
+			$http.get('/matches/rebuildRatings').success(function(data){
+				console.log('ratings recalculated');
+			});
 		});
 	};
 	
@@ -80,7 +85,8 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 function PlayerListCtrl($scope, $http, $location, $route) {
 	$scope.title = "Players"
 	$http.get('/users/json').success(function(data) {
-		$scope.players = data;
+		$scope.players = data.players;
+		if (! data.Success) $scope.error = data["Error"];
 	});
 
 	$scope.form = {};
@@ -97,8 +103,10 @@ function PlayerDetailCtrl($scope, $routeParams, $http, $location) {
 	$scope.predicate = '-createdDate';
 
 	$http.get('/users/' + $scope.userId + '/json').success(function(data) {
-		$scope.userData = data;
-		$scope.title = data.fname;
+		if (data.Success) {
+			$scope.userData = data.player;
+			$scope.title = data.player.displayName;
+		} else $scope.error = data["Error"];
 	});
 
 	$http.get('/matches/json?playerID=' + $scope.userId).success(function(data) {
