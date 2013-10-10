@@ -77,17 +77,18 @@ if (nconf.get('NODE_ENV') == 'prod') {
 
 app.get('/', routes.index);
 
-app.get('/users/:id/json', function(){ user.singleJSON.apply(user, arguments) });
-app.get('/users/:id/delete', function(){ user.delete.apply(user, arguments) });
-app.put('/users/:id/edit', function(){ user.edit.apply(user, arguments) });
-app.get('/users/json', function(){ user.listJSON.apply(user, arguments) });
-app.post('/users', function(){ user.add.apply(user, arguments) });
+app.get('/users/:id/json', function(){ user.singleJSON.apply(user, arguments); });
+app.get('/users/:id/delete', function(){ user.delete.apply(user, arguments); });
+app.put('/users/:id/edit', function(){ user.edit.apply(user, arguments); });
+app.get('/users/json', function(){ user.listJSON.apply(user, arguments); });
+app.post('/users', function(){ user.add.apply(user, arguments); });
+app.get('/users/rebuildStats', function(){ user.rebuildStats.apply(user, arguments); });
 
 
-app.post('/matches', function(){ match.add.apply(match, arguments) });
-app.get('/matches/json', function(){ match.json.apply(match, arguments) });
-app.get('/matches/delList/json', function(){ match.delList.apply(match, arguments) });
-app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, arguments) });
-app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments) });
-app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments) });
-app.get('/matches/recommend', function(){ match.recommend.apply(match, arguments) });
+app.post('/matches', function(){ match.add.apply(match, arguments); });
+app.get('/matches/json', function(){ match.json.apply(match, arguments); });
+app.get('/matches/delList/json', function(){ match.delList.apply(match, arguments); });
+app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, arguments); });
+app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments); });
+app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments); });
+app.get('/matches/recommend', function(){ match.recommend.apply(match, arguments); });

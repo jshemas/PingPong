@@ -55,6 +55,9 @@ function MatchDeleteListCtrl($scope, $http, $location, $route, $rootScope) {
 	$http.get('/users/json').success(function(data) {
 		$scope.players = data;
 	});
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	};
 };
 
 function MatchDetailCtrl($scope, $routeParams, $http, $location) {
@@ -69,7 +72,7 @@ function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 			console.log("Match removed");
 			$location.path( "/matches" );
 			$http.get('/matches/rebuildRatings').success(function(data){
-				
+				console.log('ratings recalculated');
 			});
 		});
 	};

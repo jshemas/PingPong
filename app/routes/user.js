@@ -87,3 +87,29 @@ User.prototype.delete = function(req, res){
 		} else res.json({"Success": true});
 	});
 };
+
+User.prototype.rebuildStats = function(req, res){
+	var that = this;
+	that.config.Players.find({deleted: false}, function(err, players){
+		async.each(players, function(player, f){
+			async.parallel([
+				function(pcb){
+					player.recalculateWins.call(player, pcb);
+				},
+				function(pcb){
+					player.recalculateLosses.call(player, pcb);
+				},
+				function(pcb){
+					player.recalculateStreak.call(player, pcb);
+				}
+			], f);
+		}, function(err){
+			if (err) {
+				console.log(err);
+				res.json({success: false});
+			} else {
+				res.json({success: true});
+			}
+		});
+	});
+};

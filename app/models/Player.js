@@ -1,4 +1,5 @@
-var md5 = require('MD5');
+var md5 = require('MD5'),
+	async = require('async');
 
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
@@ -46,39 +47,62 @@ module.exports = function(mongoose) {
 	});
 	
 	playerSchema.methods.recalculateWins = function(cb) {
+		var that = this;
 		mongoose.model('matches').count({deleted: false, winner: this._id}, function(err, count){
 			if (err) cb(err);
 			else {
-				this.wins = count;
-				this.save(cb);
+				that.wins = count;
+				that.save(cb);
 			}
 		});
 	};
 	
 	playerSchema.methods.recalculateLosses = function(cb) {
+		var that = this;
 		mongoose.model('matches').count({deleted: false, loser: this._id}, function(err, count){
 			if (err) cb(err);
 			else {
-				this.losses = count;
-				this.save(cb);
+				that.losses = count;
+				that.save(cb);
 			}
 		});
 	};
 	
 	playerSchema.methods.recalculateStreak = function(cb) {
+		var that = this;
 		mongoose.model('matches').find({deleted: false}).or([{winner: this._id}, {loser: this._id}]).sort({createdDate: -1}).exec(function(err, matches){
-			var streak = matches[0].winner == this._id ? 1 : -1;
-			for (var i = 1; i < matches.length; i++) {
-				if (streak < 0) {
-					if (matches[i].loser == this._id) streak--;
-					else break;
+			var streak = 0;
+			async.eachSeries(matches, function(match, f){
+				// Can't compare ObjectIds with == or ===
+				// so use the ObjectId#equals method
+				if (that._id.equals(match.winner)) {
+					if (streak >= 0) {
+						streak++;
+						f();
+					} else {
+						// async interprets this as an error
+						// which lets us break out of the loop
+						f('break');
+					}
+				} else if (that._id.equals(match.loser)) {
+					if (streak <= 0) {
+						streak--;
+						f();
+					} else {
+						f('break');
+					}
 				} else {
-					if (matches[i].winner == this._id) streak++;
-					else break;
+					console.log('neither one matches??????');
+					f();
 				}
-			}
-			this.streak = streak;
-			this.save(cb);
+			}, function(err){
+				if (err && err != 'break') {
+					cb(err);
+				} else {
+					that.streak = streak;
+					that.save(cb);
+				}
+			});
 		});
 	};
 

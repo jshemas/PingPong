@@ -190,23 +190,34 @@ Match.prototype['delete'] = function(req, res){
 	var errHandler = function(err){
 		console.log(err);
 		res.json({Success: false, 'Error': err});
-	}
+	};
 	that.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
-		console.log(match);
-		async.parallel([
-			match.winner.recalculateWins,
-			match.winner.recalculateLosses,
-			match.winner.recalculateStreak,
-			match.loser.recalculateWins,
-			match.loser.recalculateLosses,
-			match.loser.recalculateStreak
-		], function(err){
-			if (err) errHandler(err); 
+		match.deleted = true;
+		match.save(function(err){
+			if (err) errHandler(err);
 			else {
-				match.deleted = true;
-				match.save(function(err){
-					if (err) errHandler(err);
-					else that.rebuildRatings(req, res);
+				async.parallel([
+					function(pcb){
+						match.winner.recalculateWins.call(match.winner, pcb);
+					},
+					function(pcb){
+						match.winner.recalculateLosses.call(match.winner, pcb);
+					},
+					function(pcb){
+						match.winner.recalculateStreak.call(match.winner, pcb);
+					},
+					function(pcb){
+						match.loser.recalculateWins.call(match.loser, pcb);
+					},
+					function(pcb){
+						match.loser.recalculateLosses.call(match.loser, pcb);
+					},
+					function(pcb){
+						match.loser.recalculateStreak.call(match.loser, pcb);
+					}
+				], function(err){
+					if (err) errHandler(err); 
+					else res.json({success: true});
 				});
 			}
 		});
@@ -214,6 +225,7 @@ Match.prototype['delete'] = function(req, res){
 };
 
 Match.prototype.rebuildRatings = function(req, res) {
+	console.log('1');
     var that = this;
     async.parallel({
         players: function(pcb){
@@ -223,13 +235,14 @@ Match.prototype.rebuildRatings = function(req, res) {
             that.config.Matches.find({deleted: false}).sort({createdDate:1}).exec(pcb);
         }
     }, function(err, args) {
+    	console.log('2');
         if (err || !args) {
         	console.log(error);
         	winston.info(error);
         	res.json({success: false, "error": error});
         } else {
         	replayMatches(args.players, args.matches);
-	        res.json({
+    		res.json({
 	            sucess: true,
 	            players: args.players,
 	            matches: args.matches
