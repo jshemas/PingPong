@@ -66,7 +66,7 @@ describe('Add Player: ', function (done) {
 	});
 	it('make sure player one exists', function(done) {
 		request(app).get('/users/'+userID1+'/json').expect(200).end(function(err, res){
-			expect(res.body._id).to.be(userID1);
+			expect(res.body.player._id).to.be(userID1);
 			done();
 		});
 	});
@@ -79,7 +79,7 @@ describe('Add Player: ', function (done) {
 	});
 	it('make sure player two exists', function(done) {
 		request(app).get('/users/'+userID2+'/json').expect(200).end(function(err, res){
-			expect(res.body._id).to.be(userID2);
+			expect(res.body.player._id).to.be(userID2);
 			done();
 		});
 	});
@@ -94,9 +94,9 @@ describe('Add Game: ', function (done) {
 			expect(res.body.success).to.be(true);
 			//the return obj has 3 _ids in it
 			//we need to find which one is game ID
-			if(res.body.match[0].delete){
+			if(res.body.match[0]['delete']){
 				gameID = res.body.match[0]._id;
-			} else if(res.body.match[1].delete) {
+			} else if(res.body.match[1]['delete']) {
 				gameID = res.body.match[1]._id;
 			} else {
 				gameID = res.body.match[2]._id;

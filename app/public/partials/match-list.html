@@ -12,16 +12,16 @@
 			<div class="row well" style="padding-bottom: 20px;">
 				<div class="span4 offset1">
 					<div class="pull-left">
-						<img ng-src="{{match.redPlayerDetails.0.gravatar + '&s=125'}}">
+						<img ng-src="{{match.winner.gravatar + '&s=125'}}">
 					</div>
 					<div class="center">
-						<a href="#/players/{{match.redPlayerDetails.0._id}}">
-							{{match.redPlayerDetails.0.fname}} "{{match.redPlayerDetails.0.nickname}}" {{match.redPlayerDetails.0.lname}}
+						<a href="#/players/{{match.winner._id}}">
+							{{match.winner.fname}} "{{match.winner.nickname}}" {{match.winner.lname}}
 						</a>
 						<br>
-						{{ match.redPlayerRating }} ({{match.ratingChange}})
+						{{ match.winnerRating }} ({{match.ratingChange}})
 						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
-							<div><span class="badge {{badgeColor(game.redScore, game.blueScore)}}">{{game.redScore}}</span></div>
+							<div><span class="badge {{badgeColor(game.winnerScore, game.loserScore)}}">{{game.winnerScore}}</span></div>
 						</div>
 					</div>
 				</div>
@@ -34,16 +34,16 @@
 				</div>
 				<div class="span4">
 					<div class="pull-right">
-						<img ng-src="{{match.bluePlayerDetails.0.gravatar + '&s=125'}}">
+						<img ng-src="{{match.loser.gravatar + '&s=125'}}">
 					</div>
 					<div class="center">
-						<a href="#/players/{{match.bluePlayerDetails.0._id}}">
-							{{match.bluePlayerDetails.0.fname}} "{{match.bluePlayerDetails.0.nickname}}" {{match.bluePlayerDetails.0.lname}}
+						<a href="#/players/{{match.loser._id}}">
+							{{match.loser.fname}} "{{match.loser.nickname}}" {{match.loser.lname}}
 						</a>
 						<br>
-						{{ match.bluePlayerRating }} ({{-match.ratingChange}})
+						{{ match.loserRating }} ({{-match.ratingChange}})
 						<div ng-repeat="game in match.games | filter:query | orderBy:orderProp">
-							<div><span class="badge {{badgeColor(game.blueScore, game.redScore)}}">{{game.blueScore}}</span></div>
+							<div><span class="badge {{badgeColor(game.loserScore, game.winnerScore)}}">{{game.loserScore}}</span></div>
 						</div>
 					</div>
 				</div>
