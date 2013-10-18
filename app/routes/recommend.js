@@ -32,7 +32,7 @@ module.exports.buildPairs = function buildPairs(players, matches, opts) {
             // been between these two players. 
             var ratio = count/minTotalGames;
             var diff = Math.abs(player.rating - red.rating)/opts.ratingRange;
-            var compScore = diff + (2*ratio); // emphasizing low ratio of games first;
+            var compScore = diff + (3*ratio); // emphasizing low ratio of games first;
             if (compScore < minCompScore) {
                 minCompScore = compScore;
                 var leastFrequent = pid;
