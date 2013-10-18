@@ -8,17 +8,46 @@
 
 </div>
 <h1>{{title}}</h1>
-<ul class="matchesPlayed" style="margin:0; list-style: none;">
+<ul style="margin:0; list-style: none;">
 	<li>
-		<div class="row">
-			<div class="span5 center"><a href="#/players/{{matchData.redPlayerDetails.0._id}}">{{matchData.redPlayerDetails.0.fname}} "{{matchData.redPlayerDetails.0.nickname}}" {{matchData.redPlayerDetails.0.lname}}</a> </div>
-			<div class="span2 center"><a href="#/matchDatas/{{matchData._id}}">{{ matchData.createdDate | date:'MM/dd/yyyy h:mm'}}</a></div>
-			<div class="span5 center"><a href="#/players/{{matchData.bluePlayerDetails.0._id}}">{{matchData.bluePlayerDetails.0.fname}} "{{matchData.bluePlayerDetails.0.nickname}}" {{matchData.bluePlayerDetails.0.lname}}</a></div>
-		</div>
-		<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp" class="row">
-			<div class="span5 center"><span class="badge">{{game.redScore}}</span></div>
-			<div class="span2 center">GAME {{ $index +1 }}</div>
-			<div class="span5 center"><span class="badge">{{game.blueScore}}</span></div>
+		<div class="row well" style="padding-bottom: 20px;">
+			<div class="span4 offset1">
+				<div class="pull-left">
+					<img ng-src="{{matchData.winner.gravatar + '&s=125'}}">
+				</div>
+				<div class="center">
+					<a href="#/players/{{matchData.winner._id}}">
+						{{matchData.winner.fname}} "{{matchData.winner.nickname}}" {{matchData.winner.lname}}
+					</a>
+					<br>
+					{{ matchData.winnerRating }} ({{matchData.ratingChange}})
+					<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp">
+						<div><span class="badge {{badgeColor(game.winnerScore, game.loserScore)}}">{{game.winnerScore}}</span></div>
+					</div>
+				</div>
+			</div>
+			<div class="span2 center">
+				<a href="#/matches/{{matchData._id}}">{{ matchData.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
+				<br /><br />
+				<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp" class="row">
+					<div>GAME {{ $index +1 }}</div>
+				</div>
+			</div>
+			<div class="span4">
+				<div class="pull-right">
+					<img ng-src="{{matchData.loser.gravatar + '&s=125'}}">
+				</div>
+				<div class="center">
+					<a href="#/players/{{matchData.loser._id}}">
+						{{matchData.loser.fname}} "{{matchData.loser.nickname}}" {{matchData.loser.lname}}
+					</a>
+					<br>
+					{{ matchData.loserRating }} ({{-matchData.ratingChange}})
+					<div ng-repeat="game in matchData.games | filter:query | orderBy:orderProp">
+						<div><span class="badge {{badgeColor(game.loserScore, game.winnerScore)}}">{{game.loserScore}}</span></div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</li>
 </ul>
@@ -34,6 +63,6 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		<button ng-click="deleteMatch()" class="btn btn-primary">Yes, remove.</button>
+		<button ng-click="deleteMatch()" data-dismiss="modal" class="btn btn-primary">Yes, remove.</button>
 	</div>
 </div>

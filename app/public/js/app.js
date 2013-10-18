@@ -1,12 +1,16 @@
 'use strict';
 /* App Module */
 
-angular.module('arena', ['PingPongFilters']).
+angular.module('arena', ['PingPongFilters', 'Services']).
 	config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider.
 	when('/matches', {
 			templateUrl: 'partials/match-list.html',
 			controller: MatchListCtrl
+		}).
+		when('/matchesDelete', {
+			templateUrl: 'partials/match-list.html',
+			controller: MatchDeleteListCtrl
 		}).
 		when('/matches/:matchId', {
 			templateUrl: 'partials/match-detail.html',
