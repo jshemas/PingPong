@@ -25,7 +25,7 @@ module.exports = function(mongoose) {
 	});
 	
 	playerSchema.virtual('displayName').get(function(){
-		return this.fname + ' ' + this.nickname + ' ' + this.lname;
+		return this.fname + ' "' + this.nickname + '" ' + this.lname;
 	});
 	
 	playerSchema.virtual('fullName').get(function(){
