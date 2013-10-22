@@ -25,7 +25,7 @@ module.exports = function(mongoose) {
 	});
 	
 	playerSchema.virtual('displayName').get(function(){
-		return this.fname + ' ' + this.nickname + ' ' + this.lname;
+		return this.fname + ' "' + this.nickname + '" ' + this.lname;
 	});
 	
 	playerSchema.virtual('fullName').get(function(){
@@ -91,10 +91,7 @@ module.exports = function(mongoose) {
 					} else {
 						f('break');
 					}
-				} else {
-					console.log('neither one matches??????');
-					f();
-				}
+				} 
 			}, function(err){
 				if (err && err != 'break') {
 					cb(err);

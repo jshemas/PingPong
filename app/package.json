@@ -1,24 +1,29 @@
 {
-	"name": "Ping-Pong",
-	"version": "1.0.0",
-	"scripts": {
-		"start": "node app.js"
-	},
-	"dependencies": {
-		"express": "3.3.7",
-		"ejs": "0.8.4",
-		"mongoose": "3.6.18",
-		"express-ejs-layouts": "0.3.1",
-		"stylus": "0.37.0",
-		"supertest": "0.7.1",
-		"expect.js": "0.2.0",
-		"nconf": "0.6.7",
-		"async": "0.2.9",
-		"nodemailer": "0.5.2",
-		"cron": "1.0.1",
-		"twitter": "0.2.2",
-		"winston": "0.7.2",
-		"mocha": "~1.13",
-		"MD5": "1.1.x"
-	}
+  "name": "Ping-Pong",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.3.7",
+    "ejs": "0.8.4",
+    "mongoose": "3.6.18",
+    "express-ejs-layouts": "0.3.1",
+    "stylus": "0.37.0",
+    "nconf": "0.6.7",
+    "async": "0.2.9",
+    "nodemailer": "0.5.2",
+    "cron": "1.0.1",
+    "twitter": "0.2.2",
+    "winston": "0.7.2",
+    "MD5": "1.1.x"
+  },
+  "devDependencies": {
+    "expect.js": "0.2.0",
+    "supertest": "0.7.1",
+    "mocha": "~1.13",
+    "sandboxed-module": "~0.2.2",
+    "jasmine-node": "~1.11.0",
+    "jasmine-stealth": "0.0.13"
+  }
 }
