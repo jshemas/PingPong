@@ -1,16 +1,34 @@
+// Dependencies
 require('../app/node_modules/jasmine-stealth');
-var sandbox = require('./../app/node_modules/sandboxed-module'),
-    md5 = jasmine.createSpy("MD5"),
-    async = jasmine.createSpyObj("async", ["eachSeries"]),
-    mongoose = require("./../app/node_modules/mongoose"),
-    schema = sandbox.require("./../app/models/Player", {
-      requires: { 
-        MD5: md5,
-        async: async
-       }
-    }),
-    Player = schema(mongoose).Players;
+var sandbox = require('./../app/node_modules/sandboxed-module');
+var realMongoose = require("./../app/node_modules/mongoose");
+var md5 = jasmine.createSpy("MD5");
+var async = jasmine.createSpyObj("async", ["eachSeries"]);
+var mongoose = jasmine.createSpyObj("mongoose", ["Schema", "model", "count"]);   
+var schema = sandbox.require("./../app/models/Player", {
+  requires: { 
+    MD5: md5,
+    async: async
+  }
+});
 
+// Setup spy methods
+mongoose.Schema.andCallFake(function(){ 
+  return realMongoose.Schema.apply(realMongoose, arguments);
+});  
+mongoose.model.andCallFake(function(name, schema){
+  if (name === "players"){
+    return realMongoose.model.apply(realMongoose, arguments);
+  } else if (name === "matches"){
+    return mongoose;
+  }
+});
+mongoose.count.andCallFake(function(params, cb){
+  cb(null, 12);
+});
+
+// Create fake players
+var Player = schema(mongoose).Players;
 var player = new Player({
   fname: 'Test',
   lname: 'Player',
@@ -20,21 +38,20 @@ var player = new Player({
   losses: 6,
   streak: -1
 });
-    
 var player2 = new Player({
   fname: 'Foo',
   lname: 'Baby',
   nickname: 'Bar',
+  wins: 4,
+  losses: 4,
   streak: 4
 });
 
-var countCallback, recalculateCallback, query;
-
 describe("Player", function(){
-   
   describe("#gravatar", function(){
-    beforeEach(function(){
+    beforeEach(function(done){ 
       md5.when("hotness@email.com").thenReturn("md5hotness");
+      done();
     });
 
     it("should return a gravatar url", function(done){
@@ -84,48 +101,32 @@ describe("Player", function(){
   });
 
   describe("#recalculateWins", function(){
-    beforeEach(function(){
-      countCallback = jasmine.captor();
-      recalculateCallback = jasmine.createSpy("recalculateWinsCallback");
-      query = jasmine.createSpyObj("mongooseQuery", ["count"]);      
-      spyOn(mongoose, "model").andReturn(query);
-      spyOn(player, "save").andCallFake(function(){
-        recalculateCallback(null, player);
+    beforeEach(function(done){
+      spyOn(player, "save").andCallFake(function(cb){
+        cb(null, player);
       });
+      done();
     });
 
     it("should return the correct number of wins", function(done){
-      player.recalculateWins(recalculateCallback);
-      expect(query.count).toHaveBeenCalledWith(jasmine.any(Object), countCallback.capture());
-      countCallback.value(null, 8);
-      expect(player.wins).toBe(8);
-      expect(recalculateCallback).toHaveBeenCalledWith(null, player);
-      done();
+      player.recalculateWins(function(err, p){
+        expect(p.wins).toBe(12);
+        done();
+      });
     });
   });
 
   describe("#recalculateLosses", function(){
-    beforeEach(function(){
-      countCallback = jasmine.captor();
-      recalculateCallback = jasmine.createSpy("recalculateLossesCallback");
-        
-      query = jasmine.createSpyObj("mongooseQuery", ["count"]);
-      spyOn(mongoose, "model").andReturn(query);
-      spyOn(player, "save").andCallFake(function(){
-        console.log("save called");
-        recalculateCallback(null, player);
+    beforeEach(function(done){
+      spyOn(player, "save").andCallFake(function(cb){
+        cb(null, player);
       });
+      done();
     });
 
     it("should return the correct number of losses", function(done){
-      console.log("running recalculateLosses test");
-      player.recalculateLosses(recalculateCallback);
-      recalculateCallback.when(null, player).thenCallFake(function(){
-        console.log("callback called");
-        expect(query.count).toHaveBeenCalledWith(jasmine.any(Object), countCallback.capture());
-        countCallback.value(null, 3);
-        expect(p.wins).toBe(3);
-        expect(err).toBe(null);
+      player.recalculateLosses(function(err, p){
+        expect(p.losses).toBe(12);
         done();
       });
     });
