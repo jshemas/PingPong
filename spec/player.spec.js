@@ -3,14 +3,8 @@ require('../app/node_modules/jasmine-stealth');
 var sandbox = require('./../app/node_modules/sandboxed-module');
 var realMongoose = require("./../app/node_modules/mongoose");
 var md5 = jasmine.createSpy("MD5");
-var async = jasmine.createSpyObj("async", ["eachSeries"]);
 var mongoose = jasmine.createSpyObj("mongoose", ["Schema", "model", "count"]);   
-var schema = sandbox.require("./../app/models/Player", {
-  requires: { 
-    MD5: md5,
-    async: async
-  }
-});
+var schema = sandbox.require("./../app/models/Player", { requires: { MD5: md5 } });
 
 // Setup spy methods
 mongoose.Schema.andCallFake(function(){ 
