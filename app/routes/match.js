@@ -47,8 +47,16 @@ Match.prototype.delList = function(req, res){
 Match.prototype.add = function(req, res){
 	var redPlayerObj = req.body.redPlayer;
 	var bluePlayerObj = req.body.bluePlayer;
-	var redPlayer = req.body.redPlayer._id;
-	var bluePlayer = req.body.bluePlayer._id;
+
+	var redPlayer, bluePlayer;
+
+	if(req.body.team){
+		redPlayer = req.body.team1._id;
+		bluePlayer = req.body.team2._id;
+	} else {
+		redPlayer = req.body.redPlayer._id;
+		bluePlayer = req.body.bluePlayer._id;
+	};
 	//validate your inputs
 	if(validateVar(redPlayer) || validateVar(bluePlayer)){
 		console.log("Match Add Failed: ", 'no player ID');
@@ -84,32 +92,42 @@ Match.prototype.add = function(req, res){
 		});
 	};
 	var gameData = findWinner(games, redPlayer, bluePlayer);
-	var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
-	var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
-	
-	
-	var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
-		+', '+games[1].redScore+'-'+games[1].blueScore;
-	
-	if (games.length > 2) {
-		tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
-	} else {
-		//lost in 2 straight games.
-	}
-
-
+	if(!req.body.team){
+		var redName = redPlayerObj.fname+' "'+redPlayerObj.nickname+'" '+redPlayerObj.lname;
+		var blueName = bluePlayerObj.fname+' "'+bluePlayerObj.nickname+'" '+bluePlayerObj.lname;
+		var tweet_status = 'New Match: '+ redName+' VS '+blueName+' Score: '+games[0].redScore+'-'+games[0].blueScore
+			+', '+games[1].redScore+'-'+games[1].blueScore;
+		
+		if (games.length > 2) {
+			tweet_status += ', '+games[2].redScore+'-'+games[2].blueScore;
+		} else {
+			//lost in 2 straight games.
+		}
+	};
 
    var that = this;
     async.parallel({
         winner: function(pcb){
-            that.config.Players.findById(gameData.winner, function(err,winner) {
-                pcb(null,winner);
-            });
+        	if(!req.body.team){
+	            that.config.Players.findById(gameData.winner, function(err,winner) {
+	                pcb(null,winner);
+	            });
+        	} else {
+        	    that.config.Teams.findById(gameData.winner, function(err,winner) {
+	                pcb(null,winner);
+	            });	
+        	}
         },
         loser: function(pcb){
-            that.config.Players.findById(gameData.loser, function(err,loser) {
-                pcb(null,loser);
-            });
+        	if(!req.body.team){
+	            that.config.Players.findById(gameData.loser, function(err,loser) {
+	                pcb(null,loser);
+	            });
+        	} else {
+        	   	that.config.Teams.findById(gameData.loser, function(err,loser) {
+                	pcb(null,loser);
+           	 	});	
+        	}
         },
     },
     function(error,args) {
@@ -124,11 +142,11 @@ Match.prototype.add = function(req, res){
             	winner.streak = winner.streak && winner.streak > 0 ? ++winner.streak : 1;
                 winner.save(function(err, player) {
                     if (err) {
-                        console.log('Save winning player failed: ', err);
+                        //console.log('Save winning player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Winning player rating updated');
+                        //console.log('Winning player rating updated');
                         pcb(null, player);
                     }
                 });
@@ -138,11 +156,11 @@ Match.prototype.add = function(req, res){
             	loser.streak = loser.streak && loser.streak < 0 ? --loser.streak : -1;
                 loser.save(function(err, player) {
                     if (err) {
-                        console.log('Save losing player failed: ', err);
+                        //console.log('Save losing player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        console.log('Losing player rating updated');
+                        //console.log('Losing player rating updated');
                         pcb(null, player);
                     }
                 });
@@ -177,12 +195,26 @@ Match.prototype.add = function(req, res){
 					match: data
 				});
 				//adding tweet code;
-				twitter_mod.update_status(tweet_status);
+				if(!req.body.team){
+					twitter_mod.update_status(tweet_status);
+				};
 			}
         });
 
     });
 
+};
+
+// need to DRY this out
+Match.prototype.teamDelete = function(req, res){
+	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
+		match.deleted = true;
+		match.save(function(err){
+			res.json({
+				success: true
+			});
+		});
+	});
 };
 
 Match.prototype['delete'] = function(req, res){
@@ -293,7 +325,6 @@ var replayMatches = function(players,matches) {
 var adjustRatings = function(games,winner,loser) {
     var result = games.length === 2 ? 1 : 0.75;
     var ratingChange = elo.delta(winner.rating, loser.rating, result);
-    console.log(winner.lname + ' gains ' + ratingChange + ' points from ' + loser.lname);
     winner.rating += ratingChange;
     loser.rating -= ratingChange;
 

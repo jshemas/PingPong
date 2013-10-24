@@ -52,6 +52,23 @@ var gameData = {
 	game3BluePlayer: '15'
 };
 
+// data for test game (add player ids later)
+var gameTeamData = {
+	team: 'true',
+	team1: {
+		_id: ''
+	},
+	team2: {
+		_id: ''
+	},
+	game1RedPlayer: '1',
+	game1BluePlayer: '15',
+	game2RedPlayer: '1',
+	game2BluePlayer: '15',
+	game3RedPlayer: '1',
+	game3BluePlayer: '15'
+};
+
 // id of the game we make
 var gameID;
 
@@ -195,6 +212,47 @@ describe('Add a Team: ', function (done) {
 	it('make sure team two exists', function(done) {
 		request(app).get('/teams/'+teamID2+'/json').expect(200).end(function(err, res){
 			expect(res.body.team._id).to.be(teamID2);
+			done();
+		});
+	});
+});
+
+describe('Add TeamGame: ', function (done) {
+	it('Adds a game to the database', function(done) {
+		gameTeamData.team1._id = teamID1;
+		gameTeamData.team2._id = teamID2;
+		request(app).post('/matches').send(gameTeamData).expect(200).end(function(err, res){
+			expect(res.body.success).to.be(true);
+			//the return obj has 3 _ids in it
+			//we need to find which one is game ID
+			if(res.body.match[0]['delete']){
+				gameTeamID = res.body.match[0]._id;
+			} else if(res.body.match[1]['delete']) {
+				gameTeamID = res.body.match[1]._id;
+			} else {
+				gameTeamID = res.body.match[2]._id;
+			};
+			done();
+		});
+	});
+	it('make sure the new game exists', function(done) {
+		request(app).get('/matches/'+gameTeamID+'/json').expect(200).end(function(err, res){
+			expect(res.body._id).to.be(gameTeamID);
+			done();
+		});
+	});
+});
+
+describe("Remove Team Game: ", function(done){
+	it('Should mark the game as removed.', function(done){
+		request(app).get('/matches/'+gameTeamID+'/teamDelete').expect(200).end(function(err, res){
+			//we should be setting a success flag for this call
+			done();
+		});
+	});
+	it('make sure the new game exists', function(done) {
+		request(app).get('/matches/'+gameTeamID+'/json').expect(200).end(function(err, res){
+			expect(res.body._id).to.be(gameTeamID);
 			done();
 		});
 	});
