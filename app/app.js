@@ -2,6 +2,7 @@ var express = require('express'),
 	routes = require('./routes'),
 	User = require('./routes/user'),
 	Match = require('./routes/match'),
+	Team = require('./routes/team'),
 	http = require('http'),
 	expressLayouts = require('express-ejs-layouts'),
 	path = require('path'),
@@ -58,9 +59,11 @@ winston.remove(winston.transports.Console);
 // import models
 var Players = require('./models/Player')(mongoose);
 var Matches = require('./models/Match')(mongoose);
+var Teams = require('./models/Team')(mongoose);
 
 var user = new User({Matches: Matches.Match, Players: Players.Players});
 var match = new Match({Matches: Matches.Match, Players: Players.Players});
+var team = new Team({Teams: Teams.Teams, Matches: Matches.Match, Players: Players.Players});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -84,7 +87,6 @@ app.get('/users/json', function(){ user.listJSON.apply(user, arguments); });
 app.post('/users', function(){ user.add.apply(user, arguments); });
 app.get('/users/rebuildStats', function(){ user.rebuildStats.apply(user, arguments); });
 
-
 app.post('/matches', function(){ match.add.apply(match, arguments); });
 app.get('/matches/json', function(){ match.json.apply(match, arguments); });
 app.get('/matches/delList/json', function(){ match.delList.apply(match, arguments); });
@@ -92,3 +94,10 @@ app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, argument
 app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments); });
 app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments); });
 app.get('/matches/recommend', function(){ match.recommend.apply(match, arguments); });
+
+app.get('/teams/:id/json', function(){ team.singleJSON.apply(team, arguments); });
+app.get('/teams/:id/delete', function(){ team.delete.apply(team, arguments); });
+app.put('/teams/:id/edit', function(){ team.edit.apply(team, arguments); });
+app.get('/teams/json', function(){ team.listJSON.apply(team, arguments); });
+app.post('/teams', function(){ team.add.apply(team, arguments); });
+app.get('/teams/rebuildStats', function(){ team.rebuildStats.apply(team, arguments); });
