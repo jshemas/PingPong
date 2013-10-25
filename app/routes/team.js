@@ -65,9 +65,8 @@ userTeam.prototype.add = function(req, res){
 	});
 };
 
-// still need to update
 userTeam.prototype.edit = function(req, res){
-	this.config.Players.update({"_id": req.body.id}, req.body.data, function(err, player) {
+	this.config.Teams.update({"_id": req.body.id}, req.body.data, function(err, team) {
 		if (err){
 			console.log(err)
 			winston.info(err);
@@ -88,20 +87,19 @@ userTeam.prototype.delete = function(req, res){
 	});
 };
 
-// still need to update
 userTeam.prototype.rebuildStats = function(req, res){
 	var that = this;
-	that.config.Players.find({deleted: false}, function(err, players){
-		async.each(players, function(player, f){
+	that.config.Teams.find({deleted: false}, function(err, teams){
+		async.each(teams, function(team, f){
 			async.parallel([
 				function(pcb){
-					player.recalculateWins.call(player, pcb);
+					team.recalculateWins.call(team, pcb);
 				},
 				function(pcb){
-					player.recalculateLosses.call(player, pcb);
+					team.recalculateLosses.call(team, pcb);
 				},
 				function(pcb){
-					player.recalculateStreak.call(player, pcb);
+					team.recalculateStreak.call(team, pcb);
 				}
 			], f);
 		}, function(err){

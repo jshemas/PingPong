@@ -14,18 +14,12 @@ module.exports = function(mongoose) {
 		removedDate: { type: Date },
 		ratingChange: { type: Number, required: false },
 		winnerRating: { type: Number },
-		loserRating: { type: Number }
+		loserRating: { type: Number },
+		teamGame: { type: Boolean, 'default': false }
 	},
 	{
 		toObject: { getters: true },
 		toJSON: { virtuals: true }
-	});
-
-	// What is this used for?
-	var teamSchema = mongoose.Schema({
-		// TODO: Change to winner/loser
-		redPlayer: { type: String, required: true },
-		bluePlayer: { type: String, required: true }
 	});
 	
 	var Match = mongoose.model('matches', matchSchema);

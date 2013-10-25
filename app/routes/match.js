@@ -172,7 +172,8 @@ Match.prototype.add = function(req, res){
                     games: gameData.games,
                     ratingChange: ratingChange,
                     winnerRating: winner.rating,
-                    loserRating: loser.rating
+                    loserRating: loser.rating,
+                    teamGame: true
                 });
 
                 newMatch.save(function (err, newMatch) {
@@ -181,6 +182,7 @@ Match.prototype.add = function(req, res){
                         winston.info(err);
                         pcb({success: false, error: err});
                     } else {
+                    	//console.log("newMatch:",newMatch);
                         pcb(null, newMatch.toJSON({virtual: true}));
                     };
                 });
@@ -208,6 +210,7 @@ Match.prototype.add = function(req, res){
 // need to DRY this out
 Match.prototype.teamDelete = function(req, res){
 	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
+		//console.log("match:",match);
 		match.deleted = true;
 		match.save(function(err){
 			res.json({
