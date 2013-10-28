@@ -166,6 +166,10 @@ Match.prototype.add = function(req, res){
                 });
             },
             function(pcb){
+            	var teamGameBool = false;
+            	if(req.body.team){
+            		teamGameBool = true;
+            	};
                 var newMatch = new that.config.Matches({
                     winner: gameData.winner,
                     loser: gameData.loser,
@@ -173,7 +177,7 @@ Match.prototype.add = function(req, res){
                     ratingChange: ratingChange,
                     winnerRating: winner.rating,
                     loserRating: loser.rating,
-                    teamGame: true
+                    teamGame: teamGameBool
                 });
 
                 newMatch.save(function (err, newMatch) {
@@ -233,22 +237,22 @@ Match.prototype['delete'] = function(req, res){
 			else {
 				async.parallel([
 					function(pcb){
-						match.winner.recalculateWins.call(match.winner, pcb);
+						match.winner[0].recalculateWins.call(match.winner[0], pcb);
 					},
 					function(pcb){
-						match.winner.recalculateLosses.call(match.winner, pcb);
+						match.winner[0].recalculateLosses.call(match.winner[0], pcb);
 					},
 					function(pcb){
-						match.winner.recalculateStreak.call(match.winner, pcb);
+						match.winner[0].recalculateStreak.call(match.winner[0], pcb);
 					},
 					function(pcb){
-						match.loser.recalculateWins.call(match.loser, pcb);
+						match.loser[0].recalculateWins.call(match.loser[0], pcb);
 					},
 					function(pcb){
-						match.loser.recalculateLosses.call(match.loser, pcb);
+						match.loser[0].recalculateLosses.call(match.loser[0], pcb);
 					},
 					function(pcb){
-						match.loser.recalculateStreak.call(match.loser, pcb);
+						match.loser[0].recalculateStreak.call(match.loser[0], pcb);
 					}
 				], function(err){
 					if (err) errHandler(err); 
