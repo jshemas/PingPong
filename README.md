@@ -37,6 +37,14 @@ jasmine-node spec/
 ```
 You can also run the tests by using ```make tests```
 
+### Grunt.js
+To use Grunt.JS to run the server or run tests, first run...
+```
+npm install -g grunt-cli
+```
+First cd into app, then you can do things like```grunt```Which will run jshint and then the mocha tests. Or you can run```grunt testserver```This will watch some of the server files, and if a change happens it will rerun the mocha tests. You can also launch the a server doing: ```grunt server```
+These rules are defines in grunt.js
+
 ### Dev collections
 In order to import some data for your dev mongo, run the following:
 
