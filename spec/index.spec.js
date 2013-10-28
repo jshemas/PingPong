@@ -245,7 +245,7 @@ describe('Add TeamGame: ', function (done) {
 
 describe("Remove Team Game: ", function(done){
 	it('Should mark the game as removed.', function(done){
-		request(app).get('/matches/'+gameTeamID+'/teamDelete').expect(200).end(function(err, res){
+		request(app).get('/matches/'+gameTeamID+'/delete').expect(200).end(function(err, res){
 			//we should be setting a success flag for this call
 			done();
 		});

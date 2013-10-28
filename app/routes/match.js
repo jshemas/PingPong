@@ -220,19 +220,6 @@ Match.prototype.add = function(req, res){
 
 };
 
-// need to DRY this out
-Match.prototype.teamDelete = function(req, res){
-	this.config.Matches.findById(req.params.id).populate('winner loser winnerTeam loserTeam').exec(function(err, match){
-		//console.log("matchTeam:",match);
-		match.deleted = true;
-		match.save(function(err){
-			res.json({
-				success: true
-			});
-		});
-	});
-};
-
 Match.prototype['delete'] = function(req, res){
 	var that = this;
 	var errHandler = function(err){
@@ -245,29 +232,15 @@ Match.prototype['delete'] = function(req, res){
 		match.save(function(err){
 			if (err) errHandler(err);
 			else {
-				async.parallel([
-					function(pcb){
-						match.winner[0].recalculateWins.call(match.winner[0], pcb);
-					},
-					function(pcb){
-						match.winner[0].recalculateLosses.call(match.winner[0], pcb);
-					},
-					function(pcb){
-						match.winner[0].recalculateStreak.call(match.winner[0], pcb);
-					},
-					function(pcb){
-						match.loser[0].recalculateWins.call(match.loser[0], pcb);
-					},
-					function(pcb){
-						match.loser[0].recalculateLosses.call(match.loser[0], pcb);
-					},
-					function(pcb){
-						match.loser[0].recalculateStreak.call(match.loser[0], pcb);
-					}
-				], function(err){
-					if (err) errHandler(err); 
+				if(match.teamGame == false) {
+					var state = deleteMatch(match);
+					if (state) errHandler(state); 
 					else res.json({success: true});
-				});
+				} else {
+					var state = deleteTeamMatch(match);
+					if (state) errHandler(state); 
+					else res.json({success: true});
+				}
 			}
 		});
 	});
@@ -374,6 +347,58 @@ var whoWon = function(game) {
     } else {
         return 'B';
     }
+};
+
+var deleteMatch = function(match) {
+	async.parallel([
+		function(pcb){
+			match.winner.recalculateWins.call(match.winner, pcb);
+		},
+		function(pcb){
+			match.winner.recalculateLosses.call(match.winner, pcb);
+		},
+		function(pcb){
+			match.winner.recalculateStreak.call(match.winner, pcb);
+		},
+		function(pcb){
+			match.loser.recalculateWins.call(match.loser, pcb);
+		},
+		function(pcb){
+			match.loser.recalculateLosses.call(match.loser, pcb);
+		},
+		function(pcb){
+			match.loser.recalculateStreak.call(match.loser, pcb);
+		}
+	], function(err){
+		if (err) return err; 
+		else return;
+	});
+};
+
+var deleteTeamMatch = function(match) {
+	async.parallel([
+		function(pcb){
+			match.winnerTeam[0].recalculateWins.call(match.winnerTeam[0], pcb);
+		},
+		function(pcb){
+			match.winnerTeam[0].recalculateLosses.call(match.winnerTeam[0], pcb);
+		},
+		function(pcb){
+			match.winnerTeam[0].recalculateStreak.call(match.winnerTeam[0], pcb);
+		},
+		function(pcb){
+			match.loserTeam[0].recalculateWins.call(match.loserTeam[0], pcb);
+		},
+		function(pcb){
+			match.loserTeam[0].recalculateLosses.call(match.loserTeam[0], pcb);
+		},
+		function(pcb){
+			match.loserTeam[0].recalculateStreak.call(match.loserTeam[0], pcb);
+		}
+	], function(err){
+		if (err) return err; 
+		else return;
+	});
 };
 
 Match.prototype.recMatches = function recMatches() {

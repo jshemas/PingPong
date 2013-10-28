@@ -92,7 +92,6 @@ app.get('/matches/json', function(){ match.json.apply(match, arguments); });
 app.get('/matches/delList/json', function(){ match.delList.apply(match, arguments); });
 app.get('/matches/:id/json', function(){ match.singleMatch.apply(match, arguments); });
 app.get('/matches/:id/delete', function(){ match.delete.apply(match, arguments); });
-app.get('/matches/:id/teamDelete', function(){ match.teamDelete.apply(match, arguments); });
 app.get('/matches/rebuildRatings', function(){ match.rebuildRatings.apply(match, arguments); });
 app.get('/matches/recommend', function(){ match.recommend.apply(match, arguments); });
 
