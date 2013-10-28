@@ -140,6 +140,70 @@ function PlayerDetailCtrl($scope, $routeParams, $http, $location) {
 	};
 };
 
+function TeamListCtrl($scope, $http, $location, $route) {
+	$scope.title = "Teams"
+	$http.get('/matches/json').success(function(data) {
+		$scope.matches = data;
+	});
+	$http.get('/users/json').success(function(data) {
+		$scope.players = data.players;
+	});
+	$http.get('/teams/json').success(function(data) {
+		$scope.teams = data.teams;
+		if (! data.Success) $scope.error = data["Error"];
+	});
+
+	$scope.form = {};
+	$scope.addTeam = function () {
+		$http.post('/teams', $scope.form).success(function(data) {
+			$route.reload();
+		});
+	};
+	$scope.predicate = '-rating';
+};
+
+function TeamDetailCtrl($scope, $routeParams, $http, $location) {
+	$scope.teamId = $routeParams.teamId;
+	$scope.predicate = '-createdDate';
+
+	$http.get('/teams/' + $scope.teamId + '/json').success(function(data) {
+		if (data.Success) {
+			$scope.teamData = data.team;
+			$scope.title = data.team.teamName;
+		} else $scope.error = data["Error"];
+	});
+
+	$http.get('/matches/json?playerID=' + $scope.teamId + 'team=true').success(function(data) {
+		$scope.matchData = data;
+	});
+
+	$scope.deleteTeam = function () {
+		$('#removeTeamConfirmation').modal('hide')
+		$http.get('/teams/' + $scope.teamId + '/delete').success(function(data) {
+			$location.path( "/teams" );
+		});
+	};
+
+	$scope.editTeam = function (user) {
+		$.extend($scope.teamData, team);
+		$http.put('/teams/' + $scope.teamId + '/edit', {"id": $scope.teamId, "data": team}).success(function(data) {
+			$('#editTeamDialog').modal('hide');
+		});
+	};
+
+	$scope.showRemoveTeam = function(){
+		$('#removeTeamConfirmation').modal({})
+	};
+
+	$scope.showEditTeam = function(){
+		$('#editTeamDialog').modal({});
+	};
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	};
+};
+
 function RootCtrl($rootScope, $location, alertService) {
 	$rootScope.changeView = function(view) {
 		$location.path(view);

@@ -23,7 +23,11 @@ Match.prototype.singleMatch = function(req, res){
 // gets a list of all of the matches
 Match.prototype.json = function(req, res){
 	var id = req.query.playerID;
+	var isTeam = req.query.team;
 	var query = id ? {deleted: false, $or: [ {'winner': id}, {'loser': id} ]} : {deleted: false};
+	if(isTeam == true){
+		query = id ? {deleted: false, $or: [ {'winnerTeam': id}, {'loserTeam': id} ]} : {deleted: false};
+	};
 	this.config.Matches.find(query).sort({createdDate: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
 		if (err){ // TODO handle err
 			console.log(err)

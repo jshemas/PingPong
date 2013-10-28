@@ -27,6 +27,26 @@ angular.module('arena', ['PingPongFilters', 'Services']).
 		when('/updates', {
 			templateUrl: 'partials/recent-updates.html'
 		}).
+		when('/teamMatches', {
+			templateUrl: 'partials/match-list.html',
+			controller: MatchListCtrl
+		}).
+		when('/teamMatchesDelete', {
+			templateUrl: 'partials/match-list.html',
+			controller: MatchDeleteListCtrl
+		}).
+		when('/teamMatches/:matchId', {
+			templateUrl: 'partials/match-detail.html',
+			controller: MatchDetailCtrl
+		}).
+		when('/teams', {
+			templateUrl: 'partials/team-list.html',
+			controller: TeamListCtrl
+		}).
+		when('/teams/:userId', {
+			templateUrl: 'partials/team-detail.html',
+			controller: TeamDetailCtrl
+		}).
 		otherwise({redirectTo: '/matches'});
 	//$locationProvider.html5Mode(true); // Use HTML5 strategy if available for how application deep linking paths are stored
 }]);
