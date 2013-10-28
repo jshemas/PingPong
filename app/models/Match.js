@@ -1,8 +1,10 @@
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
 	var matchSchema = mongoose.Schema({
-		winner: [{ type: mongoose.Schema.ObjectId, ref: 'players', required: true }],
-		loser: [{ type: mongoose.Schema.ObjectId, ref: 'players', required: true }],
+		winner: [{ type: mongoose.Schema.ObjectId, ref: 'players'}],
+		loser: [{ type: mongoose.Schema.ObjectId, ref: 'players'}],
+		winnerTeam: [{ type: mongoose.Schema.ObjectId, ref: 'teams'}],
+		loserTeam: [{ type: mongoose.Schema.ObjectId, ref: 'teams'}],
 		games: [
 			{ 
 				winnerScore: { type: Number, required: true },

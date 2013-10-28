@@ -13,7 +13,7 @@ function Match(config){
 module.exports = Match;
 
 Match.prototype.singleMatch = function(req, res){
-	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function (err, match) {
+	this.config.Matches.findById(req.params.id).populate('winner loser winnerTeam loserTeam').exec(function (err, match) {
 		if (err) res.json({Success: false, "Error": err});
 		else if (!match) res.json({Success: false, "Error": "no record found"});
 		else res.json(match);
@@ -24,7 +24,7 @@ Match.prototype.singleMatch = function(req, res){
 Match.prototype.json = function(req, res){
 	var id = req.query.playerID;
 	var query = id ? {deleted: false, $or: [ {'winner': id}, {'loser': id} ]} : {deleted: false};
-	this.config.Matches.find(query).sort({createdDate: -1}).populate('winner loser').exec(function (err, matches) {
+	this.config.Matches.find(query).sort({createdDate: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
 		if (err){ // TODO handle err
 			console.log(err)
 			winston.info(err);
@@ -36,7 +36,7 @@ Match.prototype.json = function(req, res){
 
 // gets a list of all of the deleted matches
 Match.prototype.delList = function(req, res){
-	this.config.Matches.find({deleted: true}).sort({dateTime: -1}).populate('winner loser').exec(function (err, matches) {
+	this.config.Matches.find({deleted: true}).sort({dateTime: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
 		if (err){ // TODO handle err
 			console.log(err)
 			winston.info(err);
@@ -166,19 +166,28 @@ Match.prototype.add = function(req, res){
                 });
             },
             function(pcb){
-            	var teamGameBool = false;
+            	var newMatch;
             	if(req.body.team){
-            		teamGameBool = true;
-            	};
-                var newMatch = new that.config.Matches({
-                    winner: gameData.winner,
-                    loser: gameData.loser,
-                    games: gameData.games,
-                    ratingChange: ratingChange,
-                    winnerRating: winner.rating,
-                    loserRating: loser.rating,
-                    teamGame: teamGameBool
-                });
+	            	newMatch = new that.config.Matches({
+	                    winnerTeam: gameData.winner,
+	                    loserTeam: gameData.loser,
+	                    games: gameData.games,
+	                    ratingChange: ratingChange,
+	                    winnerRating: winner.rating,
+	                    loserRating: loser.rating,
+	                    teamGame: true
+	                });
+            	} else {
+	            	newMatch = new that.config.Matches({
+	                    winner: gameData.winner,
+	                    loser: gameData.loser,
+	                    games: gameData.games,
+	                    ratingChange: ratingChange,
+	                    winnerRating: winner.rating,
+	                    loserRating: loser.rating,
+	                    teamGame: false
+	                });
+            	}
 
                 newMatch.save(function (err, newMatch) {
                     if (err){ // TODO handle the error
@@ -213,8 +222,8 @@ Match.prototype.add = function(req, res){
 
 // need to DRY this out
 Match.prototype.teamDelete = function(req, res){
-	this.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
-		//console.log("match:",match);
+	this.config.Matches.findById(req.params.id).populate('winner loser winnerTeam loserTeam').exec(function(err, match){
+		//console.log("matchTeam:",match);
 		match.deleted = true;
 		match.save(function(err){
 			res.json({
@@ -230,7 +239,8 @@ Match.prototype['delete'] = function(req, res){
 		console.log(err);
 		res.json({Success: false, 'Error': err});
 	};
-	that.config.Matches.findById(req.params.id).populate('winner loser').exec(function(err, match){
+	that.config.Matches.findById(req.params.id).populate('winner loser winnerTeam loserTeam').exec(function(err, match){
+		//console.log("match:",match);
 		match.deleted = true;
 		match.save(function(err){
 			if (err) errHandler(err);
