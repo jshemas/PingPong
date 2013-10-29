@@ -237,11 +237,11 @@ Match.prototype['delete'] = function(req, res){
 			if (err) errHandler(err);
 			else {
 				if(match.teamGame == false) {
-					var state = deleteMatch(match);
+					var state = deleteMatch(match, match.winner, match.loser);
 					if (state) errHandler(state); 
 					else res.json({success: true});
 				} else {
-					var state = deleteTeamMatch(match);
+					var state = deleteMatch(match, match.winnerTeam, match.loserTeam);
 					if (state) errHandler(state); 
 					else res.json({success: true});
 				}
@@ -353,51 +353,25 @@ var whoWon = function(game) {
     }
 };
 
-var deleteMatch = function(match) {
+var deleteMatch = function(match, winner, loser) {
 	async.parallel([
 		function(pcb){
-			match.winner.recalculateWins.call(match.winner, pcb);
+			winner.recalculateWins.call(winner, pcb);
 		},
 		function(pcb){
-			match.winner.recalculateLosses.call(match.winner, pcb);
+			winner.recalculateLosses.call(winner, pcb);
 		},
 		function(pcb){
-			match.winner.recalculateStreak.call(match.winner, pcb);
+			winner.recalculateStreak.call(winner, pcb);
 		},
 		function(pcb){
-			match.loser.recalculateWins.call(match.loser, pcb);
+			loser.recalculateWins.call(loser, pcb);
 		},
 		function(pcb){
-			match.loser.recalculateLosses.call(match.loser, pcb);
+			loser.recalculateLosses.call(loser, pcb);
 		},
 		function(pcb){
-			match.loser.recalculateStreak.call(match.loser, pcb);
-		}
-	], function(err){
-		if (err) return err; 
-		else return;
-	});
-};
-
-var deleteTeamMatch = function(match) {
-	async.parallel([
-		function(pcb){
-			match.winnerTeam.recalculateWins.call(match.winnerTeam, pcb);
-		},
-		function(pcb){
-			match.winnerTeam.recalculateLosses.call(match.winnerTeam, pcb);
-		},
-		function(pcb){
-			match.winnerTeam.recalculateStreak.call(match.winnerTeam, pcb);
-		},
-		function(pcb){
-			match.loserTeam.recalculateWins.call(match.loserTeam, pcb);
-		},
-		function(pcb){
-			match.loserTeam.recalculateLosses.call(match.loserTeam, pcb);
-		},
-		function(pcb){
-			match.loserTeam.recalculateStreak.call(match.loserTeam, pcb);
+			loser.recalculateStreak.call(loser, pcb);
 		}
 	], function(err){
 		if (err) return err; 
