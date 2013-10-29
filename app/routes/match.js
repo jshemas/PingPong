@@ -382,22 +382,22 @@ var deleteMatch = function(match) {
 var deleteTeamMatch = function(match) {
 	async.parallel([
 		function(pcb){
-			match.winnerTeam[0].recalculateWins.call(match.winnerTeam[0], pcb);
+			match.winnerTeam.recalculateWins.call(match.winnerTeam, pcb);
 		},
 		function(pcb){
-			match.winnerTeam[0].recalculateLosses.call(match.winnerTeam[0], pcb);
+			match.winnerTeam.recalculateLosses.call(match.winnerTeam, pcb);
 		},
 		function(pcb){
-			match.winnerTeam[0].recalculateStreak.call(match.winnerTeam[0], pcb);
+			match.winnerTeam.recalculateStreak.call(match.winnerTeam, pcb);
 		},
 		function(pcb){
-			match.loserTeam[0].recalculateWins.call(match.loserTeam[0], pcb);
+			match.loserTeam.recalculateWins.call(match.loserTeam, pcb);
 		},
 		function(pcb){
-			match.loserTeam[0].recalculateLosses.call(match.loserTeam[0], pcb);
+			match.loserTeam.recalculateLosses.call(match.loserTeam, pcb);
 		},
 		function(pcb){
-			match.loserTeam[0].recalculateStreak.call(match.loserTeam[0], pcb);
+			match.loserTeam.recalculateStreak.call(match.loserTeam, pcb);
 		}
 	], function(err){
 		if (err) return err; 

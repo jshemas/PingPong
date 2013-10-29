@@ -3,8 +3,8 @@ module.exports = function(mongoose) {
 	var matchSchema = mongoose.Schema({
 		winner: { type: mongoose.Schema.ObjectId, ref: 'players'},
 		loser: { type: mongoose.Schema.ObjectId, ref: 'players'},
-		winnerTeam: [{ type: mongoose.Schema.ObjectId, ref: 'teams'}],
-		loserTeam: [{ type: mongoose.Schema.ObjectId, ref: 'teams'}],
+		winnerTeam: { type: mongoose.Schema.ObjectId, ref: 'teams'},
+		loserTeam: { type: mongoose.Schema.ObjectId, ref: 'teams'},
 		games: [
 			{ 
 				winnerScore: { type: Number, required: true },
