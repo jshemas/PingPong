@@ -22,12 +22,26 @@ var userData = {
 // data for test team
 var team1Data = {
 	teamName: 'Team 1',
-	players: []
+	players:{
+		bluePlayer: {
+			_id: ''
+		},
+		redPlayer: {
+			_id: ''
+		}
+	}
 };
 
 var team2Data = {
 	teamName: 'Team 2',
-	players: []
+	players:{
+		bluePlayer: {
+			_id: ''
+		},
+		redPlayer: {
+			_id: ''
+		}
+	}
 };
 
 // the first test user
@@ -186,8 +200,8 @@ describe('Add Game: ', function (done) {
 
 describe('Add a Team: ', function (done) {
 	it('Adds player One and Two to team 1', function(done) {
-		team1Data.players[0] = userID1;
-		team1Data.players[1] = userID2;
+		team1Data.players.bluePlayer._id = userID1;
+		team1Data.players.redPlayer._id = userID2;
 		request(app).post('/teams').send(team1Data).expect(200).end(function(err, res){
 			expect(res.body.success).to.be(true);
 			teamID1 = res.body.team["_id"];
@@ -201,8 +215,8 @@ describe('Add a Team: ', function (done) {
 		});
 	});
 	it('Adds player Three and Four to team 2', function(done) {
-		team2Data.players[0] = userID3;
-		team2Data.players[1] = userID4;
+		team2Data.players.bluePlayer._id = userID3;
+		team2Data.players.redPlayer._id = userID4;
 		request(app).post('/teams').send(team2Data).expect(200).end(function(err, res){
 			expect(res.body.success).to.be(true);
 			teamID2 = res.body.team["_id"];

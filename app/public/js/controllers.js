@@ -173,7 +173,7 @@ function TeamDetailCtrl($scope, $routeParams, $http, $location) {
 		} else $scope.error = data["Error"];
 	});
 
-	$http.get('/matches/json?playerID=' + $scope.teamId + 'team=true').success(function(data) {
+	$http.get('/matches/json?playerID=' + $scope.teamId + '&team=true').success(function(data) {
 		$scope.matchData = data;
 	});
 
@@ -184,7 +184,7 @@ function TeamDetailCtrl($scope, $routeParams, $http, $location) {
 		});
 	};
 
-	$scope.editTeam = function (user) {
+	$scope.editTeam = function (team) {
 		$.extend($scope.teamData, team);
 		$http.put('/teams/' + $scope.teamId + '/edit', {"id": $scope.teamId, "data": team}).success(function(data) {
 			$('#editTeamDialog').modal('hide');

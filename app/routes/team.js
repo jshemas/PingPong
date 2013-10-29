@@ -19,7 +19,7 @@ userTeam.prototype.list = function(req, res){
 };
 
 userTeam.prototype.listJSON = function(req, res){
-	this.config.Teams.find(function(err, teams){
+	this.config.Teams.find().populate('player1 player2').exec(function (err, teams) {
 		if (err) {
 			console.log(err);
 			winston.info(err);
@@ -45,7 +45,8 @@ userTeam.prototype.add = function(req, res){
 	// should make sure these are real players
 	var newTeam = new this.config.Teams({
 		teamName: req.body.teamName,
-		players: [req.body.players[0], req.body.players[1]]
+		player1: req.body.players.bluePlayer._id,
+		player2: req.body.players.redPlayer._id
 	});
 	newTeam.save(function (err, team) {
 		if (err){ // TODO handle the error

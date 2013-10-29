@@ -43,7 +43,7 @@ angular.module('arena', ['PingPongFilters', 'Services']).
 			templateUrl: 'partials/team-list.html',
 			controller: TeamListCtrl
 		}).
-		when('/teams/:userId', {
+		when('/teams/:teamId', {
 			templateUrl: 'partials/team-detail.html',
 			controller: TeamDetailCtrl
 		}).

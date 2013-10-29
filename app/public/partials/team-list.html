@@ -7,7 +7,7 @@
 	<table class="table">
 		<thead class="center">
 			<tr>
-				<th ng-click="predicate='fname'; reverse=!reverse">Player:</th>
+				<th ng-click="predicate='fname'; reverse=!reverse">Team Name:</th>
 				<th ng-click="predicate='rating'; reverse=!reverse">Rating</th>
 				<th ng-click="predicate='matchesPlayed'; reverse=!reverse">Games Played</th>
 				<th ng-click="predicate='wins'; reverse=!reverse">Wins</th>
@@ -18,7 +18,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="team in teams | filter:query | orderBy:predicate:reverse " class="center">
-				<td><a href="#/teams/{{team._id}}">{{teams.teamName}}</a></td>
+				<td><a href="#/teams/{{team._id}}">{{team.teamName}}</a></td>
 				<td>{{team.rating}}</td>
 				<td>{{team.matchesPlayed}}</td>
 				<td>{{team.wins}}</td>
@@ -41,14 +41,15 @@
 	<div class="modal-body">
 		<form class='form-horizontal'>
 			<div>
-				<label class='control-label' for='teamMates'>Add Team Players</label>
+				<label class='control-label' for='teamMates'>Add Team Player 1:</label>
 				<select ng-options="player.fullName for player in players | orderBy:'fname'" name="redPlayer" id="redPlayer" ng-model='form.players.redPlayer' required></select>
+				<label class='control-label' for='teamMates'>Add Team Player 2:</label>
 				<select ng-options="player.fullName for player in players | orderBy:'fname'" name="bluePlayer" id="bluePlayer" ng-model='form.players.bluePlayer' required></select>
 			</div>
 			<div class='control-group'>
-				<label class='control-label' for='name'>Name</label>
+				<label class='control-label' for='teamName'>Team Name:</label>
 				<div class='controls'>
-					<input type="text" name="name" ng-model="form.name">
+					<input type="text" name="teamName" ng-model="form.teamName">
 				</div>
 			</div>
 		</form>

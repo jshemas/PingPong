@@ -4,7 +4,8 @@ var md5 = require('MD5'),
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
 	var teamSchema = mongoose.Schema({
-		players: [{type: mongoose.Schema.ObjectId, ref: 'players', required: true}],
+		player1: { type: mongoose.Schema.ObjectId, ref: 'players'},
+		player2: { type: mongoose.Schema.ObjectId, ref: 'players'},
 		teamName: {type: String, required: true},
 		wins: { type: Number, required: false },
 		losses: { type: Number, required: false },
