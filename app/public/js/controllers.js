@@ -60,6 +60,49 @@ function MatchDeleteListCtrl($scope, $http, $location, $route, $rootScope) {
 	};
 };
 
+function MatchTeamListCtrl($scope, $http, $location, $route, $rootScope, alertService) {
+	$scope.title = "Team Matches Played";
+	$rootScope.title = "Team Matches Played";
+	$scope.predicate = '-createdDate';
+
+	$http.get('/matches/json?team=true').success(function(data) {
+		$scope.matches = data;
+	});
+	$http.get('/teams/json').success(function(data) {
+		$scope.teams = data.teams;
+	});
+
+	$scope.master = {
+		game1RedPlayer: 11,
+		game1BluePlayer: 11,
+		game2RedPlayer: 11,
+		game2BluePlayer: 11
+	};
+	$scope.form = angular.copy($scope.master);
+
+	$scope.reset = function() {
+		$scope.teams = angular.copy($scope.master);
+	};
+
+	$scope.addMatch = function () {
+		$http.post('/matches', $scope.form).success(function(data) {
+			if(data.success == true){
+				$route.reload();
+			} else {
+				if(data.error && data.error == 'same player ID'){
+					alertService.add("error", "You can't play against yourself!");
+				} else {
+					alertService.add("error", "Something Wrong!");
+				}
+			};
+		});
+	};
+	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	};
+};
+
 function MatchDetailCtrl($scope, $routeParams, $http, $location) {
 	$scope.title = "Match Details";
 	$scope.matchId = $routeParams.matchId;

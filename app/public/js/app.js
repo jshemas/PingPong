@@ -28,8 +28,8 @@ angular.module('arena', ['PingPongFilters', 'Services']).
 			templateUrl: 'partials/recent-updates.html'
 		}).
 		when('/teamMatches', {
-			templateUrl: 'partials/match-list.html',
-			controller: MatchListCtrl
+			templateUrl: 'partials/team-match-list.html',
+			controller: MatchTeamListCtrl
 		}).
 		when('/teamMatchesDelete', {
 			templateUrl: 'partials/match-list.html',
