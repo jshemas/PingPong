@@ -60,7 +60,7 @@
 					</div>
 				</div>
 				<div class="span2 center">
-					<a href="#/matches/{{match._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
+					<a href="#/teamMatches/{{match._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
 					<br /><br />
 					<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
 						<div>GAME {{ $index +1 }}</div>

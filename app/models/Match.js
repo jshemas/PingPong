@@ -17,7 +17,7 @@ module.exports = function(mongoose) {
 		ratingChange: { type: Number, required: false },
 		winnerRating: { type: Number },
 		loserRating: { type: Number },
-		teamGame: { type: Boolean, 'default': false }
+		teamGame: { type: Boolean }
 	},
 	{
 		toObject: { getters: true },

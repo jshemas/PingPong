@@ -11,12 +11,9 @@
 		<li ng-repeat="match in matches | filter:query | orderBy:predicate:reverse ">
 			<div class="row well" style="padding-bottom: 20px;">
 				<div class="span4 offset1">
-					<div class="pull-left">
-						<img ng-src="{{match.winner.gravatar + '&s=125'}}">
-					</div>
 					<div class="center">
-						<a href="#/players/{{match.winner._id}}">
-							{{match.winner.fname}} "{{match.winner.nickname}}" {{match.winner.lname}}
+						<a href="#/players/{{match.winnerTeam._id}}">
+							{{match.winnerTeam.teamName}}
 						</a>
 						<br>
 						{{ match.winnerRating }} ({{match.ratingChange}})
@@ -26,19 +23,16 @@
 					</div>
 				</div>
 				<div class="span2 center">
-					<a href="#/matches/{{match._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
+					<a href="#/teamMatches/{{match._id}}">{{ match.createdDate | date:'MM/dd/yyyy h:mm'}}</a>
 					<br /><br />
 					<div ng-repeat="game in match.games | filter:query | orderBy:orderProp" class="row">
 						<div>GAME {{ $index +1 }}</div>
 					</div>
 				</div>
 				<div class="span4">
-					<div class="pull-right">
-						<img ng-src="{{match.loser.gravatar + '&s=125'}}">
-					</div>
 					<div class="center">
-						<a href="#/players/{{match.loser._id}}">
-							{{match.loser.fname}} "{{match.loser.nickname}}" {{match.loser.lname}}
+						<a href="#/players/{{match.loserTeam._id}}">
+							{{match.loserTeam.teamName}}
 						</a>
 						<br>
 						{{ match.loserRating }} ({{-match.ratingChange}})
@@ -66,9 +60,9 @@
 			<table class="table table-striped center">
 				<tbody>
 					<tr>
-						<td><select ng-options="team.teamName for team in teams | orderBy:'teamName'" name="redPlayer" id="redPlayer" ng-model='form.redPlayer' required></select></td>
+						<td><select ng-options="team.teamName for team in teams | orderBy:'teamName'" name="team1" id="team1" ng-model='form.team1' required></select></td>
 						<th>vs</th>
-						<td><select ng-options="team.teamName for team in teams | orderBy:'teamName'" name="bluePlayer" id="bluePlayer" ng-model='form.bluePlayer' required></select></td>
+						<td><select ng-options="team.teamName for team in teams | orderBy:'teamName'" name="team2" id="team2" ng-model='form.team2' required></select></td>
 					</tr>
 					<tr>
 						<td><input name="game1RedPlayer" ng-model='form.game1RedPlayer' required type="number" ng-pattern="/\d+/" step="1" min="0"></td>
@@ -85,7 +79,6 @@
 						<th>Game 3</th>
 						<td><input name="game3BluePlayer" ng-model='form.game3BluePlayer' type="number" ng-pattern="/\d+/" step="1" min="0"><br></td>
 					</tr>
-					<input name="team" ng-model='form.team' required type="hidden" value="1">
 				</tbody>
 			</table>
 
@@ -93,7 +86,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		<button id="AddGameBtn" ng-click="addMatch()" ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Match</button>
+		<button id="AddGameBtn" ng-click="addMatch()" data-dismiss="modal" class="btn btn-primary">Add Match</button>
 	</div>
 </div>
 

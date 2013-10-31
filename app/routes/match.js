@@ -22,30 +22,50 @@ Match.prototype.singleMatch = function(req, res){
 
 // gets a list of all of the matches
 Match.prototype.json = function(req, res){
-	var id = req.query.playerID;
-	var isTeam = req.query.team;
-	var query = id ? {deleted: false, $or: [ {'winner': id}, {'loser': id} ]} : {deleted: false};
-	if(isTeam == true){
+	var id = req.query.playerID,
+		isTeam = req.query.team,
+		query;
+	if(isTeam == 'true'){
 		query = id ? {deleted: false, $or: [ {'winnerTeam': id}, {'loserTeam': id} ]} : {deleted: false};
+		this.config.Matches.find(query).exists('teamGame', true).sort({createdDate: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
+			if (err){ // TODO handle err
+				console.log(err)
+				winston.info(err);
+			} else {
+				res.json(matches);
+			}
+		});
+	} else {
+		query = id ? {deleted: false, $or: [ {'winner': id}, {'loser': id} ]} : {deleted: false};
+		this.config.Matches.find(query).exists('teamGame', false).sort({createdDate: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
+			if (err){ // TODO handle err
+				console.log(err)
+				winston.info(err);
+			} else {
+				res.json(matches);
+			}
+		});
 	};
-	this.config.Matches.find(query).sort({createdDate: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
-		if (err){ // TODO handle err
-			console.log(err)
-			winston.info(err);
-		} else {
-			res.json(matches);
-		}
-	});
 };
 
 // gets a list of all of the deleted matches
 Match.prototype.delList = function(req, res){
-	this.config.Matches.find({deleted: true}).sort({dateTime: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
-		if (err){ // TODO handle err
-			console.log(err)
-			winston.info(err);
-		} else res.json(matches);
-	});
+	var isTeam = req.query.team;
+	if(isTeam == 'true'){
+		this.config.Matches.find({deleted: true}).exists('teamGame', true).sort({dateTime: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
+			if (err){ // TODO handle err
+				console.log(err)
+				winston.info(err);
+			} else res.json(matches);
+		});
+	} else {
+		this.config.Matches.find({deleted: true}).exists('teamGame', false).sort({dateTime: -1}).populate('winner loser winnerTeam loserTeam').exec(function (err, matches) {
+			if (err){ // TODO handle err
+				console.log(err)
+				winston.info(err);
+			} else res.json(matches);
+		});
+	} 
 };
 
 Match.prototype.add = function(req, res){
@@ -146,11 +166,11 @@ Match.prototype.add = function(req, res){
             	winner.streak = winner.streak && winner.streak > 0 ? ++winner.streak : 1;
                 winner.save(function(err, player) {
                     if (err) {
-                        //console.log('Save winning player failed: ', err);
+                        console.log('Save winning player failed: ', err);
                         winston.info(err);
                         pcb(err);
                     } else {
-                        //console.log('Winning player rating updated');
+                        console.log('Winning player rating updated');
                         pcb(null, player);
                     }
                 });
@@ -188,8 +208,7 @@ Match.prototype.add = function(req, res){
 	                    games: gameData.games,
 	                    ratingChange: ratingChange,
 	                    winnerRating: winner.rating,
-	                    loserRating: loser.rating,
-	                    teamGame: false
+	                    loserRating: loser.rating
 	                });
             	}
 
@@ -236,12 +255,12 @@ Match.prototype['delete'] = function(req, res){
 		match.save(function(err){
 			if (err) errHandler(err);
 			else {
-				if(match.teamGame == false) {
-					var state = deleteMatch(match, match.winner, match.loser);
+				if(match.teamGame) {
+					var state = deleteMatch(match, match.winnerTeam, match.loserTeam);
 					if (state) errHandler(state); 
 					else res.json({success: true});
 				} else {
-					var state = deleteMatch(match, match.winnerTeam, match.loserTeam);
+					var state = deleteMatch(match, match.winner, match.loser);
 					if (state) errHandler(state); 
 					else res.json({success: true});
 				}

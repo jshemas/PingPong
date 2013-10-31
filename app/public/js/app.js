@@ -32,11 +32,11 @@ angular.module('arena', ['PingPongFilters', 'Services']).
 			controller: MatchTeamListCtrl
 		}).
 		when('/teamMatchesDelete', {
-			templateUrl: 'partials/match-list.html',
-			controller: MatchDeleteListCtrl
+			templateUrl: 'partials/team-match-list.html',
+			controller: MatchTeamDeleteListCtrl
 		}).
 		when('/teamMatches/:matchId', {
-			templateUrl: 'partials/match-detail.html',
+			templateUrl: 'partials/team-match-detail.html',
 			controller: MatchDetailCtrl
 		}).
 		when('/teams', {

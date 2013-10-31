@@ -69,6 +69,7 @@ function MatchTeamListCtrl($scope, $http, $location, $route, $rootScope, alertSe
 		$scope.matches = data;
 	});
 	$http.get('/teams/json').success(function(data) {
+		console.log("data",data)
 		$scope.teams = data.teams;
 	});
 
@@ -85,6 +86,7 @@ function MatchTeamListCtrl($scope, $http, $location, $route, $rootScope, alertSe
 	};
 
 	$scope.addMatch = function () {
+		$scope.form.team = true;
 		$http.post('/matches', $scope.form).success(function(data) {
 			if(data.success == true){
 				$route.reload();
@@ -98,6 +100,22 @@ function MatchTeamListCtrl($scope, $http, $location, $route, $rootScope, alertSe
 		});
 	};
 	
+	$scope.badgeColor = function(main, compare) {
+		return main > compare ? "badge-success" : "badge-important";
+	};
+};
+
+function MatchTeamDeleteListCtrl($scope, $http, $location, $route, $rootScope) {
+	$scope.title = "Deleted Matches Played";
+	$rootScope.title = "Deleted Matches Played";
+	$scope.predicate = '-createdDate';
+
+	$http.get('/matches/delList/json?team=true').success(function(data) {
+		$scope.matches = data;
+	});
+	$http.get('/users/json').success(function(data) {
+		$scope.players = data;
+	});
 	$scope.badgeColor = function(main, compare) {
 		return main > compare ? "badge-success" : "badge-important";
 	};
