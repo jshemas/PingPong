@@ -1,0 +1,67 @@
+<div class="searchBox float-right">
+	Search: <input ng-model="query">
+	<a href="#addTeamDialog" data-toggle="modal" class="btn btn-primary">Add Team</a>
+</div>
+<h1>{{title}}</h1>
+<div>
+	<table class="table">
+		<thead class="center">
+			<tr>
+				<th ng-click="predicate='teamName'; reverse=!reverse">Team Name:</th>
+				<th ng-click="predicate='rating'; reverse=!reverse">Rating</th>
+				<th ng-click="predicate='matchesPlayed'; reverse=!reverse">Games Played</th>
+				<th ng-click="predicate='wins'; reverse=!reverse">Wins</th>
+				<th ng-click="predicate='losses'; reverse=!reverse">Losses</th>
+				<th ng-click="predicate='ratio'; reverse=!reverse">Win %</th>
+				<th ng-click="predicate='streak'; reverse=!reverse">Streak</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="team in teams | filter:query | orderBy:predicate:reverse " class="center">
+				<td><a href="#/teams/{{team._id}}">{{team.teamName}}</a></td>
+				<td>{{team.rating}}</td>
+				<td>{{team.matchesPlayed}}</td>
+				<td>{{team.wins}}</td>
+				<td>{{team.losses}}</td>
+				<td>{{team.ratio}}%</td>
+				<td>{{team.currentStreak}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr>
+
+</div>
+
+
+<div id="addTeamDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add Team" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="editTeamDialogLabel">Add a new Team</h3>
+	</div>
+	<div class="modal-body">
+		<form class='form-horizontal'>
+			<div>
+				<label class='control-label' for='teamMates'>Add Team Player 1:</label>
+				<select ng-options="player.fullName for player in players | orderBy:'fname'" name="redPlayer" id="redPlayer" ng-model='form.players.redPlayer' required></select>
+				<label class='control-label' for='teamMates'>Add Team Player 2:</label>
+				<select ng-options="player.fullName for player in players | orderBy:'fname'" name="bluePlayer" id="bluePlayer" ng-model='form.players.bluePlayer' required></select>
+			</div>
+			<div class='control-group'>
+				<label class='control-label' for='teamName'>Team Name:</label>
+				<div class='controls'>
+					<input type="text" name="teamName" ng-model="form.teamName">
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button ng-click='addTeam()' ng-disabled="addMatchForm.$invalid || isUnchanged(addMatchForm)" data-dismiss="modal" class="btn btn-primary">Add Team</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#addTeamDialog').on('shown', function () {
+		$('input:visible:first', this).focus();
+	});
+</script>

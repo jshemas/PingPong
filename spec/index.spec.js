@@ -19,11 +19,36 @@ var userData = {
 	email: "test@gmail.com"
 };
 
-// the first test user
-var userID1;
+// data for test team
+var team1Data = {
+	teamName: 'Team 1',
+	players:{
+		bluePlayer: {
+			_id: ''
+		},
+		redPlayer: {
+			_id: ''
+		}
+	}
+};
 
-// the secound test user
-var userID2;
+var team2Data = {
+	teamName: 'Team 2',
+	players:{
+		bluePlayer: {
+			_id: ''
+		},
+		redPlayer: {
+			_id: ''
+		}
+	}
+};
+
+// the first test user
+var userID1,
+	userID2,
+	userID3,
+	userID4;
 
 // data for test game (add player ids later)
 var gameData = {
@@ -31,6 +56,23 @@ var gameData = {
 		_id: ''
 	},
 	bluePlayer: {
+		_id: ''
+	},
+	game1RedPlayer: '1',
+	game1BluePlayer: '15',
+	game2RedPlayer: '1',
+	game2BluePlayer: '15',
+	game3RedPlayer: '1',
+	game3BluePlayer: '15'
+};
+
+// data for test game (add player ids later)
+var gameTeamData = {
+	team: 'true',
+	team1: {
+		_id: ''
+	},
+	team2: {
 		_id: ''
 	},
 	game1RedPlayer: '1',
@@ -83,6 +125,32 @@ describe('Add Player: ', function (done) {
 			done();
 		});
 	});
+	it('Adds player Three to the database', function(done) {
+		request(app).post('/users').send(userData).expect(200).end(function(err, res){
+			expect(res.body.success).to.be(true);
+			userID3 = res.body.player["_id"];
+			done();
+		});
+	});
+	it('make sure player three exists', function(done) {
+		request(app).get('/users/'+userID3+'/json').expect(200).end(function(err, res){
+			expect(res.body.player._id).to.be(userID3);
+			done();
+		});
+	});
+	it('Adds player Four to the database', function(done) {
+		request(app).post('/users').send(userData).expect(200).end(function(err, res){
+			expect(res.body.success).to.be(true);
+			userID4 = res.body.player["_id"];
+			done();
+		});
+	});
+	it('make sure player four exists', function(done) {
+		request(app).get('/users/'+userID4+'/json').expect(200).end(function(err, res){
+			expect(res.body.player._id).to.be(userID4);
+			done();
+		});
+	});
 });
 
 describe('Add Game: ', function (done) {
@@ -130,6 +198,107 @@ describe('Add Game: ', function (done) {
 	});
 });
 
+describe('Add a Team: ', function (done) {
+	it('Adds player One and Two to team 1', function(done) {
+		team1Data.players.bluePlayer._id = userID1;
+		team1Data.players.redPlayer._id = userID2;
+		request(app).post('/teams').send(team1Data).expect(200).end(function(err, res){
+			expect(res.body.success).to.be(true);
+			teamID1 = res.body.team["_id"];
+			done();
+		});
+	});
+	it('make sure team one exists', function(done) {
+		request(app).get('/teams/'+teamID1+'/json').expect(200).end(function(err, res){
+			expect(res.body.team._id).to.be(teamID1);
+			done();
+		});
+	});
+	it('Adds player Three and Four to team 2', function(done) {
+		team2Data.players.bluePlayer._id = userID3;
+		team2Data.players.redPlayer._id = userID4;
+		request(app).post('/teams').send(team2Data).expect(200).end(function(err, res){
+			expect(res.body.success).to.be(true);
+			teamID2 = res.body.team["_id"];
+			done();
+		});
+	});
+	it('make sure team two exists', function(done) {
+		request(app).get('/teams/'+teamID2+'/json').expect(200).end(function(err, res){
+			expect(res.body.team._id).to.be(teamID2);
+			done();
+		});
+	});
+});
+
+describe('Add TeamGame: ', function (done) {
+	it('Adds a game to the database', function(done) {
+		gameTeamData.team1._id = teamID1;
+		gameTeamData.team2._id = teamID2;
+		request(app).post('/matches').send(gameTeamData).expect(200).end(function(err, res){
+			expect(res.body.success).to.be(true);
+			//the return obj has 3 _ids in it
+			//we need to find which one is game ID
+			if(res.body.match[0]['delete']){
+				gameTeamID = res.body.match[0]._id;
+			} else if(res.body.match[1]['delete']) {
+				gameTeamID = res.body.match[1]._id;
+			} else {
+				gameTeamID = res.body.match[2]._id;
+			};
+			done();
+		});
+	});
+	it('make sure the new game exists', function(done) {
+		request(app).get('/matches/'+gameTeamID+'/json').expect(200).end(function(err, res){
+			expect(res.body._id).to.be(gameTeamID);
+			done();
+		});
+	});
+});
+
+describe("Remove Team Game: ", function(done){
+	it('Should mark the game as removed.', function(done){
+		request(app).get('/matches/'+gameTeamID+'/delete').expect(200).end(function(err, res){
+			//we should be setting a success flag for this call
+			done();
+		});
+	});
+	it('make sure the new game exists', function(done) {
+		request(app).get('/matches/'+gameTeamID+'/json').expect(200).end(function(err, res){
+			expect(res.body._id).to.be(gameTeamID);
+			done();
+		});
+	});
+});
+
+describe('Remove Team: ', function (done) {
+	it('Removes Team One from database', function(done) {
+		request(app).get('/teams/'+teamID1+'/delete').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(true);
+			done();
+		});
+	});
+	it('make sure team one doesnt exists', function(done) {
+		request(app).get('/teams/'+teamID1+'/json').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(false);
+			done();
+		});
+	});
+	it('Removes Team Two from database', function(done) {
+		request(app).get('/teams/'+teamID2+'/delete').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(true);
+			done();
+		});
+	});
+	it('make sure team two doesnt exists', function(done) {
+		request(app).get('/teams/'+teamID2+'/json').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(false);
+			done();
+		});
+	});
+});
+
 describe("Remove Game: ", function(done){
 	it('Should mark the game as removed.', function(done){
 		request(app).get('/matches/'+gameID+'/delete').expect(200).end(function(err, res){
@@ -159,14 +328,38 @@ describe('Remove Player: ', function (done) {
 			done();
 		});
 	});
-	it('Removes player One from database', function(done) {
+	it('Removes player Two from database', function(done) {
 		request(app).get('/users/'+userID2+'/delete').expect(200).end(function(err, res){
 			expect(res.body.Success).to.be(true);
 			done();
 		});
 	});
-	it('make sure player one was deleted', function(done) {
+	it('make sure player two was deleted', function(done) {
 		request(app).get('/users/'+userID2+'/json').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(false);
+			done();
+		});
+	});
+	it('Removes player Three from database', function(done) {
+		request(app).get('/users/'+userID3+'/delete').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(true);
+			done();
+		});
+	});
+	it('make sure player three was deleted', function(done) {
+		request(app).get('/users/'+userID3+'/json').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(false);
+			done();
+		});
+	});
+	it('Removes player Four from database', function(done) {
+		request(app).get('/users/'+userID4+'/delete').expect(200).end(function(err, res){
+			expect(res.body.Success).to.be(true);
+			done();
+		});
+	});
+	it('make sure player four was deleted', function(done) {
+		request(app).get('/users/'+userID4+'/json').expect(200).end(function(err, res){
 			expect(res.body.Success).to.be(false);
 			done();
 		});

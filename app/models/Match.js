@@ -1,8 +1,10 @@
 module.exports = function(mongoose) {
 	//TODO - Add char limits to name(s)
 	var matchSchema = mongoose.Schema({
-		winner: { type: mongoose.Schema.ObjectId, ref: 'players', required: true },
-		loser: { type: mongoose.Schema.ObjectId, ref: 'players', required: true },
+		winner: { type: mongoose.Schema.ObjectId, ref: 'players'},
+		loser: { type: mongoose.Schema.ObjectId, ref: 'players'},
+		winnerTeam: { type: mongoose.Schema.ObjectId, ref: 'teams'},
+		loserTeam: { type: mongoose.Schema.ObjectId, ref: 'teams'},
 		games: [
 			{ 
 				winnerScore: { type: Number, required: true },
@@ -14,18 +16,12 @@ module.exports = function(mongoose) {
 		removedDate: { type: Date },
 		ratingChange: { type: Number, required: false },
 		winnerRating: { type: Number },
-		loserRating: { type: Number }
+		loserRating: { type: Number },
+		teamGame: { type: Boolean }
 	},
 	{
 		toObject: { getters: true },
 		toJSON: { virtuals: true }
-	});
-
-	// What is this used for?
-	var teamSchema = mongoose.Schema({
-		// TODO: Change to winner/loser
-		redPlayer: { type: String, required: true },
-		bluePlayer: { type: String, required: true }
 	});
 	
 	var Match = mongoose.model('matches', matchSchema);
