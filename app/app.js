@@ -58,9 +58,12 @@ winston.remove(winston.transports.Console);
 // import models
 var Players = require('./models/Player')(mongoose);
 var Matches = require('./models/Match')(mongoose);
+var ReqMatches = require('./models/ReqMatch')(mongoose);
 
 var user = new User({Matches: Matches.Match, Players: Players.Players});
-var match = new Match({Matches: Matches.Match, Players: Players.Players});
+var match = new Match({Matches: Matches.Match, 
+		       Players: Players.Players,
+		       ReqMatches: ReqMatches.ReqMatch});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
